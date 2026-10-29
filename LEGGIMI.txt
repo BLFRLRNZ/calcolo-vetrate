@@ -1,0 +1,28 @@
+CALCOLO VETRATE - web app indipendente
+
+Questa cartella è l'app completa. Va pubblicata su un hosting statico
+(un indirizzo https), poi si installa su iPad/iPhone/Android dalla Home.
+
+PUBBLICARLA (una volta sola, da computer):
+1. Vai su un servizio di hosting statico gratuito (es. Netlify Drop,
+   GitHub Pages, Cloudflare Pages).
+2. Carica l'intera cartella "vetrate-app" così com'è.
+3. Ottieni un indirizzo https://... : quello è il link dell'app.
+
+INSTALLARLA SU IPAD / IPHONE:
+1. Apri il link in Safari.
+2. Tocca Condividi (quadrato con freccia) > Aggiungi alla schermata Home.
+3. Da quel momento si apre dall'icona, a schermo intero, anche offline.
+
+DATI:
+- Ogni dispositivo salva i suoi dati in locale.
+- Usa sempre l'app dall'icona in Home: Safari normale e l'app installata
+  hanno memorie separate.
+- Per passare un cantiere a un collega: Parametri > Esporta cantiere,
+  manda il file (WhatsApp, email...), lui fa Importa cantiere da file.
+- Fai ogni tanto "Backup completo" e tieni il file al sicuro.
+
+AGGIORNARE L'APP:
+Sostituisci i file sull'hosting e cambia VERSIONE dentro sw.js
+(es. vetrate-v4). Al prossimo avvio con internet l'app si aggiorna,
+i dati restano.
