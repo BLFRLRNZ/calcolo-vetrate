@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0d7480">
+<meta name="theme-color" content="#0f1720">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -14,127 +14,189 @@
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Calcolo Vetrate</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
-/* Layout: elenco cantieri → cantiere con schede (Struttura, Vista, Riepilogo, Parametri, Strumenti); una colonna su telefono */
+/* Layout: strumento tecnico. Barra superiore compatta, contenuto su carta millimetrata, navigazione fissa in basso; schede a una colonna su telefono */
 :root{
-  --bg:#eef3f4; --surface:#ffffff; --ink:#15232a; --muted:#5a6b73; --line:#d2dde1;
-  --accent:#0d7480; --accent-ink:#ffffff; --glass:#cfe6e9; --glass-2:#b3d8dd; --sel:#d9822b;
-  --warn:#a85600; --bad:#b3261e; --ok:#2f7a3c;
-  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
-  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --bg:#eef1f4; --grid:#e3e8ed; --surface:#ffffff; --surface-2:#f5f7f9; --ink:#0f1720; --muted:#5b6976;
+  --line:#d6dde4; --line-2:#b8c3ce; --accent:#0b7a8f; --accent-ink:#ffffff; --accent-soft:#e0f0f3;
+  --hi:#d9530b; --sel:var(--hi); --glass:#cfe6ec; --glass-2:#a8d2db; --bar:#0f1720; --bar-ink:#dfe7ee; --bar-muted:#7f8d99;
+  --warn:#b25b00; --bad:#c0362c; --ok:#2b7a3d;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --r:6px; --nav-h:62px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0e161a; --surface:#152128; --ink:#e3edf0; --muted:#92a5ad; --line:#2a3a42;
-  --accent:#4fc2cc; --accent-ink:#06262a; --glass:#1d4549; --glass-2:#27595e; --sel:#f0a54a;
+  --bg:#0b1015; --grid:#111920; --surface:#111a21; --surface-2:#16212a; --ink:#e2e9ef; --muted:#8b9aa7;
+  --line:#22303b; --line-2:#344552; --accent:#3cc3d8; --accent-ink:#04232a; --accent-soft:#0f2e36;
+  --hi:#ff8a3d; --glass:#173f48; --glass-2:#215661; --bar:#070b0f; --bar-ink:#dfe7ee; --bar-muted:#6f7e8a;
   --warn:#f0a54a; --bad:#ff8a80; --ok:#7fcf8a; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0e161a; --surface:#152128; --ink:#e3edf0; --muted:#92a5ad; --line:#2a3a42;
-  --accent:#4fc2cc; --accent-ink:#06262a; --glass:#1d4549; --glass-2:#27595e; --sel:#f0a54a;
+  --bg:#0b1015; --grid:#111920; --surface:#111a21; --surface-2:#16212a; --ink:#e2e9ef; --muted:#8b9aa7;
+  --line:#22303b; --line-2:#344552; --accent:#3cc3d8; --accent-ink:#04232a; --accent-soft:#0f2e36;
+  --hi:#ff8a3d; --glass:#173f48; --glass-2:#215661; --bar:#070b0f; --bar-ink:#dfe7ee; --bar-muted:#6f7e8a;
   --warn:#f0a54a; --bad:#ff8a80; --ok:#7fcf8a; color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-.wrap{max-width:1100px;margin:0 auto}
-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:12px 10px;display:flex;flex-direction:column;gap:10px;border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:10px;min-width:0}
-.brand .titles{min-width:0;flex:1}
-h1{font-family:var(--f-display);font-weight:700;font-size:1.6rem;margin:0;line-height:1.05;overflow-wrap:anywhere}
-.sub{color:var(--muted);font-size:.85rem;overflow-wrap:anywhere}
-.back{flex:none;font:600 1.2rem var(--f-body);width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
-.tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px;overflow-x:auto;scrollbar-width:none}
-.tabs button{flex:1 0 auto;font:600 .9rem var(--f-body);border:0;background:transparent;color:var(--muted);padding:8px 10px;border-radius:7px;cursor:pointer;white-space:nowrap}
-.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
-main{padding-top:16px;display:flex;flex-direction:column;gap:16px}
-.grid{display:grid;gap:16px}
+html{-webkit-text-size-adjust:100%}
+body{background-color:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0 calc(var(--nav-h) + 28px + env(safe-area-inset-bottom,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:1080px;margin:0 auto}
+
+/* barra superiore */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border:1px solid var(--line);border-top:0;
+  border-radius:0 0 var(--r) var(--r);padding:12px 14px;margin-bottom:4px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand .titles{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
+.crumb{font:500 .66rem var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 1.45rem/1.05 var(--f-display);letter-spacing:.005em;margin:0;overflow-wrap:anywhere}
+.sub{color:var(--muted);font:400 .76rem var(--f-mono);overflow-wrap:anywhere}
+.logo{flex:none;width:38px;height:38px;border-radius:var(--r);background:var(--bar);display:grid;place-items:center}
+.back{flex:none;width:38px;height:38px;border-radius:var(--r);border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink);cursor:pointer;display:grid;place-items:center}
+.back svg{width:18px;height:18px}
+
+/* navigazione in basso */
+.bnav{position:fixed;left:0;right:0;bottom:0;z-index:8;background:var(--bar);border-top:1px solid var(--line-2);
+  padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+.bnav-in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.bnav button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;border-radius:var(--r);
+  color:var(--bar-muted);font:500 .64rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;position:relative}
+.bnav svg{width:22px;height:22px}
+.bnav button[aria-selected="true"]{color:var(--bar-ink)}
+.bnav button[aria-selected="true"]::before{content:"";position:absolute;top:-7px;left:25%;right:25%;height:2px;background:var(--accent)}
+.bnav button:focus-visible{outline:2px solid var(--accent)}
+
+main{padding-top:14px;display:flex;flex-direction:column;gap:14px}
+.grid{display:grid;gap:14px}
 @media (min-width:860px){.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
-h2{font-family:var(--f-display);font-weight:600;font-size:1.3rem;margin:0;text-wrap:balance}
-h3{font-family:var(--f-display);font-weight:600;font-size:.95rem;margin:0;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
-.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
-label.f{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted);min-width:0}
-label.f .hint{font-size:.74rem;opacity:.85}
-label.chk{display:flex;gap:8px;align-items:center;font-size:.9rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+h2{font:600 1.15rem/1.2 var(--f-display);margin:0;text-wrap:balance;letter-spacing:.01em}
+h3{font:600 .68rem var(--f-mono);margin:4px 0 0;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);display:flex;align-items:center;gap:8px}
+h3::after{content:"";flex:1;height:1px;background:var(--line)}
+.sec{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:6px}
+.sec h2{font-size:1rem;text-transform:uppercase;letter-spacing:.08em}
+.sec .note{font-size:.78rem}
+
+/* campi */
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px 12px}
+label.f{display:flex;flex-direction:column;gap:5px;min-width:0;font:500 .66rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+label.f .hint{font:400 .74rem var(--f-body);letter-spacing:0;text-transform:none;opacity:.9}
+.f.wide{grid-column:1/-1}
+label.chk{display:flex;gap:8px;align-items:center;font-size:.88rem}
 label.chk input{width:auto}
-input,select,textarea{font:500 1rem var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-width:0}
-input.num,textarea.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
-input.name{font:600 1.1rem var(--f-display);letter-spacing:.01em;background:transparent;border-color:transparent;padding:4px 6px}
-input.name:hover{border-color:var(--line)}
-input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+input,select,textarea{font:500 .95rem var(--f-body);color:var(--ink);background:var(--surface-2);border:1px solid var(--line-2);border-radius:4px;padding:9px 10px;width:100%;min-width:0;min-height:40px}
+input.num,textarea.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:500}
+input[readonly]{background:transparent;border-style:dashed;color:var(--muted)}
+input.name{font:600 1.08rem var(--f-display);background:transparent;border-color:transparent;padding:4px 6px;min-height:0}
+input.name:hover{border-color:var(--line-2)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:transparent}
+button:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .unit{position:relative}
-.unit input{padding-right:38px}
-.unit span{position:absolute;right:9px;top:50%;transform:translateY(-50%);font:.74rem var(--f-mono);color:var(--muted);pointer-events:none}
+.unit input{padding-right:40px}
+.unit span{position:absolute;right:10px;top:50%;transform:translateY(-50%);font:500 .68rem var(--f-mono);color:var(--muted);pointer-events:none;text-transform:none;letter-spacing:0}
+
+/* pulsanti */
 .seg{display:flex;gap:6px;flex-wrap:wrap}
-.seg button{font:600 .88rem var(--f-body);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer}
+.seg button{font:500 .78rem var(--f-mono);border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink);padding:7px 11px;border-radius:4px;cursor:pointer}
 .seg button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
-.btn{font:600 .88rem var(--f-body);border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:8px 13px;border-radius:8px;cursor:pointer;white-space:nowrap}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.btn.danger{color:var(--bad);border-color:var(--bad)}
-.btn.sm{padding:5px 9px;font-size:.8rem}
-.btn[data-armed]{background:var(--bad);color:var(--surface);border-color:var(--bad)}
+.btn{font:600 .82rem var(--f-body);border:1px solid var(--line-2);background:var(--surface);color:var(--ink);padding:8px 13px;border-radius:4px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.btn.danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,var(--line-2))}
+.btn.sm{padding:5px 9px;font-size:.76rem}
+.btn[data-armed]{background:var(--bad);color:#fff;border-color:var(--bad)}
+.btn:disabled{opacity:.35;cursor:default}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .row.between{justify-content:space-between}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
-.stat{border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:var(--bg)}
+
+/* letture numeriche */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.stat{padding:10px 12px;background:var(--surface-2);border-right:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 -1px -1px 0}
 .stat b{display:block;font:600 1.35rem var(--f-mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.stat span{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
-.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
-table{border-collapse:collapse;width:100%;font-size:.88rem}
-th,td{padding:7px 9px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
-th{font-weight:600;color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;background:var(--bg)}
+.stat span{font:500 .62rem var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+
+/* tabelle */
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+table{border-collapse:collapse;width:100%;font-size:.84rem}
+th,td{padding:7px 10px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{font:500 .62rem var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.1em;background:var(--surface-2)}
 td{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+tbody tr:last-child td{border-bottom:0}
 .l{text-align:left}
 td.t{font-family:var(--f-body)}
-tr.grp td{background:var(--bg);font:600 .82rem var(--f-body);color:var(--muted);text-align:left;text-transform:uppercase;letter-spacing:.05em}
-tfoot td{font-weight:600;border-bottom:0}
-.pill{display:inline-block;font:600 .72rem var(--f-body);padding:2px 8px;border-radius:99px;border:1px solid currentColor}
+tr.grp td{background:var(--accent-soft);font:600 .7rem var(--f-mono);color:var(--accent);text-align:left;text-transform:uppercase;letter-spacing:.1em}
+tfoot td{font-weight:600}
+
+.pill{display:inline-flex;align-items:center;gap:5px;font:500 .7rem var(--f-mono);padding:3px 8px;border-radius:3px;border:1px solid currentColor;letter-spacing:.02em}
 .pill.mob{color:var(--accent)} .pill.fix{color:var(--muted)} .pill.w{color:var(--warn)} .pill.b{color:var(--bad)}
-.msg{font-size:.85rem;padding:7px 10px;border-radius:8px;border-left:3px solid var(--warn);background:var(--bg)}
+.msg{font-size:.82rem;padding:7px 10px;border-radius:4px;border-left:3px solid var(--warn);background:var(--surface-2)}
 .msg.bad{border-color:var(--bad)} .msg.ok{border-color:var(--ok)}
-.note{font-size:.85rem;color:var(--muted);margin:0;max-width:65ch}
-.banner{font-size:.86rem;padding:10px 12px;border-radius:8px;border:1px dashed var(--warn)}
-.lato{border-left:4px solid var(--accent)}
-.lato-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.lato-head .tag{font:700 .8rem var(--f-mono);color:var(--accent-ink);background:var(--accent);border-radius:6px;padding:3px 7px}
+.note{font-size:.84rem;color:var(--muted);margin:0;max-width:68ch}
+.banner{font-size:.84rem;padding:10px 12px;border-radius:4px;border:1px dashed var(--hi);background:color-mix(in srgb,var(--hi) 7%,transparent)}
+
+/* struttura */
+.lato{padding:0;gap:0;overflow:hidden}
+.lato-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 12px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.lato-head .tag{font:700 .9rem var(--f-mono);color:var(--surface);background:var(--ink);border-radius:4px;width:30px;height:30px;display:grid;place-items:center}
 .lato-head input.name{flex:1;min-width:140px}
+.lato-body{padding:14px 12px;display:flex;flex-direction:column;gap:14px}
 .vani{display:flex;flex-direction:column;gap:12px}
-.vano{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
-.vano input,.vano select{background:var(--surface)}
-.vano-head{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.vano{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.vano-head{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:6px 8px;border-bottom:1px solid var(--line)}
 .vano-head input.name{flex:1;min-width:120px;font-size:1rem}
-.vres{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:.86rem}
-.vres b{font-family:var(--f-mono);font-weight:500}
-details summary{cursor:pointer;font-size:.86rem;font-weight:600;color:var(--accent)}
-details[open] summary{margin-bottom:8px}
-.draw{border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:8px;overflow-x:auto}
+.vano-main{display:grid;grid-template-columns:1fr;gap:12px;padding:12px}
+@media (min-width:640px){.vano-main{grid-template-columns:200px minmax(0,1fr)}}
+.thumb{background:var(--surface-2);border:1px solid var(--line);border-radius:4px;display:grid;place-items:center;padding:8px;min-height:120px}
+.thumb svg{width:100%;height:auto;max-height:190px;display:block}
+.vres{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font:500 .8rem var(--f-mono);padding:8px 12px;border-top:1px solid var(--line);background:var(--surface-2)}
+.vres b{font-weight:600}
+.vano details{padding:0 12px 12px}
+details summary{cursor:pointer;list-style:none}
+details summary::-webkit-details-marker{display:none}
+.vano details summary{font:500 .7rem var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--accent);padding-top:10px}
+.vano details summary::before{content:"+ "}
+.vano details[open] summary::before{content:"− "}
+.vano details[open] summary{margin-bottom:8px}
+
+/* disegni */
+.draw{border:1px solid var(--line);border-radius:var(--r);background:var(--surface-2);padding:8px;overflow-x:auto}
 .draw svg{display:block;width:100%;height:auto}
 .plan svg{max-height:380px}
 .plan [data-lato]{cursor:pointer}
-.kv{display:grid;grid-template-columns:1fr auto;gap:6px 14px;font-size:.9rem;margin:0}
-.kv dt{color:var(--muted)} .kv dd{margin:0;font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right}
-.clist{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-.ccard{text-align:left;cursor:pointer;font:inherit;color:inherit}
-.ccard:hover{border-color:var(--accent)}
-.ccard .meta{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem;color:var(--muted)}
-.ccard .meta b{font-family:var(--f-mono);color:var(--ink);font-weight:500}
-.vtab td input{padding:6px 8px;font-size:.88rem}
+.kv{display:grid;grid-template-columns:1fr auto;gap:0;font-size:.86rem;margin:0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.kv dt,.kv dd{padding:7px 10px;border-bottom:1px solid var(--line);margin:0}
+.kv dt{color:var(--muted)} .kv dd{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;font-weight:500}
+.kv dt:nth-last-child(2),.kv dd:last-child{border-bottom:0}
+
+/* elenco cantieri */
+.clist{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.ccard{text-align:left;cursor:pointer;font:inherit;color:inherit;padding:0;gap:0;overflow:hidden}
+.ccard:hover{border-color:var(--ink)}
+.ccard .cthumb{background:var(--surface-2);border-bottom:1px solid var(--line);height:130px;display:grid;place-items:center;padding:10px}
+.ccard .cthumb svg{width:100%;height:100%}
+.ccard .cbody{padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.ccard .meta{display:grid;grid-template-columns:repeat(4,auto);justify-content:start;gap:4px 14px;font:400 .7rem var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.ccard .meta b{display:block;font:600 .95rem var(--f-mono);color:var(--ink);letter-spacing:0}
+
+.vtab td input{padding:6px 8px;font-size:.86rem;min-height:34px}
 .vtab td{padding:4px 6px}
 .vtab td:first-child input{min-width:150px}
 .vtab td input.num{width:84px}
-.sync{font-size:.74rem;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
-.sync::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--muted)}
+
+/* sistemi */
+[data-s] details>summary{display:flex;flex-direction:column;gap:2px}
+.sis-t{font:600 1.1rem var(--f-display);color:var(--ink)}
+[data-s] details>summary .note{font:400 .72rem var(--f-mono);text-transform:uppercase;letter-spacing:.06em}
+.sis-body{display:flex;flex-direction:column;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+
+.sync{font:500 .64rem var(--f-mono);color:var(--muted);display:inline-flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.08em}
+.sync::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--muted)}
 .sync.ok::before{background:var(--ok)} .sync.w::before{background:var(--warn)} .sync.b::before{background:var(--bad)}
-.f.wide{grid-column:1/-1}
-details summary{list-style:none}
-details summary::-webkit-details-marker{display:none}
-[data-s] details>summary{display:flex;flex-direction:column;gap:2px;cursor:pointer}
-[data-s] details>summary::before{content:"›";float:right;color:var(--muted);transition:transform .15s}
-.sis-t{font:600 1.2rem var(--f-display);color:var(--ink)}
-.sis-body{display:flex;flex-direction:column;gap:12px;margin-top:12px}
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:.9rem;z-index:20}
-@media (prefers-reduced-motion:no-preference){.tabs button,.seg button,.btn{transition:background .15s,color .15s}}
+.toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:8px 14px;border-radius:4px;font:500 .82rem var(--f-mono);z-index:20}
+@media (prefers-reduced-motion:no-preference){.seg button,.btn,.bnav button{transition:background .15s,color .15s,border-color .15s}}
 </style>
 
 </head>
@@ -298,12 +360,21 @@ function totals(c){const t={vetri:0,mq:0,fmq:0,kg:0,cost:0,vani:0,warn:0};
     t.vetri+=r.N*r.qta;t.mq+=r.mq;t.fmq+=r.fmq;t.kg+=r.kg;if(r.prezzo>0)t.cost+=r.fmq*r.prezzo;t.warn+=r.msgs.length}));return t}
 
 /* ---------- navigazione ---------- */
+const ICON={
+ struttura:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18M9 9v11M15 9v11"/></svg>',
+ vista:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 18V8l8-4 8 4v10"/><path d="M4 18h16M8 18v-6h3v6M14 12h3v3h-3z"/></svg>',
+ riepilogo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 3h14v18H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+ parametri:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
+ strumenti:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 17L17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></svg>',
+ back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>',
+ logo:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#dfe7ee" stroke-width="1.5"><rect x="3" y="4" width="18" height="16"/><path d="M12 4v16" stroke="#3cc3d8"/><path d="M6 15l3-6" stroke-width="1"/></svg>'
+};
 const TABS=[['struttura','Struttura'],['vista','Vista'],['riepilogo','Riepilogo'],['parametri','Parametri'],['strumenti','Strumenti']];
 function go(c,tab){S.ui.c=c;if(tab)S.ui.tab=tab;save();render();window.scrollTo(0,0)}
 function render(){const c=C();if(!c){S.ui.c=null;renderHome()}else renderCantiere(c);paintStatus()}
 
 function renderHome(){
-  $('hdr').innerHTML=`<div class="brand"><div class="titles"><h1>Calcolo Vetrate</h1><div class="sub">I tuoi cantieri · misure in mm, superfici in m²</div><span class="sync" id="sync"></span></div></div>`;
+  $('hdr').innerHTML=`<div class="brand"><span class="logo">${ICON.logo}</span><div class="titles"><span class="crumb">Calcolo vetrate</span><h1>Cantieri</h1><span class="sync" id="sync"></span></div></div>`;const nav=$('bnav');if(nav)nav.remove();
   const opts=S.modelli.map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('');
   setMain(),$('main').innerHTML=`
   <section class="card">
@@ -315,12 +386,14 @@ function renderHome(){
     </div>
     <div class="row"><button class="btn primary" id="ncBtn">Crea cantiere</button></div>
   </section>
+  <div class="sec"><h2>I tuoi cantieri</h2><span class="note">${S.cantieri.length} in archivio</span></div>
   <div class="clist">${S.cantieri.map(c=>{const t=totals(c);return`
     <button class="card ccard" data-open="${c.id}">
-      <h2>${esc(c.nome)}</h2>
+      <div class="cthumb">${planSvg(c,null,true)}</div>
+      <div class="cbody"><h2>${esc(c.nome)}</h2>
       ${c.indirizzo?`<div class="sub">${esc(c.indirizzo)}</div>`:''}
-      <div class="meta"><span><b>${c.lati.length}</b> lati</span><span><b>${t.vani}</b> vani</span><span><b>${t.vetri}</b> vetri</span><span><b>${fmt(t.mq,2)}</b> m²</span></div>
-      ${t.warn?`<span class="pill w">${t.warn} avvisi</span>`:''}
+      <div class="meta"><span><b>${c.lati.length}</b>lati</span><span><b>${t.vani}</b>vani</span><span><b>${t.vetri}</b>vetri</span><span><b>${fmt(t.mq,1)}</b>m²</span></div>
+      ${t.warn?`<span class="pill w">${t.warn} avvisi</span>`:''}</div>
     </button>`}).join('')||'<p class="note">Nessun cantiere: creane uno qui sopra.</p>'}</div>
   <section class="card">
     <h2>Modelli di parametri</h2>
@@ -356,15 +429,16 @@ function armDelete(sel,fn){document.querySelectorAll(sel).forEach(b=>{const labe
 
 function renderCantiere(c){
   const tab=S.ui.tab||'struttura';
-  $('hdr').innerHTML=`<div class="brand"><button class="back" id="backBtn" aria-label="Torna ai cantieri">‹</button>
-    <div class="titles"><h1>${esc(c.nome)}</h1><div class="sub" id="cTot"></div><span class="sync" id="sync"></span></div></div>
-    <nav class="tabs" role="tablist">${TABS.map(([k,t])=>`<button role="tab" data-tab="${k}" aria-selected="${k===tab}">${t}</button>`).join('')}</nav>`;
+  $('hdr').innerHTML=`<div class="brand"><button class="back" id="backBtn" aria-label="Torna ai cantieri">${ICON.back}</button>
+    <div class="titles"><span class="crumb">Cantiere · ${(TABS.find(x=>x[0]===tab)||TABS[0])[1]}</span><h1>${esc(c.nome)}</h1><div class="sub" id="cTot"></div></div></div>`;
+  let nav=$('bnav');if(!nav){nav=document.createElement('nav');nav.id='bnav';nav.className='bnav';nav.setAttribute('role','tablist');document.body.appendChild(nav)}
+  nav.innerHTML=`<div class="bnav-in">${TABS.map(([k,t])=>`<button role="tab" data-tab="${k}" aria-selected="${k===tab}">${ICON[k]}<span>${t}</span></button>`).join('')}</div>`;
   $('backBtn').onclick=()=>go(null);
   document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>go(c.id,b.dataset.tab));
   ({struttura:viewStruttura,vista:viewVista,riepilogo:viewRiepilogo,parametri:viewParametri,strumenti:viewStrumenti}[tab]||viewStruttura)(c);
   updTot(c);
 }
-function updTot(c){const t=totals(c),e=$('cTot');if(e)e.textContent=`${c.indirizzo?c.indirizzo+' · ':''}${c.lati.length} lati · ${t.vani} vani · ${t.vetri} vetri · ${fmt(t.mq,2)} m²`}
+function updTot(c){const t=totals(c),e=$('cTot');if(e)e.textContent=`${c.indirizzo?c.indirizzo+' · ':''}${c.lati.length} lati · ${t.vani} vani · ${t.vetri} vetri · ${fmt(t.mq,2)} m²`;const y=$('sync');if(y)paintStatus()}
 
 /* ---------- STRUTTURA ---------- */
 function nOpts(schema,val){const lo=schema==='scorrevole'?2:1;return'<option value="auto">Automatico</option>'+Array.from({length:9-lo},(_,i)=>i+lo).map(n=>`<option value="${n}" ${String(val)===String(n)?'selected':''}>${n}</option>`).join('')}
@@ -378,16 +452,16 @@ function viewStruttura(c){
       <input class="name" id="ln_${l.id}" data-lf="nome" value="${esc(l.nome)}" aria-label="Nome del lato">
       <button class="btn sm" data-up="${li}" ${li?'':'disabled'} aria-label="Sposta su">↑</button>
       <button class="btn sm" data-down="${li}" ${li<c.lati.length-1?'':'disabled'} aria-label="Sposta giù">↓</button>
-      <button class="btn sm danger" data-dellato="${l.id}">Elimina lato</button></div>
-    <div class="fields">
+      <button class="btn sm danger" data-dellato="${l.id}">Elimina</button></div>
+    <div class="lato-body"><div class="fields">
       ${uf('la_'+l.id,'Angolo interno con il lato successivo',l.angolo,'°','data-lf="angolo"')}
       ${uf('lp_'+l.id,'Spessore tra un vano e l\'altro',l.pil,'mm','data-lf="pil"')}
       <label class="f">Lunghezza del lato<div class="unit"><input class="num" id="ll_${l.id}" readonly value="${fmt(latoLen(l))}"><span>mm</span></div></label>
     </div>
     <div class="vani">${l.vani.map((v,vi)=>vanoCard(c,l,v,vi)).join('')}</div>
-    <div class="row"><button class="btn" data-addvano="${l.id}">Aggiungi vano</button></div>
+    <div class="row"><button class="btn" data-addvano="${l.id}">+ Aggiungi vano</button></div></div>
   </section>`).join('')+`
-  <div class="row"><button class="btn primary" id="addLato">Aggiungi lato</button></div>
+  <div class="row"><button class="btn primary" id="addLato">+ Aggiungi lato</button></div>
   <p class="note">I vani di ogni lato vanno inseriti da sinistra a destra, guardando il lato dall'esterno. I lati si susseguono girando intorno alla veranda: l'angolo interno indica come si collega il lato al successivo (90° per un angolo retto).</p>`;
   bindStruttura(c);
 }
@@ -396,7 +470,7 @@ function vanoCard(c,l,v,vi){return`
     <div class="vano-head"><input class="name" id="vn_${v.id}" data-vf="nome" value="${esc(v.nome)}" aria-label="Nome del vano">
       <button class="btn sm" data-dupvano="${v.id}">Duplica</button>
       <button class="btn sm danger" data-delvano="${v.id}">Elimina</button></div>
-    <div class="fields">
+    <div class="vano-main"><div class="thumb" id="vth_${v.id}"></div><div class="fields">
       ${uf('vL_'+v.id,'Larghezza',v.L,'mm','data-vf="L"')}
       ${uf('vHs_'+v.id,'Altezza sinistra',v.Hs,'mm','data-vf="Hs"')}
       ${uf('vHd_'+v.id,'Altezza destra',v.Hd,'mm','data-vf="Hd" placeholder="= sinistra"')}
@@ -404,12 +478,12 @@ function vanoCard(c,l,v,vi){return`
       <label class="f wide">Sistema<select id="vt_${v.id}" data-vs="sistema">${c.sistemi.map(s=>`<option value="${s.id}" ${s.id===sisOf(c,v)?.id?'selected':''}>${esc(s.nome)}</option>`).join('')}</select></label>
       <label class="f">${sisOf(c,v)?.mobili?'Ante':'Vetri'}<select id="vnn_${v.id}" data-vs="n">${nOpts(sisOf(c,v)?.schema,v.n)}</select></label>
       <label class="f">Vetro<select id="vg_${v.id}" data-vs="vetro">${vetroOpts(c,v.vetro)}</select></label>
-    </div>
+    </div></div>
     <div class="vres" id="vr_${v.id}"></div>
     <details id="vdet_${v.id}"><summary>Misure dei vetri</summary><div id="vtb_${v.id}"></div></details>
   </div>`}
 function vanoResult(c,v){
-  const r=compute(v,c),box=$('vr_'+v.id),tb=$('vtb_'+v.id);if(!box)return;
+  const r=compute(v,c),box=$('vr_'+v.id),tb=$('vtb_'+v.id);if(!box)return;const th=$('vth_'+v.id);if(th)th.innerHTML=vanoThumb(r);
   if(!r.ok){box.innerHTML='<span class="note">Inserisci larghezza e altezza.</span>';tb.innerHTML='';return}
   const nb=r.msgs.filter(m=>m[0]==='bad').length,nw=r.msgs.length-nb;
   box.innerHTML=`<span class="pill ${r.s.mobili?'mob':'fix'}">${esc(r.s.nome)} · ${r.N} ${r.s.mobili?'ante':'vetri'}${r.auto?' auto':''}</span>
@@ -445,27 +519,44 @@ function bindStruttura(c){
 }
 
 /* ---------- VISTA ---------- */
-function planSvg(c,sel){
+function vanoThumb(r){
+  if(!r.ok)return'<span class="note">Inserisci le misure</span>';
+  const L=r.L,Hm=Math.max(r.Hs,r.Hd),fs=Math.max(L,Hm)/14,Y=h=>Hm-h,pad=fs*1.6;
+  let g=`<svg viewBox="${-pad} ${-fs*0.6} ${L+pad*1.4} ${Hm+fs*2.4}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anteprima del vano">`;
+  g+=`<polygon points="0,${Y(0)} ${L},${Y(0)} ${L},${Y(r.Hd)} 0,${Y(r.Hs)}" fill="none" stroke="var(--ink)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`;
+  const sc=r.s.schema==='scorrevole';
+  r.panes.forEach((q,k)=>{const b=q.by,fill=sc&&k%2?'var(--glass-2)':'var(--glass)';
+    g+=`<polygon points="${q.gx},${Y(b)} ${q.gx+q.gw},${Y(b)} ${q.gx+q.gw},${Y(b+q.hr)} ${q.gx},${Y(b+q.hl)}" fill="${fill}" fill-opacity="${sc?.85:1}" stroke="var(--accent)" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
+    g+=`<text x="${q.gx+q.gw/2}" y="${Y(b+(q.hl+q.hr)/4)}" font-size="${fs*0.8}" text-anchor="middle" dominant-baseline="middle" fill="var(--ink)" font-family="IBM Plex Mono,monospace" font-weight="600">${q.i}</text>`});
+  const yb=Hm+fs*0.9;
+  g+=`<path d="M0 ${yb-fs*.3}V${yb+fs*.3}M${L} ${yb-fs*.3}V${yb+fs*.3}M0 ${yb}H${L}" stroke="var(--hi)" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
+  g+=`<text x="${L/2}" y="${yb+fs*1.15}" font-size="${fs*0.75}" text-anchor="middle" fill="var(--hi)" font-family="IBM Plex Mono,monospace">${fmt(L)}</text>`;
+  const xl=-fs*0.7;g+=`<path d="M${xl-fs*.3} ${Y(0)}H${xl+fs*.3}M${xl-fs*.3} ${Y(r.Hs)}H${xl+fs*.3}M${xl} ${Y(0)}V${Y(r.Hs)}" stroke="var(--hi)" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
+  g+=`<text x="${xl-fs*0.35}" y="${Y(r.Hs/2)}" font-size="${fs*0.75}" text-anchor="middle" fill="var(--hi)" font-family="IBM Plex Mono,monospace" transform="rotate(-90 ${xl-fs*0.35} ${Y(r.Hs/2)})">${fmt(r.Hs)}</text>`;
+  return g+'</svg>';
+}
+function planSvg(c,sel,mini){
   let x=0,y=0,dx=0,dy=1;const segs=[];
   c.lati.forEach((l,li)=>{const len=latoLen(l)||1000;const s={l,li,x0:x,y0:y,dx,dy,len};x+=dx*len;y+=dy*len;s.x1=x;s.y1=y;segs.push(s);
     const t=(180-(num(l.angolo)||90))*Math.PI/180;[dx,dy]=[dx*Math.cos(t)+dy*Math.sin(t),-dx*Math.sin(t)+dy*Math.cos(t)]});
   if(!segs.length)return'<p class="note">Aggiungi almeno un lato.</p>';
   const xs=segs.flatMap(s=>[s.x0,s.x1]),ys=segs.flatMap(s=>[s.y0,s.y1]);
   const minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);
-  const ext=Math.max(maxX-minX,maxY-minY,1000),fs=ext/20,pad=fs*4.2;
+  const ext=Math.max(maxX-minX,maxY-minY,1000),fs=ext/20,pad=mini?fs*1.2:fs*4.2;
   let g=`<svg viewBox="${minX-pad} ${minY-pad} ${maxX-minX+pad*2} ${maxY-minY+pad*2}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pianta della veranda">`;
   if(c.parete&&segs.length>1){const a=segs[0],b=segs[segs.length-1];
     g+=`<line x1="${b.x1}" y1="${b.y1}" x2="${a.x0}" y2="${a.y0}" stroke="var(--muted)" stroke-width="6" stroke-dasharray="10 8" vector-effect="non-scaling-stroke"/>`;
-    g+=`<text x="${(a.x0+b.x1)/2}" y="${(a.y0+b.y1)/2-fs*0.7}" font-size="${fs*0.8}" text-anchor="middle" fill="var(--muted)" font-family="Barlow,sans-serif">Parete</text>`}
+    if(!mini)g+=`<text x="${(a.x0+b.x1)/2}" y="${(a.y0+b.y1)/2-fs*0.7}" font-size="${fs*0.8}" text-anchor="middle" fill="var(--muted)" font-family="IBM Plex Mono,monospace">PARETE</text>`}
   segs.forEach(s=>{const on=s.l.id===sel,col=on?'var(--sel)':'var(--accent)';
     const nx=-s.dy,ny=s.dx; /* esterno = destra del percorso */
     g+=`<g data-lato="${s.l.id}"><line x1="${s.x0}" y1="${s.y0}" x2="${s.x1}" y2="${s.y1}" stroke="transparent" stroke-width="${fs*2.2}"/>
       <line x1="${s.x0}" y1="${s.y0}" x2="${s.x1}" y2="${s.y1}" stroke="${col}" stroke-width="${on?7:5}" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;
     let acc=0;s.l.vani.forEach((v,i)=>{acc+=num(v.L)||0;if(i<s.l.vani.length-1){const px=s.x0+s.dx*acc,py=s.y0+s.dy*acc;
       g+=`<line x1="${px-nx*fs*.5}" y1="${py-ny*fs*.5}" x2="${px+nx*fs*.5}" y2="${py+ny*fs*.5}" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke"/>`;acc+=num(s.l.pil)||0}});
+    if(mini){g+='</g>';return}
     const mx=(s.x0+s.x1)/2+nx*fs*1.9,my=(s.y0+s.y1)/2+ny*fs*1.9;
-    g+=`<text x="${mx}" y="${my-fs*0.15}" font-size="${fs}" text-anchor="middle" fill="${on?'var(--sel)':'var(--ink)'}" font-family="Barlow Condensed,sans-serif" font-weight="700">${letter(s.li)} · ${esc(s.l.nome)}</text>
-      <text x="${mx}" y="${my+fs*0.95}" font-size="${fs*0.75}" text-anchor="middle" fill="var(--muted)" font-family="JetBrains Mono,monospace">${fmt(latoLen(s.l))} mm</text></g>`});
+    g+=`<text x="${mx}" y="${my-fs*0.15}" font-size="${fs}" text-anchor="middle" fill="${on?'var(--sel)':'var(--ink)'}" font-family="IBM Plex Sans Condensed,sans-serif" font-weight="700">${letter(s.li)} · ${esc(s.l.nome)}</text>
+      <text x="${mx}" y="${my+fs*0.95}" font-size="${fs*0.75}" text-anchor="middle" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${fmt(latoLen(s.l))} mm</text></g>`});
   return g+'</svg>';
 }
 function elevSvg(c,lati,multi){
@@ -479,15 +570,15 @@ function elevSvg(c,lati,multi){
       body+=`<polygon points="${x},${Y(0)} ${x+L},${Y(0)} ${x+L},${Y(Hd)} ${x},${Y(Hs)}" fill="none" stroke="var(--ink)" stroke-width="1.6" vector-effect="non-scaling-stroke"/>`;
       if(r.ok)r.panes.forEach((q,k)=>{const sc=r.s.schema==='scorrevole',fill=sc&&k%2?'var(--glass-2)':'var(--glass)',X=x+q.gx,b=q.by;
         body+=`<polygon points="${X},${Y(b)} ${X+q.gw},${Y(b)} ${X+q.gw},${Y(b+q.hr)} ${X},${Y(b+q.hl)}" fill="${fill}" fill-opacity="${sc?.85:1}" stroke="var(--accent)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>`;
-        body+=`<text x="${X+q.gw/2}" y="${Y(b+(q.hl+q.hr)/4)}" font-size="${fs*0.9}" text-anchor="middle" dominant-baseline="middle" fill="var(--ink)" font-family="Barlow Condensed,sans-serif" font-weight="700">${q.i}</text>`});
-      body+=`<text x="${x+L/2}" y="${Y(Math.max(Hs,Hd))-fs*0.55}" font-size="${fs*0.78}" text-anchor="middle" fill="var(--ink)" font-family="Barlow,sans-serif" font-weight="600">${esc(v.nome)}</text>`;
-      body+=`<text x="${x+L/2}" y="${Hm+fs*1.2}" font-size="${fs*0.72}" text-anchor="middle" fill="var(--muted)" font-family="JetBrains Mono,monospace">${fmt(L)}</text>`;
-      body+=`<text x="${x+fs*0.3}" y="${Y(Hs)+fs*1.1}" font-size="${fs*0.62}" fill="var(--muted)" font-family="JetBrains Mono,monospace">${fmt(Hs)}</text>`;
-      if(Math.abs(Hs-Hd)>.5)body+=`<text x="${x+L-fs*0.3}" y="${Y(Hd)+fs*1.1}" font-size="${fs*0.62}" text-anchor="end" fill="var(--muted)" font-family="JetBrains Mono,monospace">${fmt(Hd)}</text>`;
+        body+=`<text x="${X+q.gw/2}" y="${Y(b+(q.hl+q.hr)/4)}" font-size="${fs*0.9}" text-anchor="middle" dominant-baseline="middle" fill="var(--ink)" font-family="IBM Plex Sans Condensed,sans-serif" font-weight="700">${q.i}</text>`});
+      body+=`<text x="${x+L/2}" y="${Y(Math.max(Hs,Hd))-fs*0.55}" font-size="${fs*0.78}" text-anchor="middle" fill="var(--ink)" font-family="IBM Plex Sans,sans-serif" font-weight="600">${esc(v.nome)}</text>`;
+      body+=`<text x="${x+L/2}" y="${Hm+fs*1.2}" font-size="${fs*0.72}" text-anchor="middle" fill="var(--hi)" font-family="IBM Plex Mono,monospace">${fmt(L)}</text>`;
+      body+=`<text x="${x+fs*0.3}" y="${Y(Hs)+fs*1.1}" font-size="${fs*0.62}" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${fmt(Hs)}</text>`;
+      if(Math.abs(Hs-Hd)>.5)body+=`<text x="${x+L-fs*0.3}" y="${Y(Hd)+fs*1.1}" font-size="${fs*0.62}" text-anchor="end" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${fmt(Hd)}</text>`;
       x+=L+pil});
     if(l.vani.length&&pil>0)x-=pil;
     if(multi){body+=`<line x1="${x0}" y1="${Hm+fs*2}" x2="${x}" y2="${Hm+fs*2}" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/>
-      <text x="${(x0+x)/2}" y="${Hm+fs*3.3}" font-size="${fs}" text-anchor="middle" fill="var(--accent)" font-family="Barlow Condensed,sans-serif" font-weight="700">${letter(c.lati.indexOf(l))} · ${esc(l.nome)}</text>`;x+=gap}});
+      <text x="${(x0+x)/2}" y="${Hm+fs*3.3}" font-size="${fs}" text-anchor="middle" fill="var(--accent)" font-family="IBM Plex Sans Condensed,sans-serif" font-weight="700">${letter(c.lati.indexOf(l))} · ${esc(l.nome)}</text>`;x+=gap}});
   if(multi)x-=gap;
   const W=Math.max(x,1),top=fs*2,bot=multi?fs*4:fs*1.9,side=fs*0.8,vbW=W+side*2,vbH=Hm+top+bot;
   const minPx=Math.round(Math.min(4000,300*vbW/vbH));

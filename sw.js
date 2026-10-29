@@ -1,5 +1,5 @@
 // Copia offline dell'app. Cambia VERSIONE quando aggiorni i file.
-const VERSIONE = 'vetrate-v4';
+const VERSIONE = 'vetrate-v5';
 const FILE = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSIONE).then(c => c.addAll(FILE)).then(() => self.skipWaiting()));
