@@ -1,7 +1,7 @@
 // Copia offline dell'app. Cambia VERSIONE quando aggiorni i file.
 // I file dell'app vengono sempre chiesti prima al server (senza usare copie vecchie),
 // e la copia salvata serve solo quando manca internet.
-const VERSIONE = 'vetrate-v6';
+const VERSIONE = 'vetrate-v7';
 const FILE = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
