@@ -126,6 +126,13 @@ details[open] summary{margin-bottom:8px}
 .sync{font-size:.74rem;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
 .sync::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--muted)}
 .sync.ok::before{background:var(--ok)} .sync.w::before{background:var(--warn)} .sync.b::before{background:var(--bad)}
+.f.wide{grid-column:1/-1}
+details summary{list-style:none}
+details summary::-webkit-details-marker{display:none}
+[data-s] details>summary{display:flex;flex-direction:column;gap:2px;cursor:pointer}
+[data-s] details>summary::before{content:"›";float:right;color:var(--muted);transition:transform .15s}
+.sis-t{font:600 1.2rem var(--f-display);color:var(--ink)}
+.sis-body{display:flex;flex-direction:column;gap:12px;margin-top:12px}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:8px;font-size:.9rem;z-index:20}
 @media (prefers-reduced-motion:no-preference){.tabs button,.seg button,.btn{transition:background .15s,color .15s}}
 </style>
@@ -147,61 +154,89 @@ const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&g
 const letter=i=>String.fromCharCode(65+(i%26));
 const clone=o=>JSON.parse(JSON.stringify(o));
 
-const PARAM_GROUPS=[
- {t:'Posa',d:'Valido per tutti i vani del cantiere.',f:[['gp','Gioco di posa per lato','mm','Spazio tra muro e telaio su ogni lato']]},
- {t:'Scorrevole · telaio',f:[
-  ['sTelL','Deduzione telaio in larghezza','mm','Totale sx + dx, da telaio esterno a luce di scorrimento'],
-  ['sTelH','Deduzione telaio in altezza','mm','Totale sopra + sotto, da telaio esterno ad altezza anta'],
-  ['binari','Numero di binari','n','Solo informativo per ora']]},
- {t:'Scorrevole · ante e vetro',f:[
-  ['sorm','Sormonto tra ante','mm','Quanto si sovrappongono due ante vicine'],
-  ['sAntaL','Deduzione vetro in larghezza','mm','Totale, da larghezza anta a larghezza vetro'],
-  ['sAntaH','Deduzione vetro in altezza','mm','Totale, da altezza anta ad altezza vetro'],
-  ['minAnte','Numero minimo di ante','n','Usato dalla divisione automatica']]},
- {t:'Fissa',f:[
-  ['fTelL','Deduzione telaio in larghezza','mm','Totale sx + dx, da telaio esterno a luce'],
-  ['fTelH','Deduzione telaio in altezza','mm','Totale sopra + sotto'],
-  ['mont','Larghezza montante intermedio','mm','Tra un vetro fisso e l\'altro'],
-  ['fVetL','Gioco vetro in larghezza','mm','Totale per vetro, da luce a vetro'],
-  ['fVetH','Gioco vetro in altezza','mm','Totale per vetro']]},
- {t:'Limiti vetro',d:'La divisione automatica sceglie il numero di vetri per restare entro questi limiti.',f:[
+/* sistemi: ogni vano usa un sistema; due schemi di calcolo */
+const SCHEMI={scorrevole:'Ante sovrapposte (scorrono una sull\'altra)',affiancati:'Vetri affiancati (impacchettabile, a libro, fissa)'};
+const SIS_FIELDS=[
+ {t:'Telaio e posa',f:[
+  ['gp','Gioco di posa per lato','mm','Spazio tra muro e telaio, su ogni lato'],
+  ['telL','Deduzione telaio in larghezza','mm','Totale sx + dx, dal telaio esterno alla luce utile'],
+  ['telH','Deduzione telaio in altezza','mm','Totale sopra + sotto: binari, guide o profili']]},
+ {t:'Tra un vetro e l\'altro',f:[
+  ['sorm','Sormonto tra ante','mm','Quanto si sovrappongono due ante vicine. Negativo = fuga tra i vetri','scorrevole'],
+  ['fuga','Spazio tra vetri vicini','mm','Montante, guarnizione o fuga tra un vetro e il successivo','affiancati']]},
+ {t:'Vetro',f:[
+  ['vetL','Deduzione vetro in larghezza','mm','Totale, da anta o modulo a vetro (profili + gioco)'],
+  ['vetH','Deduzione vetro in altezza','mm','Totale, da anta o modulo a vetro (traversi + gioco)']]},
+ {t:'Limiti e divisione automatica',f:[
+  ['minN','Numero minimo di vetri','n',''],['maxN','Numero massimo di vetri','n',''],
   ['maxW','Larghezza massima vetro','mm',''],['maxH','Altezza massima vetro','mm',''],
-  ['maxKg','Peso massimo per vetro','kg',''],['maxN','Numero massimo di vetri per vano','n','']]},
- {t:'Fatturazione',f:[
-  ['minMq','Superficie minima per vetro','m²','Sotto questa soglia si fattura il minimo'],
-  ['arrot','Arrotondamento lati','mm','Multiplo per eccesso, 0 = nessuno'],
-  ['sfrido','Sfrido / scarto','%','Aggiunto ai m² da ordinare']]}
+  ['maxKg','Peso massimo per vetro','kg',''],['binari','Binari o guide','n','Solo informativo']]}
 ];
-const DEF_P={gp:5,sTelL:40,sTelH:60,binari:2,sorm:40,sAntaL:70,sAntaH:90,minAnte:2,
-  fTelL:50,fTelH:50,mont:50,fVetL:10,fVetH:10,maxW:1500,maxH:3000,maxKg:120,maxN:8,minMq:0.5,arrot:0,sfrido:0};
+const FATT_FIELDS=[['minMq','Superficie minima per vetro','m²','Sotto questa soglia si fattura il minimo'],
+  ['arrot','Arrotondamento lati','mm','Multiplo per eccesso, 0 = nessuno'],['sfrido','Sfrido / scarto','%','Aggiunto ai m² da ordinare']];
+const DEF_FATT={minMq:0.5,arrot:0,sfrido:0};
+const DEF_SP={gp:0,telL:0,telH:0,sorm:0,fuga:0,vetL:0,vetH:0,minN:1,maxN:8,maxW:1500,maxH:3000,maxKg:120,binari:0};
+const PRESETS=[
+ {key:'binari',nome:'Scorrevole tutto vetro su binari',schema:'scorrevole',mobili:true,
+  note:'Vetrata panoramica a 3–5 binari, ante senza profili verticali. Larghezza anta tipica 600–1000 mm, vetro temperato 10 mm.',
+  p:{telL:30,sorm:30,vetH:75,minN:2,maxN:10,maxW:1000,maxH:3000,maxKg:80,binari:3}},
+ {key:'pacchetto',nome:'Impacchettabile (si raccoglie a pacchetto)',schema:'affiancati',mobili:true,
+  note:'Vetri affiancati con guarnizione tra uno e l\'altro, appesi alla guida superiore. Larghezza vetro tipica 600–800 mm, circa 55 kg max per vetro.',
+  p:{telL:30,fuga:3,vetH:80,minN:2,maxN:14,maxW:800,maxH:3000,maxKg:55,binari:1}},
+ {key:'libro',nome:'A libro (pieghevole)',schema:'affiancati',mobili:true,
+  note:'Ante incernierate che si piegano a soffietto. Larghezza anta tipica 500–850 mm, altezza fino a circa 2800 mm.',
+  p:{telL:30,fuga:5,vetH:80,minN:2,maxN:10,maxW:850,maxH:2800,maxKg:60,binari:1}},
+ {key:'alluminio',nome:'Scorrevole in alluminio con telaio',schema:'scorrevole',mobili:true,
+  note:'Serramento con telaio e ante a profilo. Tarato su un catalogo di settore: 2 ante su 2 binari danno vetro L/2 − 75,5 mm e H − 130 mm.',
+  p:{telL:60,telH:40,sorm:40,vetL:65.5,vetH:90,minN:2,maxN:6,maxW:1500,maxH:2700,maxKg:150,binari:2}},
+ {key:'fissaprof',nome:'Fissa con profili e montanti',schema:'affiancati',mobili:false,
+  note:'Vetri fissi in telaio perimetrale con montante tra un vetro e l\'altro. Larghezza vetro fino a circa 2000 mm.',
+  p:{gp:5,telL:50,telH:50,fuga:50,vetL:10,vetH:10,minN:1,maxN:8,maxW:2000,maxH:3000,maxKg:150}},
+ {key:'fissavetro',nome:'Fissa tutto vetro (vetri accostati)',schema:'affiancati',mobili:false,
+  note:'Vetri accostati con guarnizione trasparente, profilo a U sopra e sotto. Larghezza vetro tipica 500–1000 mm.',
+  p:{telL:20,fuga:3,vetH:40,minN:1,maxN:10,maxW:1000,maxH:2500,maxKg:80}}
+];
+const sisDaPreset=x=>({id:uid(),nome:x.nome,schema:x.schema,mobili:x.mobili,note:x.note,preset:x.key,p:{...DEF_SP,...x.p}});
+const presetSistemi=()=>PRESETS.map(sisDaPreset);
 const defVetri=()=>[['Temperato 8 mm',8,20],['Temperato 10 mm',10,25],['Stratificato 33.1',6.4,16],['Stratificato 44.2',8.8,22],
  ['Stratificato 55.2',10.8,27],['Vetrocamera 4/16/4',8,20],['Vetrocamera 33.1/16/33.1',12.8,32]].map(([nome,sp,kg])=>({id:uid(),nome,sp,kg,prezzo:''}));
 
-function newVano(nome,o={}){return{id:uid(),nome,L:'',Hs:'',Hd:'',qta:'1',tipo:'fissa',n:'auto',vetro:'',...o}}
+function newVano(nome,o={}){return{id:uid(),nome,L:'',Hs:'',Hd:'',qta:'1',sistema:'',n:'auto',vetro:'',...o}}
 function newLato(nome,o={}){return{id:uid(),nome,angolo:90,pil:0,vani:[],...o}}
 function newCantiere(nome,modello,catalogo){return{id:uid(),nome,indirizzo:'',note:'',parete:true,creato:new Date().toISOString().slice(0,10),
-  p:{...DEF_P,...(modello?modello.p:{})},vetri:clone(catalogo),lati:[]}}
+  p:{...DEF_FATT,...(modello&&modello.fatt||{})},sistemi:clone(modello&&modello.sistemi&&modello.sistemi.length?modello.sistemi:presetSistemi()),vetri:clone(catalogo),lati:[]}}
+const sisBy=(c,key)=>c.sistemi.find(s=>s.preset===key)||c.sistemi[0];
 function esempio(modello,catalogo){
   const c=newCantiere('Veranda di esempio',modello,catalogo);
   c.note='Misure di esempio: sostituiscile con quelle reali o crea un nuovo cantiere.';
-  const v=c.vetri.find(x=>x.nome.includes('44.2'))||c.vetri[0];
+  const v=c.vetri.find(x=>x.nome.includes('10 mm'))||c.vetri[0],fx=sisBy(c,'fissavetro').id,sc=sisBy(c,'binari').id;
   c.lati=[
-    newLato('Fianco sinistro',{vani:[newVano('Vano 1',{L:'2500',Hs:'2600',Hd:'2300',vetro:v.id})]}),
-    newLato('Fronte',{pil:80,vani:[newVano('Vano scorrevole',{L:'3000',Hs:'2300',Hd:'2300',tipo:'scorrevole',vetro:v.id}),newVano('Vano fisso',{L:'1500',Hs:'2300',Hd:'2300',vetro:v.id})]}),
-    newLato('Fianco destro',{vani:[newVano('Vano 1',{L:'2500',Hs:'2300',Hd:'2600',vetro:v.id})]})];
+    newLato('Fianco sinistro',{vani:[newVano('Vano 1',{L:'2500',Hs:'2600',Hd:'2300',sistema:fx,vetro:v.id})]}),
+    newLato('Fronte',{pil:80,vani:[newVano('Vano scorrevole',{L:'3000',Hs:'2300',Hd:'2300',sistema:sc,vetro:v.id}),newVano('Vano fisso',{L:'1500',Hs:'2300',Hd:'2300',sistema:fx,vetro:v.id})]}),
+    newLato('Fianco destro',{vani:[newVano('Vano 1',{L:'2500',Hs:'2300',Hd:'2600',sistema:fx,vetro:v.id})]})];
   return c;
 }
+/* migrazione dal formato precedente (tipo fissa/scorrevole + parametri unici) */
+function sistemiDaVecchi(p){p=p||{};const b={gp:p.gp??5,maxN:p.maxN??8,maxW:p.maxW??1500,maxH:p.maxH??3000,maxKg:p.maxKg??120};
+  return[{id:uid(),nome:'Scorrevole (tuoi parametri)',schema:'scorrevole',mobili:true,note:'Parametri che avevi inserito nella versione precedente.',preset:'',p:{...DEF_SP,...b,telL:p.sTelL??40,telH:p.sTelH??60,sorm:p.sorm??40,vetL:p.sAntaL??70,vetH:p.sAntaH??90,minN:p.minAnte??2,binari:p.binari??2}},
+    {id:uid(),nome:'Fissa (tuoi parametri)',schema:'affiancati',mobili:false,note:'Parametri che avevi inserito nella versione precedente.',preset:'',p:{...DEF_SP,...b,telL:p.fTelL??50,telH:p.fTelH??50,fuga:p.mont??50,vetL:p.fVetL??10,vetH:p.fVetH??10,minN:1}}]}
+function migraCantiere(c){
+  if(!(c.sistemi&&c.sistemi.length)){const old=sistemiDaVecchi(c.p);c.sistemi=[...old,...presetSistemi()];
+    c.lati.forEach(l=>l.vani.forEach(v=>{v.sistema=v.tipo==='scorrevole'?old[0].id:old[1].id;delete v.tipo}));
+    const p=c.p||{};c.p={minMq:p.minMq??0.5,arrot:p.arrot??0,sfrido:p.sfrido??0}}
+  c.p={...DEF_FATT,...c.p};c.sistemi.forEach(x=>x.p={...DEF_SP,...x.p});return c}
+function migraModello(m){if(m.sistemi)return m;
+  return{id:m.id,nome:m.nome,sistemi:[...sistemiDaVecchi(m.p),...presetSistemi()],fatt:{minMq:m.p?.minMq??0.5,arrot:m.p?.arrot??0,sfrido:m.p?.sfrido??0}}}
 
 /* ---------- stato ---------- */
 const KEY='vetrate.v2';
 let S;
-function fresh(){
-  let modelli=[{id:uid(),nome:'Modello esempio',p:{...DEF_P}}],catalogo=defVetri();
-  try{const o=JSON.parse(localStorage.getItem('vetrate.v1')||'null');
-    if(o&&o.sistemi&&o.sistemi.length){modelli=o.sistemi.map(s=>({id:s.id,nome:s.nome,p:{...DEF_P,...s.p}}));if(o.vetri&&o.vetri.length)catalogo=o.vetri}}catch(e){}
-  return{v:2,modelli,catalogo,cantieri:[esempio(modelli[0],catalogo)],ui:{c:null,tab:'struttura',lato:null,sviluppo:false}};
-}
-function load(){try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&o.v===2&&o.cantieri)return o}catch(e){}return fresh()}
+function fresh(){const f={v:2,modelli:[{id:uid(),nome:'Preimpostazioni standard',sistemi:presetSistemi(),fatt:{...DEF_FATT}}],catalogo:defVetri(),cantieri:[],ui:{c:null,tab:'struttura',lato:null,sviluppo:false}};
+  f.cantieri=[esempio(f.modelli[0],f.catalogo)];return f}
+function load(){let o=null;try{o=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+  if(!(o&&o.v===2&&o.cantieri))return fresh();
+  o.modelli=(o.modelli||[]).map(migraModello);if(!o.modelli.length)o.modelli=fresh().modelli;
+  o.cantieri.forEach(migraCantiere);return o}
 /* salvataggio sul dispositivo */
 const cloud={state:'local'};
 function setStatus(s){cloud.state=s;paintStatus()}
@@ -214,8 +249,8 @@ async function shareFile(name,obj){
   const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);toast('File salvato')}
 function readFile(input,fn){const f=input.files&&input.files[0];if(!f)return;const r=new FileReader();
   r.onload=()=>{try{fn(JSON.parse(r.result))}catch(e){toast('File non valido')}input.value=''};r.readAsText(f)}
-function importCantiere(c){if(!c||!c.lati||!c.p){toast('Il file non contiene un cantiere');return}
-  c=clone(c);c.p={...DEF_P,...c.p};if(S.cantieri.some(x=>x.id===c.id)){c.id=uid();c.nome+=' (importato)'}
+function importCantiere(c){if(!c||!c.lati){toast('Il file non contiene un cantiere');return}
+  c=migraCantiere(clone(c));if(S.cantieri.some(x=>x.id===c.id)){c.id=uid();c.nome+=' (importato)'}
   S.cantieri.unshift(c);save();toast('Cantiere importato: '+c.nome);return c}
 S=load();S.ui=S.ui||{};
 function setMain(){const o=$('main'),n=o.cloneNode(false);o.replaceWith(n)}
@@ -225,41 +260,37 @@ function toast(t){const d=document.createElement('div');d.className='toast';d.te
 async function copy(text,ta){try{await navigator.clipboard.writeText(text);toast('Copiato')}catch(e){if(ta){ta.value=text;ta.focus();ta.select()}toast('Seleziona e copia il testo a mano')}}
 
 /* ---------- calcolo ---------- */
-function layout(N,L,Hs,Hd,p,tipo,kgm){
-  const H=x=>Hs+(Hd-Hs)*x/L,panes=[];
-  if(tipo==='scorrevole'){
-    const luce=L-2*p.gp-p.sTelL,aW=(luce+(N-1)*p.sorm)/N,gw=aW-p.sAntaL,ded=2*p.gp+p.sTelH+p.sAntaH;
-    for(let i=0;i<N;i++){const x0=p.gp+p.sTelL/2+i*(aW-p.sorm),gx=x0+p.sAntaL/2;
-      panes.push({i:i+1,mob:true,gx,gw,hl:H(gx)-ded,hr:H(gx+gw)-ded,by:p.gp+p.sTelH/2+p.sAntaH/2})}
-  }else{
-    const luce=L-2*p.gp-p.fTelL,mW=(luce-(N-1)*p.mont)/N,gw=mW-p.fVetL,ded=2*p.gp+p.fTelH+p.fVetH;
-    for(let i=0;i<N;i++){const x0=p.gp+p.fTelL/2+i*(mW+p.mont),gx=x0+p.fVetL/2;
-      panes.push({i:i+1,mob:false,gx,gw,hl:H(gx)-ded,hr:H(gx+gw)-ded,by:p.gp+p.fTelH/2+p.fVetH/2})}
-  }
-  const r=v=>p.arrot>0?Math.ceil(v/p.arrot)*p.arrot:v;
+const sisOf=(c,v)=>c.sistemi.find(s=>s.id===v.sistema)||c.sistemi[0];
+function layout(N,L,Hs,Hd,s,f,kgm){
+  const p=s.p,H=x=>Hs+(Hd-Hs)*x/L,panes=[],ded=2*p.gp+p.telH+p.vetH,by=p.gp+p.telH/2+p.vetH/2,luce=L-2*p.gp-p.telL;
+  let w,step;
+  if(s.schema==='scorrevole'){w=(luce+(N-1)*p.sorm)/N;step=w-p.sorm}else{w=(luce-(N-1)*p.fuga)/N;step=w+p.fuga}
+  const gw=w-p.vetL;
+  for(let i=0;i<N;i++){const gx=p.gp+p.telL/2+i*step+p.vetL/2;panes.push({i:i+1,mob:!!s.mobili,gx,gw,hl:H(gx)-ded,hr:H(gx+gw)-ded,by})}
+  const r=v=>f.arrot>0?Math.ceil(v/f.arrot)*f.arrot:v;
   panes.forEach(q=>{q.mq=q.gw*(q.hl+q.hr)/2/1e6;q.kg=q.mq*kgm;
-    q.fmq=Math.max(p.minMq||0,r(q.gw)*r(Math.max(q.hl,q.hr))/1e6);q.lato=Math.hypot(q.gw,q.hr-q.hl)});
+    q.fmq=Math.max(f.minMq||0,r(q.gw)*r(Math.max(q.hl,q.hr))/1e6);q.lato=Math.hypot(q.gw,q.hr-q.hl)});
   return panes;
 }
 function problems(panes,p){const m=[];
   panes.forEach(q=>{
     if(!(q.gw>0&&q.hl>0&&q.hr>0))m.push(['bad',`Vetro ${q.i}: misure nulle o negative, controlla vano e detrazioni.`]);
     else{if(q.gw>p.maxW)m.push(['warn',`Vetro ${q.i}: larghezza ${fmt(q.gw)} mm oltre il massimo di ${fmt(p.maxW)} mm.`]);
-      if(Math.max(q.hl,q.hr)>p.maxH)m.push(['warn',`Vetro ${q.i}: altezza ${fmt(Math.max(q.hl,q.hr))} mm oltre il massimo di ${fmt(p.maxH)} mm.`]);
+      if(Math.max(q.hl,q.hr)>p.maxH)m.push(['warn',`Vetro ${q.i}: altezza ${fmt(Math.max(q.hl,q.hr))} mm oltre il massimo di ${fmt(p.maxH)} mm.`,'h']);
       if(q.kg>p.maxKg)m.push(['warn',`Vetro ${q.i}: peso ${fmt(q.kg,1)} kg oltre il massimo di ${fmt(p.maxKg)} kg.`])}});
   return m}
 function compute(v,c){
   const L=num(v.L),Hs=num(v.Hs);let Hd=num(v.Hd);if(!isFinite(Hd))Hd=Hs;
-  if(!(L>0&&Hs>0&&Hd>0))return{ok:false};
-  const p=c.p,gl=c.vetri.find(x=>x.id===v.vetro)||c.vetri[0]||{nome:'—',kg:0},kgm=num(gl.kg)||0,qta=Math.max(1,Math.round(num(v.qta))||1);
+  if(!(L>0&&Hs>0&&Hd>0)||!c.sistemi.length)return{ok:false};
+  const s=sisOf(c,v),p=s.p,f=c.p,gl=c.vetri.find(x=>x.id===v.vetro)||c.vetri[0]||{nome:'—',kg:0},kgm=num(gl.kg)||0,qta=Math.max(1,Math.round(num(v.qta))||1);
   let N,panes,auto=v.n==='auto';
-  if(auto){const lo=v.tipo==='scorrevole'?Math.max(2,p.minAnte|0):1,hi=Math.max(lo,p.maxN|0);
-    for(N=lo;N<=hi;N++){panes=layout(N,L,Hs,Hd,p,v.tipo,kgm);if(!problems(panes,p).length)break}
-    if(N>hi){N=hi;panes=layout(N,L,Hs,Hd,p,v.tipo,kgm)}}
-  else{N=+v.n;panes=layout(N,L,Hs,Hd,p,v.tipo,kgm)}
+  if(auto){const lo=Math.max(s.schema==='scorrevole'?2:1,p.minN|0),hi=Math.max(lo,p.maxN|0);
+    for(N=lo;N<=hi;N++){panes=layout(N,L,Hs,Hd,s,f,kgm);if(!problems(panes,p).some(m=>m[2]!=='h'))break}
+    if(N>hi){N=hi;panes=layout(N,L,Hs,Hd,s,f,kgm)}}
+  else{N=+v.n;panes=layout(N,L,Hs,Hd,s,f,kgm)}
   const sum=k=>panes.reduce((a,q)=>a+q[k],0);
-  return{ok:true,L,Hs,Hd,N,auto,panes,qta,gl,flat:Math.abs(Hs-Hd)<.5,msgs:problems(panes,p),
-    mq:sum('mq')*qta,fmq:sum('fmq')*qta*(1+(p.sfrido||0)/100),kg:sum('kg')*qta,prezzo:num(gl.prezzo)};
+  return{ok:true,L,Hs,Hd,N,auto,panes,qta,gl,s,flat:Math.abs(Hs-Hd)<.5,msgs:problems(panes,p),
+    mq:sum('mq')*qta,fmq:sum('fmq')*qta*(1+(f.sfrido||0)/100),kg:sum('kg')*qta,prezzo:num(gl.prezzo)};
 }
 const latoLen=(l)=>{const ws=l.vani.map(v=>num(v.L)).filter(x=>x>0);return ws.reduce((a,b)=>a+b,0)+Math.max(0,ws.length-1)*(num(l.pil)||0)};
 function totals(c){const t={vetri:0,mq:0,fmq:0,kg:0,cost:0,vani:0,warn:0};
@@ -293,7 +324,7 @@ function renderHome(){
     </button>`}).join('')||'<p class="note">Nessun cantiere: creane uno qui sopra.</p>'}</div>
   <section class="card">
     <h2>Modelli di parametri</h2>
-    <p class="note">Un modello è un insieme di detrazioni da usare come punto di partenza per i nuovi cantieri. Per crearne uno, apri un cantiere e in Parametri premi Salva come modello.</p>
+    <p class="note">Un modello è un insieme di sistemi e parametri da usare come punto di partenza per i nuovi cantieri. Per crearne uno, apri un cantiere e in Parametri premi Salva come modello.</p>
     <div class="tablebox"><table><tbody>${S.modelli.map(m=>`<tr><td class="t l">${esc(m.nome)}</td><td><button class="btn danger sm" data-delmod="${m.id}">Elimina</button></td></tr>`).join('')}</tbody></table></div>
   </section>
   <section class="card">
@@ -309,13 +340,13 @@ function renderHome(){
   document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>go(b.dataset.open,'struttura'));
   $('ncBtn').onclick=()=>{const m=S.modelli.find(x=>x.id===$('ncMod').value);
     const c=newCantiere($('ncNome').value.trim()||'Nuovo cantiere',m,S.catalogo);c.indirizzo=$('ncInd').value.trim();
-    c.lati=[newLato('Lato A',{vani:[newVano('Vano 1',{vetro:c.vetri[0]?.id})]})];
+    c.lati=[newLato('Lato A',{vani:[newVano('Vano 1',{vetro:c.vetri[0]?.id,sistema:c.sistemi[0]?.id})]})];
     S.cantieri.unshift(c);go(c.id,'struttura')};
   armDelete('[data-delmod]',b=>{if(S.modelli.length<2){toast('Serve almeno un modello');return false}S.modelli=S.modelli.filter(m=>m.id!==b.dataset.delmod);save();renderHome()});
   $('impC').onchange=e=>readFile(e.target,o=>{const c=importCantiere(o.cantiere||o);if(c)go(c.id,'struttura')});
   $('expAll').onclick=()=>shareFile('vetrate-backup-'+new Date().toISOString().slice(0,10)+'.json',{v:2,tipo:'backup',modelli:S.modelli,catalogo:S.catalogo,cantieri:S.cantieri});
   $('impAll').onchange=e=>readFile(e.target,o=>{if(o.v!==2||!o.cantieri||!o.modelli){toast('Questo file non è un backup completo');return}
-    S={v:2,modelli:o.modelli,catalogo:o.catalogo||S.catalogo,cantieri:o.cantieri,ui:{c:null,tab:'struttura'}};save();renderHome();toast('Backup ripristinato')});
+    o.cantieri.forEach(migraCantiere);S={v:2,modelli:o.modelli.map(migraModello),catalogo:o.catalogo||S.catalogo,cantieri:o.cantieri,ui:{c:null,tab:'struttura'}};save();renderHome();toast('Backup ripristinato')});
 }
 
 function armDelete(sel,fn){document.querySelectorAll(sel).forEach(b=>{const label=b.textContent;
@@ -336,7 +367,7 @@ function renderCantiere(c){
 function updTot(c){const t=totals(c),e=$('cTot');if(e)e.textContent=`${c.indirizzo?c.indirizzo+' · ':''}${c.lati.length} lati · ${t.vani} vani · ${t.vetri} vetri · ${fmt(t.mq,2)} m²`}
 
 /* ---------- STRUTTURA ---------- */
-function nOpts(tipo,val){const lo=tipo==='scorrevole'?2:1;return'<option value="auto">Automatico</option>'+Array.from({length:9-lo},(_,i)=>i+lo).map(n=>`<option value="${n}" ${String(val)===String(n)?'selected':''}>${n}</option>`).join('')}
+function nOpts(schema,val){const lo=schema==='scorrevole'?2:1;return'<option value="auto">Automatico</option>'+Array.from({length:9-lo},(_,i)=>i+lo).map(n=>`<option value="${n}" ${String(val)===String(n)?'selected':''}>${n}</option>`).join('')}
 function vetroOpts(c,val){return c.vetri.map(v=>`<option value="${v.id}" ${v.id===val?'selected':''}>${esc(v.nome)}</option>`).join('')}
 const uf=(id,label,val,u,attrs='')=>`<label class="f">${label}<div class="unit"><input class="num" id="${id}" inputmode="decimal" value="${esc(val)}" ${attrs}><span>${u}</span></div></label>`;
 
@@ -370,8 +401,8 @@ function vanoCard(c,l,v,vi){return`
       ${uf('vHs_'+v.id,'Altezza sinistra',v.Hs,'mm','data-vf="Hs"')}
       ${uf('vHd_'+v.id,'Altezza destra',v.Hd,'mm','data-vf="Hd" placeholder="= sinistra"')}
       <label class="f">Quantità uguali<input class="num" id="vq_${v.id}" inputmode="numeric" data-vf="qta" value="${esc(v.qta)}"></label>
-      <label class="f">Tipo<select id="vt_${v.id}" data-vs="tipo"><option value="fissa" ${v.tipo==='fissa'?'selected':''}>Fissa</option><option value="scorrevole" ${v.tipo==='scorrevole'?'selected':''}>Scorrevole</option></select></label>
-      <label class="f">${v.tipo==='scorrevole'?'Ante':'Vetri'}<select id="vnn_${v.id}" data-vs="n">${nOpts(v.tipo,v.n)}</select></label>
+      <label class="f wide">Sistema<select id="vt_${v.id}" data-vs="sistema">${c.sistemi.map(s=>`<option value="${s.id}" ${s.id===sisOf(c,v)?.id?'selected':''}>${esc(s.nome)}</option>`).join('')}</select></label>
+      <label class="f">${sisOf(c,v)?.mobili?'Ante':'Vetri'}<select id="vnn_${v.id}" data-vs="n">${nOpts(sisOf(c,v)?.schema,v.n)}</select></label>
       <label class="f">Vetro<select id="vg_${v.id}" data-vs="vetro">${vetroOpts(c,v.vetro)}</select></label>
     </div>
     <div class="vres" id="vr_${v.id}"></div>
@@ -381,7 +412,7 @@ function vanoResult(c,v){
   const r=compute(v,c),box=$('vr_'+v.id),tb=$('vtb_'+v.id);if(!box)return;
   if(!r.ok){box.innerHTML='<span class="note">Inserisci larghezza e altezza.</span>';tb.innerHTML='';return}
   const nb=r.msgs.filter(m=>m[0]==='bad').length,nw=r.msgs.length-nb;
-  box.innerHTML=`<span class="pill ${v.tipo==='scorrevole'?'mob':'fix'}">${v.tipo==='scorrevole'?'Scorrevole':'Fissa'} · ${r.N} ${v.tipo==='scorrevole'?'ante':'vetri'}${r.auto?' auto':''}</span>
+  box.innerHTML=`<span class="pill ${r.s.mobili?'mob':'fix'}">${esc(r.s.nome)} · ${r.N} ${r.s.mobili?'ante':'vetri'}${r.auto?' auto':''}</span>
     <span><b>${fmt(r.mq,2)}</b> m²</span><span><b>${fmt(r.kg,0)}</b> kg</span>${r.qta>1?`<span>× ${r.qta}</span>`:''}
     ${nb?`<span class="pill b">${nb} errori</span>`:''}${nw?`<span class="pill w">${nw} avvisi</span>`:''}`;
   tb.innerHTML=r.msgs.map(([k,t])=>`<div class="msg ${k==='bad'?'bad':''}">${esc(t)}</div>`).join('')+paneTable(r);
@@ -401,15 +432,15 @@ function bindStruttura(c){
     if(t.dataset.lf){const l=findL(t);l[t.dataset.lf]=t.dataset.lf==='nome'?t.value:t.value;save();$('ll_'+l.id).value=fmt(latoLen(l));return}
     if(t.dataset.vf){const[l,v]=findV(t);v[t.dataset.vf]=t.value;save();if(t.dataset.vf!=='nome'){vanoResult(c,v);$('ll_'+l.id).value=fmt(latoLen(l));updTot(c)}}});
   m.addEventListener('change',e=>{const t=e.target;if(!t.dataset.vs)return;const[,v]=findV(t);v[t.dataset.vs]=t.value;
-    if(t.dataset.vs==='tipo'){v.n='auto';save();viewStruttura(c);updTot(c);return}save();vanoResult(c,v);updTot(c)});
+    if(t.dataset.vs==='sistema'){v.n='auto';save();viewStruttura(c);updTot(c);return}save();vanoResult(c,v);updTot(c)});
   m.querySelectorAll('[data-addvano]').forEach(b=>b.onclick=()=>{const l=c.lati.find(x=>x.id===b.dataset.addvano);const prev=l.vani[l.vani.length-1];
-    l.vani.push(newVano('Vano '+(l.vani.length+1),prev?{Hs:prev.Hd||prev.Hs,Hd:prev.Hd||prev.Hs,vetro:prev.vetro,tipo:prev.tipo}:{vetro:c.vetri[0]?.id}));save();viewStruttura(c);updTot(c)});
+    l.vani.push(newVano('Vano '+(l.vani.length+1),prev?{Hs:prev.Hd||prev.Hs,Hd:prev.Hd||prev.Hs,vetro:prev.vetro,sistema:prev.sistema}:{vetro:c.vetri[0]?.id,sistema:c.sistemi[0]?.id}));save();viewStruttura(c);updTot(c)});
   m.querySelectorAll('[data-dupvano]').forEach(b=>b.onclick=()=>{const[l,v]=findV(b);const i=l.vani.indexOf(v);l.vani.splice(i+1,0,{...clone(v),id:uid(),nome:v.nome+' (copia)'});save();viewStruttura(c);updTot(c)});
   armDelete('[data-delvano]',b=>{const[l,v]=findV(b);l.vani=l.vani.filter(x=>x!==v);save();viewStruttura(c);updTot(c)});
   armDelete('[data-dellato]',b=>{c.lati=c.lati.filter(l=>l.id!==b.dataset.dellato);save();viewStruttura(c);updTot(c)});
   m.querySelectorAll('[data-up],[data-down]').forEach(b=>b.onclick=()=>{const i=+(b.dataset.up??b.dataset.down),j=b.dataset.up!=null?i-1:i+1;
     [c.lati[i],c.lati[j]]=[c.lati[j],c.lati[i]];save();viewStruttura(c)});
-  $('addLato').onclick=()=>{const l=newLato('Lato '+letter(c.lati.length),{vani:[newVano('Vano 1',{vetro:c.vetri[0]?.id})]});c.lati.push(l);save();viewStruttura(c);updTot(c);
+  $('addLato').onclick=()=>{const l=newLato('Lato '+letter(c.lati.length),{vani:[newVano('Vano 1',{vetro:c.vetri[0]?.id,sistema:c.sistemi[0]?.id})]});c.lati.push(l);save();viewStruttura(c);updTot(c);
     const el=document.querySelector(`[data-l="${l.id}"]`);if(el)el.scrollIntoView({block:'start'})};
 }
 
@@ -446,8 +477,8 @@ function elevSvg(c,lati,multi){
       const Hs=num(v.Hs)||0,Hd=isFinite(num(v.Hd))?num(v.Hd):Hs,Y=h=>Hm-h;
       if(vi>0&&pil>0)body+=`<rect x="${x-pil}" y="${Y(Math.max(Hs,Hd))}" width="${pil}" height="${Math.max(Hs,Hd)}" fill="var(--line)"/>`;
       body+=`<polygon points="${x},${Y(0)} ${x+L},${Y(0)} ${x+L},${Y(Hd)} ${x},${Y(Hs)}" fill="none" stroke="var(--ink)" stroke-width="1.6" vector-effect="non-scaling-stroke"/>`;
-      if(r.ok)r.panes.forEach((q,k)=>{const fill=v.tipo==='scorrevole'&&k%2?'var(--glass-2)':'var(--glass)',X=x+q.gx,b=q.by;
-        body+=`<polygon points="${X},${Y(b)} ${X+q.gw},${Y(b)} ${X+q.gw},${Y(b+q.hr)} ${X},${Y(b+q.hl)}" fill="${fill}" fill-opacity="${v.tipo==='scorrevole'?.85:1}" stroke="var(--accent)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>`;
+      if(r.ok)r.panes.forEach((q,k)=>{const sc=r.s.schema==='scorrevole',fill=sc&&k%2?'var(--glass-2)':'var(--glass)',X=x+q.gx,b=q.by;
+        body+=`<polygon points="${X},${Y(b)} ${X+q.gw},${Y(b)} ${X+q.gw},${Y(b+q.hr)} ${X},${Y(b+q.hl)}" fill="${fill}" fill-opacity="${sc?.85:1}" stroke="var(--accent)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>`;
         body+=`<text x="${X+q.gw/2}" y="${Y(b+(q.hl+q.hr)/4)}" font-size="${fs*0.9}" text-anchor="middle" dominant-baseline="middle" fill="var(--ink)" font-family="Barlow Condensed,sans-serif" font-weight="700">${q.i}</text>`});
       body+=`<text x="${x+L/2}" y="${Y(Math.max(Hs,Hd))-fs*0.55}" font-size="${fs*0.78}" text-anchor="middle" fill="var(--ink)" font-family="Barlow,sans-serif" font-weight="600">${esc(v.nome)}</text>`;
       body+=`<text x="${x+L/2}" y="${Hm+fs*1.2}" font-size="${fs*0.72}" text-anchor="middle" fill="var(--muted)" font-family="JetBrains Mono,monospace">${fmt(L)}</text>`;
@@ -479,7 +510,7 @@ function viewVista(c){
   document.querySelectorAll('[data-sl]').forEach(b=>b.onclick=()=>{if(b.dataset.sl==='__all')S.ui.sviluppo=true;else{S.ui.lato=b.dataset.sl;S.ui.sviluppo=false}save();viewVista(c)});
 }
 function latoDetail(c,l){return l.vani.map(v=>{const r=compute(v,c);return`<div class="card" style="padding:12px;gap:8px"><div class="row between"><h3>${esc(v.nome)}</h3>
-  ${r.ok?`<span class="note">${fmt(r.L)} × ${r.flat?fmt(r.Hs):fmt(r.Hs)+'/'+fmt(r.Hd)} mm · ${esc(r.gl.nome)}${r.qta>1?' · × '+r.qta:''}</span>`:''}</div>
+  ${r.ok?`<span class="note">${fmt(r.L)} × ${r.flat?fmt(r.Hs):fmt(r.Hs)+'/'+fmt(r.Hd)} mm · ${esc(r.s.nome)} · ${esc(r.gl.nome)}${r.qta>1?' · × '+r.qta:''}</span>`:''}</div>
   ${r.ok?r.msgs.map(([k,t])=>`<div class="msg ${k==='bad'?'bad':''}">${esc(t)}</div>`).join('')+paneTable(r):'<p class="note">Misure incomplete.</p>'}</div>`}).join('')}
 
 /* ---------- RIEPILOGO ---------- */
@@ -488,7 +519,7 @@ function viewRiepilogo(c){
   c.lati.forEach((l,li)=>{rows+=`<tr class="grp"><td colspan="7">${letter(li)} · ${esc(l.nome)}</td></tr>`;txt+=`\n== ${letter(li)} · ${l.nome} ==\n`;
     l.vani.forEach(v=>{const r=compute(v,c);if(!r.ok){rows+=`<tr><td class="t l">${esc(v.nome)}</td><td class="t l" colspan="6">Misure incomplete</td></tr>`;return}
       const g=byG[r.gl.id]||(byG[r.gl.id]={nome:r.gl.nome,n:0,mq:0,fmq:0,kg:0,pr:r.prezzo});g.n+=r.N*r.qta;g.mq+=r.mq;g.fmq+=r.fmq;g.kg+=r.kg;
-      txt+=`${v.nome} – ${v.tipo} – vano ${fmt(r.L)} × ${r.flat?fmt(r.Hs):fmt(r.Hs)+'/'+fmt(r.Hd)}${r.qta>1?' (× '+r.qta+')':''} – ${r.gl.nome}\n`;
+      txt+=`${v.nome} – ${r.s.nome} – vano ${fmt(r.L)} × ${r.flat?fmt(r.Hs):fmt(r.Hs)+'/'+fmt(r.Hd)}${r.qta>1?' (× '+r.qta+')':''} – ${r.gl.nome}\n`;
       r.panes.forEach(q=>{rows+=`<tr><td class="t l">${esc(v.nome)}</td><td class="l">${q.i}</td><td>${fmt(q.gw,1)}</td><td>${r.flat?fmt(q.hl,1):fmt(q.hl,1)+' / '+fmt(q.hr,1)}</td><td>${r.qta}</td><td>${fmt(q.mq*r.qta,3)}</td><td>${fmt(q.kg*r.qta,1)}</td></tr>`;
         txt+=`  ${q.i}) ${fmt(q.gw,1)} × ${r.flat?fmt(q.hl,1):fmt(q.hl,1)+'/'+fmt(q.hr,1)} mm  ×${r.qta}  ${fmt(q.mq*r.qta,3)} m²\n`})})});
   txt+=`\nTOTALE: ${t.vetri} vetri · ${fmt(t.mq,2)} m² reali · ${fmt(t.fmq,2)} m² fatturati · ${fmt(t.kg,0)} kg`;
@@ -510,7 +541,22 @@ function viewRiepilogo(c){
 }
 
 /* ---------- PARAMETRI ---------- */
-function viewParametri(c){
+function sisCard(c,s,open){
+  const used=c.lati.reduce((a,l)=>a+l.vani.filter(v=>sisOf(c,v)===s).length,0),pr=PRESETS.find(x=>x.key===s.preset);
+  return`<section class="card" data-s="${s.id}"><details ${open?'open':''}><summary><span class="sis-t">${esc(s.nome)}</span>
+    <span class="note">${s.mobili?'Mobile':'Fissa'} · ${s.schema==='scorrevole'?'ante sovrapposte':'vetri affiancati'} · usato da ${used} ${used===1?'vano':'vani'}</span></summary>
+    <div class="sis-body">
+    ${s.note?`<p class="note">${esc(s.note)}</p>`:''}
+    <div class="fields">
+      <label class="f wide">Nome<input id="sn_${s.id}" data-sf="nome" value="${esc(s.nome)}"></label>
+      <label class="f wide">Come si dividono i vetri<select id="ss_${s.id}" data-sf="schema">${Object.entries(SCHEMI).map(([k,t])=>`<option value="${k}" ${s.schema===k?'selected':''}>${t}</option>`).join('')}</select></label>
+      <label class="f">Vetri<select id="sm_${s.id}" data-sf="mobili"><option value="1" ${s.mobili?'selected':''}>Mobili</option><option value="0" ${s.mobili?'':'selected'}>Fissi</option></select></label>
+    </div>
+    ${SIS_FIELDS.map(gr=>{const fs=gr.f.filter(x=>!x[4]||x[4]===s.schema);return fs.length?`<h3>${gr.t}</h3><div class="fields">`+
+      fs.map(([k,l,u,h])=>`<label class="f">${l}<div class="unit"><input class="num" id="p_${s.id}_${k}" data-k="${k}" inputmode="decimal" value="${s.p[k]??''}"><span>${u}</span></div>${h?`<span class="hint">${h}</span>`:''}</label>`).join('')+'</div>':''}).join('')}
+    <div class="row"><button class="btn sm" data-sdup="${s.id}">Duplica</button>${pr?`<button class="btn sm" data-sreset="${s.id}">Ripristina valori preimpostati</button>`:''}<button class="btn sm danger" data-sdel="${s.id}">Elimina sistema</button></div>
+    </div></details></section>`}
+function viewParametri(c,openId){
   const p=c.p;
   setMain(),$('main').innerHTML=`
   <section class="card"><h2>Dati del cantiere</h2>
@@ -518,12 +564,15 @@ function viewParametri(c){
     <label class="f">Note<textarea id="cno" rows="2">${esc(c.note)}</textarea></label>
     <label class="chk"><input type="checkbox" id="cpar" ${c.parete?'checked':''}> Veranda addossata a una parete (chiude la pianta tra ultimo e primo lato)</label>
     <div class="row"><button class="btn primary" id="expC">Esporta cantiere</button><button class="btn" id="dupC">Duplica cantiere</button><button class="btn danger" id="delC">Elimina cantiere</button></div></section>
-  <section class="card"><h2>Parametri di questo cantiere</h2>
-    <p class="banner">Questi valori valgono solo per «${esc(c.nome)}». Modificarli non cambia gli altri cantieri.</p>
-    <div class="fields"><label class="f">Carica da un modello<select id="modSel">${S.modelli.map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('')}</select></label></div>
-    <div class="row"><button class="btn" id="loadMod">Carica modello</button><button class="btn" id="saveMod">Salva come modello</button></div></section>
-  ${PARAM_GROUPS.map(gr=>`<section class="card"><h2>${gr.t}</h2>${gr.d?`<p class="note">${gr.d}</p>`:''}<div class="fields">`+
-    gr.f.map(([k,l,u,h])=>`<label class="f">${l}<div class="unit"><input class="num" id="p_${k}" data-k="${k}" inputmode="decimal" value="${p[k]??''}"><span>${u}</span></div>${h?`<span class="hint">${h}</span>`:''}</label>`).join('')+'</div></section>').join('')}
+  <section class="card"><h2>Sistemi di questo cantiere</h2>
+    <p class="banner">Le preimpostazioni sono valori indicativi ricavati da schede tecniche pubbliche e misure tipiche del settore, non da un produttore preciso. Prima di ordinare i vetri verificale su un lavoro già fatto o sulla scheda del tuo sistema. Modificarle qui vale solo per «${esc(c.nome)}».</p>
+    <div class="fields"><label class="f wide">Aggiungi una preimpostazione<select id="addPre">${PRESETS.map(x=>`<option value="${x.key}">${esc(x.nome)}</option>`).join('')}</select></label></div>
+    <div class="row"><button class="btn primary" id="addPreBtn">Aggiungi sistema</button></div>
+    <div class="fields"><label class="f wide">Modello<select id="modSel">${S.modelli.map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('')}</select></label></div>
+    <div class="row"><button class="btn" id="loadMod">Carica sistemi dal modello</button><button class="btn" id="saveMod">Salva come modello</button></div></section>
+  ${c.sistemi.map(s=>sisCard(c,s,s.id===openId)).join('')}
+  <section class="card"><h2>Fatturazione</h2><div class="fields">
+    ${FATT_FIELDS.map(([k,l,u,h])=>`<label class="f">${l}<div class="unit"><input class="num" id="f_${k}" data-fk="${k}" inputmode="decimal" value="${p[k]??''}"><span>${u}</span></div>${h?`<span class="hint">${h}</span>`:''}</label>`).join('')}</div></section>
   <section class="card"><h2>Vetri di questo cantiere</h2>
     <p class="note">Peso indicativo circa 2,5 kg/m² per mm di spessore. Il prezzo è facoltativo.</p>
     <div class="tablebox"><table class="vtab"><thead><tr><th class="l">Nome</th><th>Spessore mm</th><th>kg/m²</th><th>€/m²</th><th></th></tr></thead><tbody>
@@ -531,13 +580,28 @@ function viewParametri(c){
       <td><input class="num" id="gk_${v.id}" data-f="kg" inputmode="decimal" value="${v.kg}"></td><td><input class="num" id="gp_${v.id}" data-f="prezzo" inputmode="decimal" value="${v.prezzo??''}" placeholder="–"></td>
       <td><button class="btn danger sm" data-delg="${v.id}" aria-label="Elimina vetro">✕</button></td></tr>`).join('')}</tbody></table></div>
     <div class="row"><button class="btn" id="addG">Aggiungi vetro</button></div></section>`;
+  const findS=el=>c.sistemi.find(s=>s.id===el.closest('[data-s]').dataset.s);
   $('cn').oninput=e=>{c.nome=e.target.value||'Senza nome';save();document.querySelector('h1').textContent=c.nome};
   $('ci').oninput=e=>{c.indirizzo=e.target.value;save();updTot(c)};
   $('cno').oninput=e=>{c.note=e.target.value;save()};
   $('cpar').onchange=e=>{c.parete=e.target.checked;save()};
-  document.querySelectorAll('[data-k]').forEach(i=>i.addEventListener('input',e=>{const n=num(e.target.value);c.p[e.target.dataset.k]=isFinite(n)?n:0;save();updTot(c)}));
-  $('loadMod').onclick=()=>{const m=S.modelli.find(x=>x.id===$('modSel').value);if(!m)return;c.p={...DEF_P,...m.p};save();viewParametri(c);updTot(c);toast('Modello caricato')};
-  $('saveMod').onclick=()=>{S.modelli.push({id:uid(),nome:'Da '+c.nome,p:{...c.p}});save();viewParametri(c);toast('Salvato come modello «Da '+c.nome+'»')};
+  document.querySelectorAll('[data-s] [data-k]').forEach(i=>i.addEventListener('input',e=>{const n=num(e.target.value);findS(e.target).p[e.target.dataset.k]=isFinite(n)?n:0;save();updTot(c)}));
+  document.querySelectorAll('[data-sf="nome"]').forEach(i=>i.addEventListener('input',e=>{const s=findS(e.target);s.nome=e.target.value||'Sistema';save();e.target.closest('details').querySelector('.sis-t').textContent=s.nome}));
+  document.querySelectorAll('select[data-sf]').forEach(i=>i.addEventListener('change',e=>{const s=findS(e.target);
+    if(e.target.dataset.sf==='mobili')s.mobili=e.target.value==='1';else s.schema=e.target.value;save();viewParametri(c,s.id);updTot(c)}));
+  document.querySelectorAll('[data-fk]').forEach(i=>i.addEventListener('input',e=>{const n=num(e.target.value);c.p[e.target.dataset.fk]=isFinite(n)?n:0;save();updTot(c)}));
+  $('addPreBtn').onclick=()=>{const x=PRESETS.find(k=>k.key===$('addPre').value);if(!x)return;const s=sisDaPreset(x);c.sistemi.push(s);save();viewParametri(c,s.id);toast('Sistema aggiunto')};
+  document.querySelectorAll('[data-sdup]').forEach(b=>b.onclick=()=>{const s=findS(b),n={...clone(s),id:uid(),nome:s.nome+' (copia)'};c.sistemi.splice(c.sistemi.indexOf(s)+1,0,n);save();viewParametri(c,n.id)});
+  armDelete('[data-sreset]',b=>{const s=findS(b),x=PRESETS.find(k=>k.key===s.preset);if(!x)return;s.p={...DEF_SP,...x.p};s.schema=x.schema;s.mobili=x.mobili;save();viewParametri(c,s.id);updTot(c);toast('Valori ripristinati')});
+  armDelete('[data-sdel]',b=>{const s=findS(b);const used=c.lati.reduce((a,l)=>a+l.vani.filter(v=>sisOf(c,v)===s).length,0);
+    if(c.sistemi.length<2){toast('Serve almeno un sistema');return}
+    if(used){toast(`Usato da ${used} ${used===1?'vano':'vani'}: cambia prima il sistema di quei vani`);return}
+    c.sistemi=c.sistemi.filter(x=>x!==s);save();viewParametri(c)});
+  $('loadMod').onclick=()=>{const m=S.modelli.find(x=>x.id===$('modSel').value);if(!m)return;
+    const nuovi=clone(m.sistemi).map(s=>({...s,id:uid()}));
+    c.lati.forEach(l=>l.vani.forEach(v=>{const old=sisOf(c,v);const n=nuovi.find(x=>old&&((x.preset&&x.preset===old.preset)||x.nome===old.nome))||nuovi[0];v.sistema=n.id}));
+    c.sistemi=nuovi;c.p={...DEF_FATT,...m.fatt};save();viewParametri(c);updTot(c);toast('Sistemi caricati dal modello')};
+  $('saveMod').onclick=()=>{S.modelli.push({id:uid(),nome:'Da '+c.nome,sistemi:clone(c.sistemi),fatt:{...c.p}});save();toast('Salvato come modello «Da '+c.nome+'»')};
   $('expC').onclick=()=>shareFile('cantiere-'+fileName(c.nome)+'.json',{v:2,tipo:'cantiere',cantiere:c});
   $('dupC').onclick=()=>{const n={...clone(c),id:uid(),nome:c.nome+' (copia)'};S.cantieri.unshift(n);go(n.id,'struttura');toast('Cantiere duplicato')};
   armDelete('#delC',()=>{S.cantieri=S.cantieri.filter(x=>x!==c);go(null);toast('Cantiere eliminato')});
