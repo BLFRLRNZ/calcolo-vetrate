@@ -195,6 +195,9 @@ details summary::-webkit-details-marker{display:none}
 .sync{font:500 .64rem var(--f-mono);color:var(--muted);display:inline-flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.08em}
 .sync::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--muted)}
 .sync.ok::before{background:var(--ok)} .sync.w::before{background:var(--warn)} .sync.b::before{background:var(--bad)}
+.ver{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;font:500 .7rem var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:4px 0 8px}
+.upd{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));z-index:21;display:flex;align-items:center;gap:12px;
+  background:var(--surface);border:1px solid var(--accent);border-radius:var(--r);padding:8px 8px 8px 14px;font:500 .8rem var(--f-mono);box-shadow:0 6px 20px rgba(0,0,0,.18);white-space:nowrap}
 .toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:8px 14px;border-radius:4px;font:500 .82rem var(--f-mono);z-index:20}
 @media (prefers-reduced-motion:no-preference){.seg button,.btn,.bnav button{transition:background .15s,color .15s,border-color .15s}}
 </style>
@@ -369,6 +372,7 @@ const ICON={
  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>',
  logo:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#dfe7ee" stroke-width="1.5"><rect x="3" y="4" width="18" height="16"/><path d="M12 4v16" stroke="#3cc3d8"/><path d="M6 15l3-6" stroke-width="1"/></svg>'
 };
+const APP_VER='6 · 30/10/2026';
 const TABS=[['struttura','Struttura'],['vista','Vista'],['riepilogo','Riepilogo'],['parametri','Parametri'],['strumenti','Strumenti']];
 function go(c,tab){S.ui.c=c;if(tab)S.ui.tab=tab;save();render();window.scrollTo(0,0)}
 function render(){const c=C();if(!c){S.ui.c=null;renderHome()}else renderCantiere(c);paintStatus()}
@@ -409,7 +413,11 @@ function renderHome(){
       <label class="btn" for="impAll">Ripristina backup</label><input type="file" id="impAll" accept=".json,application/json" hidden>
     </div>
     <p class="note">Il ripristino sostituisce tutti i dati di questo dispositivo con quelli del backup.</p>
-  </section>`;
+  </section>
+  <div class="ver"><span>Versione ${APP_VER}</span><button class="btn sm" id="updBtn" type="button">Cerca aggiornamenti</button></div>`;
+  $('updBtn').onclick=()=>{toast('Controllo aggiornamenti…');const fine=()=>setTimeout(()=>location.reload(),700);
+    if(!('serviceWorker' in navigator))return fine();
+    navigator.serviceWorker.getRegistration().then(r=>r?r.update():null).catch(()=>{}).finally(fine)};
   document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>go(b.dataset.open,'struttura'));
   $('ncBtn').onclick=()=>{const m=S.modelli.find(x=>x.id===$('ncMod').value);
     const c=newCantiere($('ncNome').value.trim()||'Nuovo cantiere',m,S.catalogo);c.indirizzo=$('ncInd').value.trim();
@@ -750,7 +758,17 @@ function viewStrumenti(c){
 
 render();
 paintStatus();
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+/* aggiornamenti: il service worker nuovo prende il controllo e la pagina si ricarica da sola */
+function showUpd(fn){if($('upd'))return;const d=document.createElement('div');d.id='upd';d.className='upd';
+  d.innerHTML='<span>Nuova versione pronta</span><button class="btn sm primary" type="button">Aggiorna</button>';d.querySelector('button').onclick=fn;document.body.appendChild(d)}
+if('serviceWorker' in navigator){
+  const hadCtrl=!!navigator.serviceWorker.controller;let reloading=false;
+  const doReload=()=>{if(reloading)return;reloading=true;location.reload()};
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!hadCtrl)return;
+    const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName))showUpd(doReload);else doReload()});
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(()=>{}));
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')navigator.serviceWorker.getRegistration().then(r=>r&&r.update()).catch(()=>{})});
+}
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 })();
 </script>

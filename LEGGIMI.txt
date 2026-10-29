@@ -23,6 +23,9 @@ DATI:
 - Fai ogni tanto "Backup completo" e tieni il file al sicuro.
 
 AGGIORNARE L'APP:
-Sostituisci i file sull'hosting e cambia VERSIONE dentro sw.js
-(es. vetrate-v4). Al prossimo avvio con internet l'app si aggiorna,
-i dati restano.
+Si carica la nuova versione nel repository e si cambia VERSIONE dentro
+sw.js (es. vetrate-v7) e APP_VER dentro index.html. Aprendo l'app con
+internet, entro pochi secondi si ricarica da sola con la versione nuova;
+i dati restano. In fondo alla schermata dei cantieri c'e' la versione in
+uso e il pulsante "Cerca aggiornamenti".
+Non eliminare l'icona dalla Home per aggiornare: cancellerebbe i dati.
