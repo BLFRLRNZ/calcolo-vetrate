@@ -235,6 +235,58 @@ details summary::-webkit-details-marker{display:none}
 .ver{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;font:500 .7rem var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:4px 0 8px}
 .upd{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));z-index:21;display:flex;align-items:center;gap:12px;
   background:var(--surface);border:1px solid var(--accent);border-radius:var(--r);padding:8px 8px 8px 14px;font:500 .8rem var(--f-mono);box-shadow:0 6px 20px rgba(0,0,0,.18);white-space:nowrap}
+.htabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:12px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:4px}
+.htabs button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 10px;border-radius:4px;font:600 .9rem var(--f-body);color:var(--muted)}
+.htabs button svg{width:18px;height:18px}
+.htabs button[aria-selected="true"]{background:var(--ink);color:var(--surface)}
+.htabs button:focus-visible{outline:2px solid var(--accent)}
+.xbtn{flex:none;width:32px;height:32px;border-radius:4px;border:1px solid var(--line-2);background:var(--surface);color:var(--muted);font:600 .95rem/1 var(--f-body);display:grid;place-items:center;cursor:pointer;padding:0}
+.xbtn:hover{border-color:var(--ink);color:var(--ink)}
+.pill.ok{color:var(--ok)}
+.plist{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.pcard{text-align:left;cursor:pointer;font:inherit;color:inherit;gap:8px}
+.pcard:hover{border-color:var(--ink)}
+.pcard .pill{align-self:flex-start}
+.pc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.pc-top h2{min-width:0;overflow-wrap:anywhere}
+.pc-tot{display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-top:1px solid var(--line);padding-top:8px}
+.pc-tot span{font:500 .62rem var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.pc-tot b{font:600 1.2rem var(--f-mono);font-variant-numeric:tabular-nums}
+.pvtab input{width:110px;min-height:34px;padding:6px 8px;text-align:right}
+.pvtab td:last-child{font-weight:600}
+.kv.tot dt:nth-last-child(2),.kv.tot dd:last-child{background:var(--surface-2);font-weight:700;color:var(--ink)}
+.kv.tot dd:last-child{font-size:1.15rem}
+details.regole{border:1px solid var(--line);border-radius:var(--r);padding:10px 12px}
+details.regole summary{font:500 .7rem var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--accent)}
+details.regole summary::before{content:"+ "}
+details.regole[open] summary::before{content:"− "}
+details.regole[open] summary{margin-bottom:10px}
+.lav-list{display:flex;flex-direction:column;gap:8px}
+.lav-row{display:grid;grid-template-columns:70px 84px minmax(0,1fr) auto;grid-template-areas:"d d d x" "q u p p" "i i i i";gap:6px 8px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface-2)}
+.lav-row.lst{grid-template-columns:84px minmax(0,1fr) auto;grid-template-areas:"d d x" "u p p"}
+@media (min-width:700px){.lav-row{grid-template-columns:minmax(0,1fr) 80px 84px 130px 100px auto;grid-template-areas:"d q u p i x"}
+  .lav-row.lst{grid-template-columns:minmax(0,1fr) 84px 150px auto;grid-template-areas:"d u p x"}}
+.lv-i::before{content:"Importo € ";font:500 .62rem var(--f-mono);color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+@media (min-width:700px){.lv-i::before{content:none}}
+.pv-list{border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.pv-row{display:grid;grid-template-columns:minmax(0,1fr) 116px 96px;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line)}
+.pv-row:last-child{border-bottom:0}
+.pv-h{background:var(--surface-2);font:500 .62rem var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding-block:7px}
+.pv-h span:nth-child(n+2),.pv-i,.pv-f span:last-child{text-align:right}
+.pv-n{font-size:.9rem;font-weight:500;min-width:0;overflow-wrap:anywhere}
+.pv-n small{display:block;font:400 .74rem var(--f-mono);color:var(--muted);margin-top:2px}
+.pv-i{font:600 .9rem var(--f-mono);font-variant-numeric:tabular-nums}
+.pv-f{background:var(--surface-2);font-weight:600}
+.pv-f span:first-child{grid-column:span 2}
+.pv-f span:last-child{font:600 .95rem var(--f-mono);font-variant-numeric:tabular-nums}
+.pv-p input{min-height:36px;text-align:right}
+@media (min-width:640px){.pv-row{grid-template-columns:minmax(0,1fr) 140px 120px}}
+.lv-d{grid-area:d}.lv-q{grid-area:q}.lv-u{grid-area:u}.lv-p{grid-area:p}.lv-i{grid-area:i;font:600 .9rem var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}.lv-x{grid-area:x;justify-self:end}
+.lav-row input,.lav-row select{background:var(--surface)}
+.quick{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.qlbl{font:500 .62rem var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-right:4px}
+.chip{font:500 .8rem var(--f-body);border:1px dashed var(--line-2);background:var(--surface);color:var(--ink);padding:6px 10px;border-radius:99px;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
 .toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:8px 14px;border-radius:4px;font:500 .82rem var(--f-mono);z-index:20}
 @media (prefers-reduced-motion:no-preference){.seg button,.btn,.bnav button{transition:background .15s,color .15s,border-color .15s}}
 </style>
@@ -258,7 +310,7 @@ const clone=o=>JSON.parse(JSON.stringify(o));
 
 /* ---------- testi delle spiegazioni (pulsanti «!») ---------- */
 const HELP={
- nuovo:'Il nuovo cantiere parte dalle tipologie, dalla fatturazione e dai vetri predefiniti, che imposti in Impostazioni generali (ingranaggio in alto a destra). Dopo puoi modificarli solo per questo cantiere. Con Importa cantiere apri un file ricevuto da un collega.',
+ nuovo:'Il nuovo cantiere parte dalle tipologie e dai vetri predefiniti, che imposti in Impostazioni generali (ingranaggio in alto a destra). Dopo puoi modificarli solo per questo cantiere. Con Importa cantiere apri un file ricevuto da un collega. Prezzi e preventivi stanno nella sezione Preventivi.',
  lato:'Un lato è una parete della veranda, ad esempio il fronte o un fianco, e contiene uno o più vani. I vani vanno inseriti da sinistra a destra guardando il lato dall\'esterno. Le frecce cambiano l\'ordine dei lati, che è anche l\'ordine con cui vengono disegnati in pianta.',
  angolo:'Angolo tra questo lato e il successivo, misurato all\'interno della veranda: 90° per un angolo retto, 135° per un angolo smussato. Serve solo per disegnare la pianta e non cambia le misure dei vetri. Se non lo conosci, usa lo strumento Angolo tra due lati.',
  pil:'Spessore di pilastri, montanti o muretti che separano un vano dall\'altro sullo stesso lato. Si aggiunge alla lunghezza del lato e compare nel prospetto. Non cambia le misure dei vetri.',
@@ -271,28 +323,37 @@ const HELP={
  vg:'Il vetro serve per calcolare peso ed eventuale costo. L\'elenco dei vetri del cantiere si modifica in Parametri.',
  pianta:'Vista dall\'alto della veranda. I lati sono disegnati in sequenza con gli angoli inseriti in Struttura; la linea tratteggiata è la parete di appoggio. Le tacche indicano dove finisce un vano e inizia il successivo. Tocca un lato per vederne il prospetto.',
  prospetto:'Il lato visto dall\'esterno, con i vani, i vetri numerati e le misure. Nelle tipologie ad ante sovrapposte le ante hanno due tonalità alternate. Tutti i lati mostra lo sviluppo completo della veranda, un lato dopo l\'altro.',
- totali:'m² reali: superficie effettiva dei vetri. m² da fatturare: con superficie minima per lastra, arrotondamento dei lati e sfrido impostati in Parametri › Fatturazione. Copia distinta copia un testo pronto da incollare in un messaggio o in una email al vetraio, con l\'intestazione impostata in Impostazioni generali.',
- ordine:'Pezzi e superfici raggruppati per tipo di vetro: è il riassunto da usare per chiedere un preventivo o fare l\'ordine. Il costo compare solo se hai inserito il prezzo al m² del vetro.',
+ totali:'Vani, vetri, m² e peso di tutto il cantiere. Copia distinta copia un testo pronto da incollare in un messaggio o in una email al vetraio, con i dati della ditta impostati in Impostazioni generali. Prezzi e costi stanno nel preventivo del cantiere.',
+ ordine:'Pezzi, superfici e pesi raggruppati per tipo di vetro: è il riassunto da usare per l\'ordine al vetraio.',
  distinta:'Tutti i vetri del cantiere, lato per lato, con le misure di taglio. Nei vani in pendenza l\'altezza è indicata come sinistra / destra.',
  datiCantiere:'Con Veranda addossata a una parete la pianta viene chiusa da una linea tratteggiata tra l\'ultimo e il primo lato. Esporta cantiere crea un file da mandare a un collega, che lo apre con Importa cantiere nella schermata iniziale.',
  calcolo:'<b>Come si calcola un vetro</b><br>1. Luce = larghezza vano − 2 × gioco di posa − deduzione telaio in larghezza.<br>2. Ante sovrapposte: anta = (luce + sormonti) ÷ numero di ante. Vetri affiancati: modulo = (luce − spazi tra vetri) ÷ numero di vetri.<br>3. Larghezza vetro = anta o modulo − deduzione vetro in larghezza.<br>4. Altezza vetro = altezza vano − 2 × gioco di posa − deduzione telaio in altezza − deduzione vetro in altezza.',
  schema:'Ante sovrapposte: le ante scorrono su binari diversi e da chiuse si sovrappongono (si usa il sormonto). Vetri affiancati: i vetri stanno uno accanto all\'altro, separati da una fuga, una guarnizione o un montante (impacchettabili, a libro, fisse).',
  mobili:'Indica se i vetri si aprono. Serve per le etichette Anta mobile o Fisso nella distinta e nei disegni.',
  prova:'Inserisci le misure di un vano di cui conosci già i vetri, per esempio un lavoro fatto con lo stesso sistema: se i risultati coincidono, la tipologia è tarata bene. La prova non viene salvata nel cantiere.',
- tipPre:'Salva come predefinite: queste tipologie e la fatturazione diventano il punto di partenza per i nuovi cantieri. Ricarica le predefinite: sostituisce le tipologie di questo cantiere con quelle predefinite e ricollega i vani alla tipologia corrispondente.',
- fattur:'Valori usati solo per i m² da fatturare e da ordinare: non cambiano le misure di taglio dei vetri.',
- vetri:'Elenco dei vetri che puoi scegliere nei vani. Scrivendo lo spessore il peso viene stimato a 2,5 kg/m² per mm; puoi correggerlo a mano, per esempio per i vetrocamera. Il prezzo al m² è facoltativo e serve per il costo nel riepilogo.',
+ tipPre:'Salva come predefinite: queste tipologie diventano il punto di partenza per i nuovi cantieri. Ricarica le predefinite: sostituisce le tipologie di questo cantiere con quelle predefinite e ricollega i vani alla tipologia corrispondente.',
+ fattur:'Regole per calcolare i m² dei vetri da mettere in preventivo: superficie minima per lastra, arrotondamento dei lati e maggiorazione per sfrido. Non cambiano le misure di taglio dei vetri.',
+ vetri:'Elenco dei vetri che puoi scegliere nei vani. Scrivendo lo spessore il peso viene stimato a 2,5 kg/m² per mm; puoi correggerlo a mano, per esempio per i vetrocamera. I prezzi si inseriscono nella sezione Preventivi.',
  inclinato:'Per i vani sotto una falda: con la base e le due altezze ricavi il lato superiore inclinato, la pendenza e le due diagonali, utili per controllare il vano o tagliare i profili. Puoi partire dalle misure di un vano del cantiere.',
  triangolo:'Teorema di Pitagora: inserisci due lati qualsiasi di un triangolo rettangolo e ottieni il terzo. Se li inserisci tutti e tre, vedi di quanto la diagonale misurata si discosta da quella teorica.',
  squadra:'Misura le due diagonali del vano da angolo ad angolo. Se sono uguali il vano è in squadra: fino a 2 mm di differenza è considerato in squadra, fino a 5 mm leggermente fuori squadra.',
  angoloLati:'Per trovare l\'angolo reale tra due lati della veranda: dall\'angolo segna un punto su ciascun lato (per esempio a 1000 mm) e misura la distanza tra i due punti. L\'app calcola l\'angolo con il teorema del coseno: inseriscilo in Struttura come angolo interno.',
  aspetto:'Automatico segue l\'impostazione chiaro o scuro dell\'iPad. Testo grande ingrandisce tutta l\'app, comodo in cantiere. Puoi nascondere i pulsanti «!» quando non ti servono più: le spiegazioni restano disponibili riattivandoli da qui.',
  arrot:'Come vengono arrotondate le misure di taglio dei vetri. Al mm per difetto è la scelta più prudente per l\'ordine: il vetro non risulta mai più grande del calcolo. Superfici e pesi vengono calcolati sulle misure arrotondate.',
- intest:'Ditta e contatto compaiono in testa al testo di Copia distinta, le note in fondo. Utile quando mandi la distinta al vetraio.',
+ intest:'Ditta e contatto compaiono in testa alla distinta per il vetraio e ai preventivi. Le note per il vetraio vanno in fondo alla distinta.',
  tipPredef:'Tipologie con cui parte ogni nuovo cantiere. Modificarle qui non cambia i cantieri esistenti: per aggiornarne uno, aprilo e in Parametri usa Ricarica le predefinite.',
  fatturPre:'Fatturazione con cui parte ogni nuovo cantiere. Non cambia i cantieri esistenti.',
  vetriPre:'Vetri con cui parte ogni nuovo cantiere. Modificarli qui non cambia i cantieri esistenti.',
  backup:'I dati sono salvati solo su questo dispositivo. Backup completo crea un file con tutti i cantieri e le impostazioni: salvalo in File, su iCloud o mandalo via email. Ripristina backup sostituisce tutti i dati con quelli del file. Elimina tutti i dati cancella tutto da questo dispositivo.',
+ prevLista:'Ogni cantiere ha il suo preventivo: qui vedi stato e totale di ciascuno e le somme per stato. Il Listino prezzi contiene i prezzi di partenza di vetri e lavorazioni, che i nuovi preventivi usano da soli. I filtri mostrano solo bozze, inviati, accettati o rifiutati.',
+ prevDati:'Cliente, numero e data compaiono in testa al preventivo copiato. Lo stato serve a tenere traccia dei preventivi: bozza, inviato al cliente, accettato o rifiutato. Apri cantiere porta alle misure e ai disegni.',
+ prevVetri:'Ogni tipo di vetro usato nel cantiere compare con pezzi e m² da preventivare: inserisci il prezzo al m² e l\'importo si calcola da solo. I m² seguono le Regole di calcolo (superficie minima per lastra, arrotondamento dei lati, sfrido). Prezzi dal listino sostituisce i prezzi con quelli del listino.',
+ prevLav:'Voci da aggiungere ai vetri: posa, profili, trasporto, smaltimento e altro. Per ogni voce scrivi descrizione, quantità, unità di misura e prezzo unitario. Con i pulsanti Dal listino aggiungi una voce già pronta: la quantità viene proposta dal cantiere (m² di vetro, metri lineari dei lati o numero di vani) e puoi correggerla.',
+ prevTot:'Lo sconto si applica all\'imponibile (vetri più lavorazioni), poi si aggiunge l\'IVA. Imposta l\'aliquota IVA giusta per il tipo di lavoro.',
+ prevNote:'Le note per il cliente finiscono in fondo al preventivo copiato: tempi, esclusioni, pagamento. Le note interne restano solo nell\'app. Copia preventivo copia un testo pronto da incollare in un messaggio o in una email.',
+ listVetri:'Prezzo al m² di ogni vetro predefinito. Ogni nuovo cantiere parte con questi prezzi nel suo preventivo; per aggiornare un preventivo esistente usa Prezzi dal listino.',
+ listLav:'Lavorazioni che usi spesso, con unità di misura e prezzo: nei preventivi le aggiungi con un tocco.',
+ listAltro:'IVA, validità, regole dei m² e note con cui parte ogni nuovo preventivo. Non cambiano i preventivi già esistenti.',
  app:'L\'app si aggiorna da sola quando la apri con internet. Cerca aggiornamenti forza subito il controllo. Non eliminare l\'icona dalla Home per aggiornare: cancelleresti i dati.'
 };
 HELP.tipologie='Ogni vano usa una tipologia. Qui scegli dal menu quale modificare, oppure con + Nuova tipologia ne crei una partendo da una preimpostazione, da una copia o da zero. Le modifiche valgono solo per questo cantiere.<br><br>'+HELP.calcolo+'<br><br>I valori preimpostati sono indicativi: confrontali con un lavoro di cui conosci già le misure usando la Prova rapida.';
@@ -322,10 +383,13 @@ const SIS_FIELDS=[
 const FATT_FIELDS=[
  ['minMq','Superficie minima per vetro','m²','Molti vetrai fatturano un minimo per lastra (spesso 0,5 m²): se un vetro è più piccolo, nei m² da fatturare conta il minimo. Metti 0 se non serve.'],
  ['arrot','Arrotondamento lati','mm','Alcuni listini fatturano i lati arrotondati per eccesso a un multiplo (es. 30 o 60 mm). Vale solo per i m² da fatturare, non per le misure di taglio. 0 = nessun arrotondamento.'],
- ['sfrido','Sfrido / scarto','%','Percentuale aggiunta ai m² da ordinare per coprire scarti e rotture. Non cambia le misure dei vetri.']];
+ ['sfrido','Maggiorazione sfrido','%','Percentuale aggiunta ai m² dei vetri per coprire scarti e rotture. Non cambia le misure di taglio.']];
 const DEF_FATT={minMq:0.5,arrot:0,sfrido:0};
 const DEF_SP={gp:0,telL:0,telH:0,sorm:0,fuga:0,vetL:0,vetH:0,minN:1,maxN:8,maxW:1500,maxH:3000,maxKg:120,binari:0};
-const DEF_SET={tema:'auto',testo:'normale',aiuti:true,arrotVetro:'decimo',ditta:'',contatto:'',noteOrdine:'',lastBackup:null};
+const DEF_SET={tema:'auto',testo:'normale',aiuti:true,arrotVetro:'decimo',ditta:'',contatto:'',noteOrdine:'',lastBackup:null,bkDismiss:null};
+const UM=['pz','m','m²','h','corpo'];
+const DEF_LAV=[['Posa in opera','m²'],['Profili e accessori','m'],['Trasporto','corpo'],['Smaltimento vecchi infissi','corpo'],['Sopralluogo e rilievo misure','corpo']];
+const newListino=fatt=>({vetri:{},fatt:{...DEF_FATT,...(fatt||{})},iva:22,validita:30,cond:'',lav:DEF_LAV.map(([desc,um])=>({id:uid(),desc,um,prezzo:''}))});
 const PRESETS=[
  {key:'binari',nome:'Scorrevole tutto vetro su binari',schema:'scorrevole',mobili:true,
   note:'Vetrata panoramica a 3–5 binari, ante senza profili verticali. Larghezza anta tipica 600–1000 mm, vetro temperato 10 mm.',
@@ -349,16 +413,18 @@ const PRESETS=[
 const sisDaPreset=x=>({id:uid(),nome:x.nome,schema:x.schema,mobili:x.mobili,note:x.note,preset:x.key,p:{...DEF_SP,...x.p}});
 const presetSistemi=()=>PRESETS.map(sisDaPreset);
 const defVetri=()=>[['Temperato 8 mm',8,20],['Temperato 10 mm',10,25],['Stratificato 33.1',6.4,16],['Stratificato 44.2',8.8,22],
- ['Stratificato 55.2',10.8,27],['Vetrocamera 4/16/4',8,20],['Vetrocamera 33.1/16/33.1',12.8,32]].map(([nome,sp,kg])=>({id:uid(),nome,sp,kg,prezzo:''}));
+ ['Stratificato 55.2',10.8,27],['Vetrocamera 4/16/4',8,20],['Vetrocamera 33.1/16/33.1',12.8,32]].map(([nome,sp,kg])=>({id:uid(),nome,sp,kg}));
 
 function newVano(nome,o={}){return{id:uid(),nome,L:'',Hs:'',Hd:'',qta:'1',sistema:'',n:'auto',vetro:'',...o}}
 function newLato(nome,o={}){return{id:uid(),nome,angolo:90,pil:0,vani:[],...o}}
-function newPredef(){return{sistemi:presetSistemi(),fatt:{...DEF_FATT}}}
-function newCantiere(nome,predef,catalogo){return{id:uid(),nome,indirizzo:'',note:'',parete:true,creato:new Date().toISOString().slice(0,10),
-  p:{...DEF_FATT,...(predef&&predef.fatt||{})},sistemi:clone(predef&&predef.sistemi&&predef.sistemi.length?predef.sistemi:presetSistemi()),vetri:clone(catalogo),lati:[]}}
+function newPredef(){return{sistemi:presetSistemi()}}
+function newPrev(L,vetri){L=L||newListino();const pz={};(vetri||[]).forEach(v=>{const p=L.vetri&&L.vetri[v.id];if(p!=null&&p!=='')pz[v.id]=p});
+  return{stato:'bozza',numero:'',data:new Date().toISOString().slice(0,10),cliente:'',validita:L.validita??30,prezzi:pz,fatt:{...DEF_FATT,...L.fatt},lav:[],sconto:0,iva:L.iva??22,note:L.cond||'',interne:''}}
+function newCantiere(nome,predef,catalogo,listino){const vetri=clone(catalogo);return{id:uid(),nome,indirizzo:'',note:'',parete:true,creato:new Date().toISOString().slice(0,10),
+  sistemi:clone(predef&&predef.sistemi&&predef.sistemi.length?predef.sistemi:presetSistemi()),vetri,lati:[],prev:newPrev(listino,vetri)}}
 const sisBy=(c,key)=>c.sistemi.find(s=>s.preset===key)||c.sistemi[0];
-function esempio(predef,catalogo){
-  const c=newCantiere('Veranda di esempio',predef,catalogo);
+function esempio(predef,catalogo,listino){
+  const c=newCantiere('Veranda di esempio',predef,catalogo,listino);
   c.note='Misure di esempio: sostituiscile con quelle reali o crea un nuovo cantiere.';
   const v=c.vetri.find(x=>x.nome.includes('10 mm'))||c.vetri[0],fx=sisBy(c,'fissavetro').id,sc=sisBy(c,'binari').id;
   c.lati=[
@@ -371,11 +437,15 @@ function esempio(predef,catalogo){
 function sistemiDaVecchi(p){p=p||{};const b={gp:p.gp??5,maxN:p.maxN??8,maxW:p.maxW??1500,maxH:p.maxH??3000,maxKg:p.maxKg??120};
   return[{id:uid(),nome:'Scorrevole (tuoi parametri)',schema:'scorrevole',mobili:true,note:'Parametri che avevi inserito nella prima versione.',preset:'',p:{...DEF_SP,...b,telL:p.sTelL??40,telH:p.sTelH??60,sorm:p.sorm??40,vetL:p.sAntaL??70,vetH:p.sAntaH??90,minN:p.minAnte??2,binari:p.binari??2}},
     {id:uid(),nome:'Fissa (tuoi parametri)',schema:'affiancati',mobili:false,note:'Parametri che avevi inserito nella prima versione.',preset:'',p:{...DEF_SP,...b,telL:p.fTelL??50,telH:p.fTelH??50,fuga:p.mont??50,vetL:p.fVetL??10,vetH:p.fVetH??10,minN:1}}]}
-function migraCantiere(c){
+function migraCantiere(c,L){
   if(!(c.sistemi&&c.sistemi.length)){const old=sistemiDaVecchi(c.p);c.sistemi=[...old,...presetSistemi()];
     c.lati.forEach(l=>l.vani.forEach(v=>{v.sistema=v.tipo==='scorrevole'?old[0].id:old[1].id;delete v.tipo}));
     const p=c.p||{};c.p={minMq:p.minMq??0.5,arrot:p.arrot??0,sfrido:p.sfrido??0}}
-  c.p={...DEF_FATT,...c.p};c.sistemi.forEach(x=>x.p={...DEF_SP,...x.p});if(!c.vetri||!c.vetri.length)c.vetri=defVetri();return c}
+  c.sistemi.forEach(x=>x.p={...DEF_SP,...x.p});if(!c.vetri||!c.vetri.length)c.vetri=defVetri();
+  if(!c.prev){c.prev=newPrev(L,[]);if(c.p)c.prev.fatt={...DEF_FATT,minMq:c.p.minMq??DEF_FATT.minMq,arrot:c.p.arrot??0,sfrido:c.p.sfrido??0};
+    c.vetri.forEach(v=>{if(v.prezzo!=null&&v.prezzo!=='')c.prev.prezzi[v.id]=v.prezzo})}
+  c.vetri.forEach(v=>{delete v.prezzo});delete c.p;
+  c.prev={...newPrev(L,[]),...c.prev};c.prev.fatt={...DEF_FATT,...c.prev.fatt};c.prev.prezzi=c.prev.prezzi||{};c.prev.lav=c.prev.lav||[];return c}
 function migraModello(m){if(m.sistemi)return m;
   return{id:m.id,nome:m.nome,sistemi:[...sistemiDaVecchi(m.p),...presetSistemi()],fatt:{minMq:m.p?.minMq??0.5,arrot:m.p?.arrot??0,sfrido:m.p?.sfrido??0}}}
 function migraStato(o){
@@ -384,16 +454,19 @@ function migraStato(o){
     ms.slice(1).forEach(m=>m.sistemi.forEach(s=>{if(!nomi.has(s.nome)){nomi.add(s.nome);base.sistemi.push(clone(s))}}));
     o.predef={sistemi:base.sistemi,fatt:{...DEF_FATT,...(base.fatt||{})}}}
   delete o.modelli;
-  o.predef.fatt={...DEF_FATT,...o.predef.fatt};o.predef.sistemi.forEach(x=>x.p={...DEF_SP,...x.p});
+  o.predef.sistemi.forEach(x=>x.p={...DEF_SP,...x.p});
   o.set={...DEF_SET,...(o.set||{})};
   if(!o.catalogo||!o.catalogo.length)o.catalogo=defVetri();
-  o.cantieri=o.cantieri||[];o.cantieri.forEach(migraCantiere);o.ui=o.ui||{};o.v=2;return o}
+  if(!o.listino){o.listino=newListino(o.predef.fatt);o.catalogo.forEach(v=>{if(v.prezzo!=null&&v.prezzo!=='')o.listino.vetri[v.id]=v.prezzo})}
+  o.listino={...newListino(),...o.listino};o.listino.fatt={...DEF_FATT,...o.listino.fatt};o.listino.vetri=o.listino.vetri||{};o.listino.lav=o.listino.lav||[];
+  o.catalogo.forEach(v=>{delete v.prezzo});delete o.predef.fatt;
+  o.cantieri=o.cantieri||[];o.cantieri.forEach(c=>migraCantiere(c,o.listino));o.ui=o.ui||{};o.v=2;return o}
 
 /* ---------- stato ---------- */
 const KEY='vetrate.v2';
 let S;
-function fresh(){const f={v:2,predef:newPredef(),catalogo:defVetri(),cantieri:[],set:{...DEF_SET},ui:{c:null,tab:'struttura',lato:null,sviluppo:false}};
-  f.cantieri=[esempio(f.predef,f.catalogo)];return f}
+function fresh(){const f={v:2,predef:newPredef(),catalogo:defVetri(),listino:newListino(),cantieri:[],set:{...DEF_SET},ui:{c:null,tab:'struttura',lato:null,sviluppo:false,home:'cantieri'}};
+  f.cantieri=[esempio(f.predef,f.catalogo,f.listino)];return f}
 function load(){let o=null;try{o=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
   if(!(o&&o.v===2&&o.cantieri))return fresh();return migraStato(o)}
 
@@ -411,20 +484,21 @@ async function shareFile(name,obj){
 function readFile(input,fn){const f=input.files&&input.files[0];if(!f)return;const r=new FileReader();
   r.onload=()=>{let o;try{o=JSON.parse(r.result)}catch(e){toast('File non valido');input.value='';return}input.value='';fn(o)};r.readAsText(f)}
 function importCantiere(c){if(!c||!c.lati){toast('Il file non contiene un cantiere');return}
-  c=migraCantiere(clone(c));if(S.cantieri.some(x=>x.id===c.id)){c.id=uid();c.nome+=' (importato)'}
+  c=migraCantiere(clone(c),S.listino);if(S.cantieri.some(x=>x.id===c.id)){c.id=uid();c.nome+=' (importato)'}
   S.cantieri.unshift(c);save();toast('Cantiere importato: '+c.nome);return c}
 async function doBackup(){
-  const ok=await shareFile('vetrate-backup-'+new Date().toISOString().slice(0,10)+'.json',{v:2,tipo:'backup',predef:S.predef,catalogo:S.catalogo,set:{...S.set,lastBackup:null},cantieri:S.cantieri});
+  const ok=await shareFile('vetrate-backup-'+new Date().toISOString().slice(0,10)+'.json',{v:2,tipo:'backup',predef:S.predef,catalogo:S.catalogo,listino:S.listino,set:{...S.set,lastBackup:null,bkDismiss:null},cantieri:S.cantieri});
   if(ok){S.set.lastBackup=Date.now();save();toast('Backup creato')}return ok}
 function restoreBackup(o){
   if(!o||o.v!==2||!o.cantieri||!(o.predef||o.modelli)){toast('Questo file non è un backup completo');return}
-  const keep={...S.set};S=migraStato({v:2,predef:o.predef,modelli:o.modelli,catalogo:o.catalogo,cantieri:o.cantieri,set:{...keep,...(o.set||{}),lastBackup:keep.lastBackup},ui:{c:null,tab:'struttura'}});
+  const keep={...S.set};S=migraStato({v:2,predef:o.predef,modelli:o.modelli,catalogo:o.catalogo,listino:o.listino,cantieri:o.cantieri,set:{...keep,...(o.set||{}),lastBackup:keep.lastBackup},ui:{c:null,tab:'struttura'}});
   save();applySettings();render();toast('Backup ripristinato')}
 function needsBackup(){
   if(!S.cantieri.some(c=>c.nome!=='Veranda di esempio'))return'';
-  const t=S.set.lastBackup;
+  const now=Date.now(),D=14*864e5,t=S.set.lastBackup,x=S.set.bkDismiss;
+  if(x&&now-x<D)return'';
   if(!t)return'Non hai ancora fatto un backup. I cantieri sono salvati solo su questo dispositivo: un file di backup li protegge se cambi iPad o si cancellano i dati.';
-  const d=Math.floor((Date.now()-t)/864e5);return d>=14?`L'ultimo backup è di ${d} giorni fa. Fanne uno nuovo per tenere al sicuro i cantieri.`:''}
+  return now-t>=D?`L'ultimo backup è di ${Math.floor((now-t)/864e5)} giorni fa. Fanne uno nuovo per tenere al sicuro i cantieri.`:''}
 function applySettings(){const r=document.documentElement,t=S.set.tema;
   if(t==='light'||t==='dark')r.setAttribute('data-theme',t);else r.removeAttribute('data-theme');
   r.style.fontSize=S.set.testo==='grande'?'112.5%':''}
@@ -439,6 +513,7 @@ async function copy(text,ta){try{await navigator.clipboard.writeText(text);toast
 const MODO=()=>(S&&S.set&&S.set.arrotVetro)||'decimo';
 const DEC=()=>MODO()==='decimo'?1:0;
 const rv=v=>{const m=MODO();return m==='mm-giu'?Math.floor(v+1e-6):m==='mm'?Math.round(v):Math.round(v*10)/10};
+const fattOf=c=>(c&&c.prev&&c.prev.fatt)||DEF_FATT;
 const sisOf=(c,v)=>c.sistemi.find(s=>s.id===v.sistema)||c.sistemi[0];
 function layout(N,L,Hs,Hd,s,f,kgm){
   const p=s.p,H=x=>Hs+(Hd-Hs)*x/L,panes=[],ded=2*p.gp+p.telH+p.vetH,by=p.gp+p.telH/2+p.vetH/2,luce=L-2*p.gp-p.telL;
@@ -461,7 +536,7 @@ function problems(panes,p){const m=[];
 function compute(v,c){
   const L=num(v.L),Hs=num(v.Hs);let Hd=num(v.Hd);if(!isFinite(Hd))Hd=Hs;
   if(!(L>0&&Hs>0&&Hd>0)||!c.sistemi.length)return{ok:false};
-  const s=sisOf(c,v),p=s.p,f=c.p,gl=c.vetri.find(x=>x.id===v.vetro)||c.vetri[0]||{nome:'—',kg:0},kgm=num(gl.kg)||0,qta=Math.max(1,Math.round(num(v.qta))||1);
+  const s=sisOf(c,v),p=s.p,f=fattOf(c),gl=c.vetri.find(x=>x.id===v.vetro)||c.vetri[0]||{nome:'—',kg:0},kgm=num(gl.kg)||0,qta=Math.max(1,Math.round(num(v.qta))||1);
   let N,panes,auto=v.n==='auto'||!(+v.n>0);
   if(auto){const lo=Math.max(s.schema==='scorrevole'?2:1,p.minN|0),hi=Math.max(lo,p.maxN|0);
     for(N=lo;N<=hi;N++){panes=layout(N,L,Hs,Hd,s,f,kgm);if(!problems(panes,p).some(m=>m[2]!=='h'))break}
@@ -501,25 +576,45 @@ const ICON={
  riepilogo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 3h14v18H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
  parametri:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
  strumenti:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 17L17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></svg>',
+ euro:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17.5 6.6A6.5 6.5 0 0 0 7 12a6.5 6.5 0 0 0 10.5 5.4"/><path d="M4.5 10h8.5M4.5 14h8.5"/></svg>',
  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>',
  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M10.3 3h3.4l.5 2.4 1.7.7 2-1.4 2.4 2.4-1.4 2 .7 1.7 2.4.5v3.4l-2.4.5-.7 1.7 1.4 2-2.4 2.4-2-1.4-1.7.7-.5 2.4h-3.4l-.5-2.4-1.7-.7-2 1.4-2.4-2.4 1.4-2-.7-1.7L3 13.7v-3.4l2.4-.5.7-1.7-1.4-2 2.4-2.4 2 1.4 1.7-.7z"/></svg>',
  logo:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#dfe7ee" stroke-width="1.5"><rect x="3" y="4" width="18" height="16"/><path d="M12 4v16" stroke="#3cc3d8"/><path d="M6 15l3-6" stroke-width="1"/></svg>'
 };
-const APP_VER='7 · 30/10/2026';
+const APP_VER='8 · 30/10/2026';
 const TABS=[['struttura','Struttura'],['vista','Vista'],['riepilogo','Riepilogo'],['parametri','Parametri'],['strumenti','Strumenti']];
-function go(c,tab){S.ui.imp=false;S.ui.c=c;if(tab)S.ui.tab=tab;save();render();window.scrollTo(0,0)}
+function nav(o){Object.assign(S.ui,{imp:false,listino:false,prev:null,c:null},o);save();render();window.scrollTo(0,0)}
+function go(c,tab){nav({c,tab:tab||S.ui.tab})}
+const goPrev=id=>nav({prev:id});
+const goHome=sec=>nav(sec?{home:sec}:{});
+const goListino=()=>nav({listino:true});
 function openSettings(){S.ui.imp=true;save();render();window.scrollTo(0,0)}
 function removeNav(){const n=$('bnav');if(n)n.remove()}
-function render(){if(S.ui.imp)renderSettings();else{const c=C();if(!c){S.ui.c=null;renderHome()}else renderCantiere(c)}paintStatus()}
+function render(){
+  if(S.ui.imp)renderSettings();
+  else if(S.ui.listino)renderListino();
+  else if(S.ui.prev&&S.cantieri.some(c=>c.id===S.ui.prev))renderPrev(S.cantieri.find(c=>c.id===S.ui.prev));
+  else{S.ui.prev=null;const c=C();if(!c){S.ui.c=null;renderHome()}else renderCantiere(c)}
+  paintStatus()}
 
 /* ---------- schermata cantieri ---------- */
 function renderHome(){
-  $('hdr').innerHTML=`<div class="brand"><span class="logo">${ICON.logo}</span><div class="titles"><span class="crumb">Calcolo vetrate</span><h1>Cantieri</h1><span class="sync" id="sync"></span></div>
-    <button class="hbtn" id="setBtn" type="button" aria-label="Impostazioni generali">${ICON.gear}</button></div>`;
+  const sec=S.ui.home==='preventivi'?'preventivi':'cantieri';
+  $('hdr').innerHTML=`<div class="brand"><span class="logo">${ICON.logo}</span><div class="titles"><span class="crumb">Calcolo vetrate</span><h1>${sec==='preventivi'?'Preventivi':'Cantieri'}</h1><span class="sync" id="sync"></span></div>
+    <button class="hbtn" id="setBtn" type="button" aria-label="Impostazioni generali">${ICON.gear}</button></div>
+    <nav class="htabs" role="tablist"><button type="button" role="tab" data-home="cantieri" aria-selected="${sec==='cantieri'}">${ICON.struttura}<span>Cantieri</span></button><button type="button" role="tab" data-home="preventivi" aria-selected="${sec==='preventivi'}">${ICON.euro}<span>Preventivi</span></button></nav>`;
   removeNav();
   const rem=needsBackup();
-  setMain(),$('main').innerHTML=`
-  ${rem?`<section class="card remind"><div class="card-h"><h2>Fai un backup</h2></div><p class="note">${rem}</p><div class="row"><button class="btn primary" id="bkNow" type="button">Fai backup ora</button></div></section>`:''}
+  setMain(),$('main').innerHTML=(rem?`<section class="card remind"><div class="card-h"><h2>Fai un backup</h2><button class="xbtn" id="bkX" type="button" aria-label="Chiudi il promemoria">✕</button></div>
+    <p class="note">${rem}</p><div class="row"><button class="btn primary" id="bkNow" type="button">Fai backup ora</button></div></section>`:'')
+    +(sec==='cantieri'?homeCantieriHTML():homePrevHTML());
+  $('setBtn').onclick=openSettings;
+  document.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>goHome(b.dataset.home));
+  if($('bkNow'))$('bkNow').onclick=()=>doBackup().then(ok=>{if(ok)renderHome()});
+  if($('bkX'))$('bkX').onclick=()=>{S.set.bkDismiss=Date.now();save();renderHome();toast('Te lo ricorderò tra 2 settimane')};
+  if(sec==='cantieri')bindHomeCantieri();else bindHomePrev();
+}
+function homeCantieriHTML(){return`
   <section class="card">${cardH('Nuovo cantiere','nuovo','hp_nuovo')}
     <div class="fields">${fld({id:'ncNome',label:'Nome',attrs:'placeholder="Es. Veranda Rossi"'})}${fld({id:'ncInd',label:'Indirizzo',attrs:'placeholder="Facoltativo"'})}</div>
     <div class="row"><button class="btn primary" id="ncBtn" type="button">+ Crea cantiere</button>
@@ -533,11 +628,10 @@ function renderHome(){
       ${c.indirizzo?`<div class="sub">${esc(c.indirizzo)}</div>`:''}
       <div class="meta"><span><b>${c.lati.length}</b>lati</span><span><b>${t.vani}</b>vani</span><span><b>${t.vetri}</b>vetri</span><span><b>${fmt(t.mq,1)}</b>m²</span></div>
       ${t.warn?`<span class="pill w">${t.warn} avvisi</span>`:''}</div>
-    </button>`}).join('')||'<p class="note">Nessun cantiere: creane uno qui sopra.</p>'}</div>`;
-  $('setBtn').onclick=openSettings;
-  if($('bkNow'))$('bkNow').onclick=()=>doBackup().then(ok=>{if(ok)renderHome()});
+    </button>`}).join('')||'<p class="note">Nessun cantiere: creane uno qui sopra.</p>'}</div>`}
+function bindHomeCantieri(){
   document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>go(b.dataset.open,'struttura'));
-  $('ncBtn').onclick=()=>{const c=newCantiere($('ncNome').value.trim()||'Nuovo cantiere',S.predef,S.catalogo);c.indirizzo=$('ncInd').value.trim();
+  $('ncBtn').onclick=()=>{const c=newCantiere($('ncNome').value.trim()||'Nuovo cantiere',S.predef,S.catalogo,S.listino);c.indirizzo=$('ncInd').value.trim();
     c.lati=[newLato('Lato A',{vani:[newVano('Vano 1',{vetro:c.vetri[0]?.id,sistema:c.sistemi[0]?.id})]})];
     S.cantieri.unshift(c);go(c.id,'struttura')};
   $('impC').onchange=e=>readFile(e.target,o=>{const c=importCantiere(o.cantiere||o);if(c)go(c.id,'struttura')});
@@ -731,27 +825,27 @@ function viewRiepilogo(c){
   let txt=(st.ditta?st.ditta+'\n':'')+(st.contatto?st.contatto+'\n':'')+((st.ditta||st.contatto)?'\n':'')+`CANTIERE: ${c.nome}${c.indirizzo?' – '+c.indirizzo:''}\n`;
   c.lati.forEach((l,li)=>{rows+=`<tr class="grp"><td colspan="7">${letter(li)} · ${esc(l.nome)}</td></tr>`;txt+=`\n== ${letter(li)} · ${l.nome} ==\n`;
     l.vani.forEach(v=>{const r=compute(v,c);if(!r.ok){rows+=`<tr><td class="t l">${esc(v.nome)}</td><td class="t l" colspan="6">Misure incomplete</td></tr>`;return}
-      const g=byG[r.gl.id]||(byG[r.gl.id]={nome:r.gl.nome,n:0,mq:0,fmq:0,kg:0,pr:r.prezzo});g.n+=r.N*r.qta;g.mq+=r.mq;g.fmq+=r.fmq;g.kg+=r.kg;
+      const g=byG[r.gl.id]||(byG[r.gl.id]={nome:r.gl.nome,n:0,mq:0,kg:0});g.n+=r.N*r.qta;g.mq+=r.mq;g.kg+=r.kg;
       txt+=`${v.nome} – ${r.s.nome} – vano ${fmt(r.L)} × ${r.flat?fmt(r.Hs):fmt(r.Hs)+'/'+fmt(r.Hd)}${r.qta>1?' (× '+r.qta+')':''} – ${r.gl.nome}\n`;
       r.panes.forEach(q=>{rows+=`<tr><td class="t l">${esc(v.nome)}</td><td class="l">${q.i}</td><td>${fmt(q.gw,d)}</td><td>${r.flat?fmt(q.hl,d):fmt(q.hl,d)+' / '+fmt(q.hr,d)}</td><td>${r.qta}</td><td>${fmt(q.mq*r.qta,3)}</td><td>${fmt(q.kg*r.qta,1)}</td></tr>`;
         txt+=`  ${q.i}) ${fmt(q.gw,d)} × ${r.flat?fmt(q.hl,d):fmt(q.hl,d)+'/'+fmt(q.hr,d)} mm  ×${r.qta}  ${fmt(q.mq*r.qta,3)} m²\n`})})});
-  txt+=`\nTOTALE: ${t.vetri} vetri · ${fmt(t.mq,2)} m² reali · ${fmt(t.fmq,2)} m² fatturati · ${fmt(t.kg,0)} kg`;
+  txt+=`\nTOTALE: ${t.vetri} vetri · ${fmt(t.mq,2)} m² · ${fmt(t.kg,0)} kg`;
   const gl=Object.values(byG);
-  txt+='\n\nORDINE VETRI:\n'+gl.map(g=>`${g.nome}: ${g.n} pz · ${fmt(g.fmq,2)} m²`).join('\n');
+  txt+='\n\nORDINE VETRI:\n'+gl.map(g=>`${g.nome}: ${g.n} pz · ${fmt(g.mq,2)} m²`).join('\n');
   if(st.noteOrdine)txt+='\n\nNOTE: '+st.noteOrdine;
   setMain(),$('main').innerHTML=`
-  <section class="card">${cardH('Totali cantiere','totali','hp_tot',`<button class="btn primary sm" id="copyAll" type="button">Copia distinta</button>`)}
-    <div class="stats"><div class="stat"><span>Vetri</span><b>${t.vetri}</b></div><div class="stat"><span>m² reali</span><b>${fmt(t.mq,2)}</b></div>
-    <div class="stat"><span>m² da fatturare</span><b>${fmt(t.fmq,2)}</b></div><div class="stat"><span>Peso</span><b>${fmt(t.kg,0)} kg</b></div>
-    ${t.cost>0?`<div class="stat"><span>Costo vetro</span><b>€ ${fmt(t.cost,2)}</b></div>`:''}</div>
+  <section class="card">${cardH('Totali cantiere','totali','hp_tot',`<button class="btn sm" id="toPrev" type="button">Preventivo</button><button class="btn primary sm" id="copyAll" type="button">Copia distinta</button>`)}
+    <div class="stats"><div class="stat"><span>Vani</span><b>${t.vani}</b></div><div class="stat"><span>Vetri</span><b>${t.vetri}</b></div>
+    <div class="stat"><span>m² di vetro</span><b>${fmt(t.mq,2)}</b></div><div class="stat"><span>Peso</span><b>${fmt(t.kg,0)} kg</b></div></div>
     ${t.warn?`<div class="msg">Ci sono ${t.warn} avvisi nei vani: controllali in Struttura.</div>`:''}
     <textarea id="distTa" rows="8" class="num" hidden></textarea></section>
   <section class="card">${cardH('Ordine per tipo di vetro','ordine','hp_ord')}
-    <div class="tablebox"><table><thead><tr><th class="l">Vetro</th><th>Pezzi</th><th>m² reali</th><th>m² fatt.</th><th>kg</th><th>€</th></tr></thead><tbody>
-    ${gl.map(g=>`<tr><td class="t l">${esc(g.nome)}</td><td>${g.n}</td><td>${fmt(g.mq,2)}</td><td>${fmt(g.fmq,2)}</td><td>${fmt(g.kg,0)}</td><td>${g.pr>0?fmt(g.fmq*g.pr,2):'–'}</td></tr>`).join('')}</tbody></table></div></section>
+    <div class="tablebox"><table><thead><tr><th class="l">Vetro</th><th>Pezzi</th><th>m²</th><th>kg</th></tr></thead><tbody>
+    ${gl.map(g=>`<tr><td class="t l">${esc(g.nome)}</td><td>${g.n}</td><td>${fmt(g.mq,2)}</td><td>${fmt(g.kg,0)}</td></tr>`).join('')}</tbody></table></div></section>
   <section class="card">${cardH('Distinta vetri per lato','distinta','hp_dis')}
     <div class="tablebox"><table><thead><tr><th class="l">Vano</th><th class="l">N°</th><th>Larghezza</th><th>Altezza</th><th>Pz</th><th>m²</th><th>kg</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
   $('copyAll').onclick=()=>copy(txt,$('distTa'));
+  $('toPrev').onclick=()=>goPrev(c.id);
 }
 
 /* ---------- editor delle tipologie (cantiere e predefinite) ---------- */
@@ -791,7 +885,7 @@ function tipBody(ctx,s){
    <div class="row"><button class="btn sm" id="tsDup" type="button">Duplica</button>${pr?'<button class="btn sm" id="tsReset" type="button">Ripristina valori preimpostati</button>':''}<button class="btn sm danger" id="tsDel" type="button">Elimina tipologia</button></div>
   </div>`}
 function provaUpdate(ctx){const box=$('provaRes');if(!box)return;const s=tipSel(ctx),P=S.ui.prova;
-  const r=compute({L:P.L,Hs:P.H,Hd:'',qta:'1',sistema:s.id,n:P.n,vetro:ctx.vetri[0]?.id},{sistemi:ctx.h.sistemi,p:ctx.fatt(),vetri:ctx.vetri});
+  const r=compute({L:P.L,Hs:P.H,Hd:'',qta:'1',sistema:s.id,n:P.n,vetro:ctx.vetri[0]?.id},{sistemi:ctx.h.sistemi,prev:{fatt:DEF_FATT},vetri:ctx.vetri});
   if(!r.ok){box.innerHTML='<p class="note">Inserisci larghezza e altezza del vano di prova.</p>';return}
   box.innerHTML=`<div class="thumb">${vanoThumb(r)}</div><div class="prova-tab">${r.msgs.map(([k,t])=>`<div class="msg ${k==='bad'?'bad':''}">${esc(t)}</div>`).join('')}${paneTable(r)}</div>`}
 function bindTip(ctx){
@@ -817,18 +911,17 @@ function bindTip(ctx){
     if(u){toast(`Usata da ${u} ${u===1?'vano':'vani'}: cambia prima la tipologia di quei vani`);return}
     ctx.h.sistemi=ctx.h.sistemi.filter(x=>x!==s);delete S.ui.tipSel[ctx.key];save();rer();toast('Tipologia eliminata')});
   if(ctx.cantiere){const c=ctx.cantiere;
-    armDelete('#tipToPre',()=>{S.predef={sistemi:clone(c.sistemi),fatt:{...c.p}};save();toast('Salvate come predefinite per i nuovi cantieri')});
+    armDelete('#tipToPre',()=>{S.predef={sistemi:clone(c.sistemi)};save();toast('Salvate come predefinite per i nuovi cantieri')});
     armDelete('#tipFromPre',()=>{const nuovi=clone(S.predef.sistemi).map(x=>({...x,id:uid()}));
       c.lati.forEach(l=>l.vani.forEach(v=>{const old=sisOf(c,v);const n=nuovi.find(x=>old&&((x.preset&&x.preset===old.preset)||x.nome===old.nome))||nuovi[0];v.sistema=n.id}));
-      c.sistemi=nuovi;c.p={...DEF_FATT,...S.predef.fatt};delete S.ui.tipSel[ctx.key];save();rer();chg();toast('Tipologie predefinite caricate')})}
+      c.sistemi=nuovi;delete S.ui.tipSel[ctx.key];save();rer();chg();toast('Tipologie predefinite caricate')})}
   provaUpdate(ctx)}
 
 /* ---------- elenco vetri (cantiere e predefiniti) ---------- */
-function vetriHTML(list,key){return`<div data-gk="${key}"><div class="tablebox"><table class="vtab"><thead><tr><th class="l">Nome</th><th>Spessore mm</th><th>kg/m²</th><th>€/m²</th><th></th></tr></thead><tbody>
+function vetriHTML(list,key){return`<div data-gk="${key}"><div class="tablebox"><table class="vtab"><thead><tr><th class="l">Nome</th><th>Spessore mm</th><th>kg/m²</th><th></th></tr></thead><tbody>
   ${list.map(v=>`<tr data-g="${v.id}"><td><input id="${key}n_${v.id}" data-f="nome" value="${esc(v.nome)}" aria-label="Nome del vetro"></td>
     <td><input class="num" id="${key}s_${v.id}" data-f="sp" inputmode="decimal" value="${esc(v.sp)}" aria-label="Spessore"></td>
     <td><input class="num" id="${key}k_${v.id}" data-f="kg" inputmode="decimal" value="${esc(v.kg)}" aria-label="Peso al metro quadro"></td>
-    <td><input class="num" id="${key}p_${v.id}" data-f="prezzo" inputmode="decimal" value="${esc(v.prezzo??'')}" placeholder="–" aria-label="Prezzo al metro quadro"></td>
     <td><button class="btn danger sm" type="button" data-delg="${v.id}" aria-label="Elimina vetro">✕</button></td></tr>`).join('')}</tbody></table></div>
   <div class="row gap-top"><button class="btn" type="button" data-addg>+ Aggiungi vetro</button></div></div>`}
 function bindVetri(holder,prop,key,rerender,onChange){const box=document.querySelector(`[data-gk="${key}"]`);if(!box)return;
@@ -836,11 +929,11 @@ function bindVetri(holder,prop,key,rerender,onChange){const box=document.querySe
     v[f]=f==='nome'?e.target.value:e.target.value.replace(',','.');
     if(f==='sp'){const sp=num(e.target.value);if(sp>0){v.kg=+(sp*2.5).toFixed(1);$(key+'k_'+v.id).value=v.kg}}save();onChange&&onChange()}));
   armDelete(`[data-gk="${key}"] [data-delg]`,b=>{if(holder[prop].length<2){toast('Serve almeno un vetro');return}holder[prop]=holder[prop].filter(v=>v.id!==b.dataset.delg);save();rerender();onChange&&onChange()});
-  box.querySelector('[data-addg]').onclick=()=>{holder[prop].push({id:uid(),nome:'Nuovo vetro',sp:8,kg:20,prezzo:''});save();rerender()}}
+  box.querySelector('[data-addg]').onclick=()=>{holder[prop].push({id:uid(),nome:'Nuovo vetro',sp:8,kg:20});save();rerender()}}
 
 /* ---------- parametri del cantiere ---------- */
 function viewParametri(c){
-  const ctx={key:'c_'+c.id,h:c,cantiere:c,vetri:c.vetri,fatt:()=>c.p,usage:s=>c.lati.reduce((a,l)=>a+l.vani.filter(v=>sisOf(c,v)===s).length,0),
+  const ctx={key:'c_'+c.id,h:c,cantiere:c,vetri:c.vetri,usage:s=>c.lati.reduce((a,l)=>a+l.vani.filter(v=>sisOf(c,v)===s).length,0),
     rerender:()=>viewParametri(c),onChange:()=>updTot(c)};
   setMain(),$('main').innerHTML=`
   <section class="card">${cardH('Dati del cantiere','datiCantiere','hp_dc')}
@@ -849,16 +942,13 @@ function viewParametri(c){
     <label class="chk"><input type="checkbox" id="cpar" ${c.parete?'checked':''}> Veranda addossata a una parete</label>
     <div class="row"><button class="btn primary" id="expC" type="button">Esporta cantiere</button><button class="btn" id="dupC" type="button">Duplica cantiere</button><button class="btn danger" id="delC" type="button">Elimina cantiere</button></div></section>
   ${tipHTML(ctx,'Tipologie di vetrata','tipologie')}
-  <section class="card">${cardH('Fatturazione','fattur','hp_fat')}<div class="fields">
-    ${FATT_FIELDS.map(([k,l,u,h])=>fld({id:'f_'+k,label:l,unit:u,val:c.p[k]??'',help:h,attrs:`data-fk="${k}"`})).join('')}</div></section>
   <section class="card">${cardH('Vetri di questo cantiere','vetri','hp_vc')}${vetriHTML(c.vetri,'gc')}</section>`;
   $('cn').oninput=e=>{c.nome=e.target.value||'Senza nome';save();document.querySelector('h1').textContent=c.nome};
   $('ci').oninput=e=>{c.indirizzo=e.target.value;save();updTot(c)};
   $('cno').oninput=e=>{c.note=e.target.value;save()};
   $('cpar').onchange=e=>{c.parete=e.target.checked;save()};
-  document.querySelectorAll('[data-fk]').forEach(i=>i.addEventListener('input',e=>{const n=num(e.target.value);c.p[e.target.dataset.fk]=isFinite(n)?n:0;save();updTot(c)}));
   $('expC').onclick=()=>shareFile('cantiere-'+fileName(c.nome)+'.json',{v:2,tipo:'cantiere',cantiere:c});
-  $('dupC').onclick=()=>{const n={...clone(c),id:uid(),nome:c.nome+' (copia)'};S.cantieri.unshift(n);go(n.id,'struttura');toast('Cantiere duplicato')};
+  $('dupC').onclick=()=>{const n={...clone(c),id:uid(),nome:c.nome+' (copia)'};n.prev={...n.prev,stato:'bozza',numero:''};S.cantieri.unshift(n);go(n.id,'struttura');toast('Cantiere duplicato')};
   armDelete('#delC',()=>{S.cantieri=S.cantieri.filter(x=>x!==c);go(null);toast('Cantiere eliminato')});
   bindTip(ctx);
   bindVetri(c,'vetri','gc',()=>viewParametri(c),()=>updTot(c));
@@ -910,13 +1000,171 @@ function viewStrumenti(c){
   run();
 }
 
+/* ---------- preventivi ---------- */
+const STATI=[['bozza','Bozza'],['inviato','Inviato'],['accettato','Accettato'],['rifiutato','Rifiutato']];
+const statoPill=s=>{const m={bozza:'fix',inviato:'mob',accettato:'ok',rifiutato:'b'};return`<span class="pill ${m[s]||'fix'}">${(STATI.find(x=>x[0]===s)||STATI[0])[1]}</span>`};
+const fmtData=d=>{if(!d)return'';const[y,m,g]=String(d).split('-');return g?`${g}/${m}/${y}`:String(d)};
+const fmtE=n=>(isFinite(n)?n:0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2,useGrouping:'always'});
+const eur=n=>'€ '+fmtE(n||0);
+const fmtQ=n=>isFinite(n)?n.toLocaleString('it-IT',{maximumFractionDigits:2}):'–';
+function prevCalc(c){
+  if(!c.prev)c.prev=newPrev(S.listino,c.vetri);
+  const pv=c.prev,byG={};let mq=0,vani=0;
+  c.lati.forEach(l=>l.vani.forEach(v=>{vani++;const r=compute(v,c);if(!r.ok)return;mq+=r.mq;
+    const g=byG[r.gl.id]||(byG[r.gl.id]={id:r.gl.id,nome:r.gl.nome,n:0,mq:0,fmq:0});g.n+=r.N*r.qta;g.mq+=r.mq;g.fmq+=r.fmq}));
+  const vetri=Object.values(byG).map(g=>{const pr=num(pv.prezzi[g.id]);return{...g,pr,imp:pr>0?pr*g.fmq:0}});
+  const lav=pv.lav.map(x=>({...x,imp:(num(x.qta)||0)*(num(x.prezzo)||0)}));
+  const totV=vetri.reduce((a,g)=>a+g.imp,0),totL=lav.reduce((a,x)=>a+x.imp,0),imp=totV+totL;
+  const sc=imp*(num(pv.sconto)||0)/100,base=imp-sc,iva=base*(num(pv.iva)||0)/100;
+  return{pv,vetri,lav,totV,totL,imp,sc,base,iva,tot:base+iva,mq,vani,mlin:c.lati.reduce((a,l)=>a+latoLen(l),0)/1000,mancanti:vetri.filter(g=>!(g.pr>0)).length}}
+function homePrevHTML(){
+  const rows=S.cantieri.map(c=>({c,k:prevCalc(c)}));
+  const sum=st=>rows.filter(r=>r.k.pv.stato===st).reduce((a,r)=>a+r.k.tot,0);
+  const filt=S.ui.pvFilt||'tutti',list=rows.filter(r=>filt==='tutti'||r.k.pv.stato===filt);
+  return`<section class="card">${cardH('Riepilogo','prevLista','hp_pl',`<button class="btn sm" id="listBtn" type="button">Listino prezzi</button>`)}
+    <div class="stats"><div class="stat"><span>Accettati</span><b>${eur(sum('accettato'))}</b></div><div class="stat"><span>Inviati, in attesa</span><b>${eur(sum('inviato'))}</b></div><div class="stat"><span>In bozza</span><b>${eur(sum('bozza'))}</b></div></div></section>
+  <div class="sec"><h2>Preventivi</h2>${seg('pvFilt',filt,[['tutti','Tutti'],['bozza','Bozze'],['inviato','Inviati'],['accettato','Accettati'],['rifiutato','Rifiutati']])}</div>
+  <div class="plist">${list.map(({c,k})=>`<button class="card pcard" data-prev="${c.id}" type="button">
+      <div class="pc-top"><h2>${esc(c.nome)}</h2>${statoPill(k.pv.stato)}</div>
+      <div class="sub">${k.pv.cliente?esc(k.pv.cliente):'Cliente non indicato'}${k.pv.numero?' · n. '+esc(k.pv.numero):''}${k.pv.data?' · '+fmtData(k.pv.data):''}</div>
+      <div class="pc-tot"><span>Totale IVA inclusa</span><b>${eur(k.tot)}</b></div>
+      ${k.mancanti?`<span class="pill w">${k.mancanti} ${k.mancanti===1?'prezzo mancante':'prezzi mancanti'}</span>`:''}
+    </button>`).join('')||'<p class="note">Nessun preventivo con questo stato.</p>'}</div>`}
+function bindHomePrev(){
+  $('listBtn').onclick=goListino;
+  $('pvFilt').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.ui.pvFilt=b.dataset.v;save();renderHome()});
+  document.querySelectorAll('[data-prev]').forEach(b=>b.onclick=()=>goPrev(b.dataset.prev));
+}
+function renderPrev(c){
+  const pv=prevCalc(c).pv;
+  $('hdr').innerHTML=`<div class="brand"><button class="back" id="backBtn" type="button" aria-label="Torna ai preventivi">${ICON.back}</button>
+    <div class="titles"><span class="crumb">Preventivo</span><h1>${esc(c.nome)}</h1><div class="sub" id="pvSub"></div></div>
+    <button class="hbtn" id="setBtn" type="button" aria-label="Impostazioni generali">${ICON.gear}</button></div>`;
+  removeNav();
+  setMain(),$('main').innerHTML=`
+  <section class="card">${cardH('Dati del preventivo','prevDati','hp_pd',`<button class="btn sm" id="openC" type="button">Apri cantiere</button>`)}
+    <div class="fields">${fld({id:'pvCli',label:'Cliente',val:pv.cliente,wide:true,attrs:'placeholder="Nome e cognome o ragione sociale"'})}
+      ${fld({id:'pvNum',label:'Numero',val:pv.numero,attrs:'placeholder="Es. 12/2026"'})}
+      ${fld({id:'pvData',label:'Data',ctrl:`<input type="date" id="pvData" value="${esc(pv.data)}">`})}
+      ${fld({id:'pvVal',label:'Validità',unit:'giorni',val:pv.validita})}</div>
+    <div class="setrow"><span class="setl">Stato</span>${seg('pvStato',pv.stato,STATI)}</div>
+  </section>
+  <section class="card">${cardH('Vetri','prevVetri','hp_pv',`<button class="btn sm" id="pvFromList" type="button">Prezzi dal listino</button>`)}
+    <div id="pvVetri"></div>
+    <details class="regole"><summary>Regole di calcolo dei m²</summary><div class="fields">
+      ${FATT_FIELDS.map(([k,l,u,h])=>fld({id:'pf_'+k,label:l,unit:u,val:pv.fatt[k]??'',help:h,attrs:`data-pf="${k}"`})).join('')}</div></details>
+  </section>
+  <section class="card">${cardH('Altre lavorazioni','prevLav','hp_plv')}
+    <div id="pvLav" class="lav-list"></div>
+    <div class="row"><button class="btn" id="lavAdd" type="button">+ Aggiungi lavorazione</button></div>
+    ${S.listino.lav.length?`<div class="quick"><span class="qlbl">Dal listino</span>${S.listino.lav.map(l=>`<button class="chip" type="button" data-ql="${l.id}">+ ${esc(l.desc||'Lavorazione')}</button>`).join('')}</div>`:''}
+  </section>
+  <section class="card">${cardH('Totale','prevTot','hp_pt')}
+    <div class="fields">${fld({id:'pvSc',label:'Sconto',unit:'%',val:pv.sconto})}${fld({id:'pvIva',label:'IVA',unit:'%',val:pv.iva})}</div>
+    <dl class="kv tot" id="pvTot"></dl>
+  </section>
+  <section class="card">${cardH('Note','prevNote','hp_pn')}
+    ${fld({id:'pvNote',label:'Note per il cliente',ctrl:`<textarea id="pvNote" rows="3" placeholder="Es. tempi di consegna, esclusioni, modalità di pagamento">${esc(pv.note)}</textarea>`})}
+    ${fld({id:'pvInt',label:'Note interne',ctrl:`<textarea id="pvInt" rows="2" placeholder="Restano solo nell'app e non finiscono nel preventivo">${esc(pv.interne||'')}</textarea>`})}
+    <div class="row"><button class="btn primary" id="pvCopy" type="button">Copia preventivo</button></div>
+    <textarea id="pvTa" rows="10" class="num" hidden></textarea>
+  </section>`;
+  $('backBtn').onclick=()=>goHome('preventivi');$('setBtn').onclick=openSettings;$('openC').onclick=()=>go(c.id,'struttura');
+  const bindTxt=(id,key,tot)=>$(id).addEventListener('input',e=>{pv[key]=e.target.value;save();if(tot)paintPrevTot(c)});
+  bindTxt('pvCli','cliente');bindTxt('pvNum','numero');bindTxt('pvVal','validita');bindTxt('pvSc','sconto',1);bindTxt('pvIva','iva',1);bindTxt('pvNote','note');bindTxt('pvInt','interne');
+  $('pvData').addEventListener('change',e=>{pv.data=e.target.value;save()});
+  $('pvStato').querySelectorAll('button').forEach(b=>b.onclick=()=>{pv.stato=b.dataset.v;save();$('pvStato').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));paintPrevTot(c)});
+  document.querySelectorAll('[data-pf]').forEach(i=>i.addEventListener('input',e=>{const n=num(e.target.value);pv.fatt[e.target.dataset.pf]=isFinite(n)?n:0;save();paintPrevVetri(c);paintPrevTot(c)}));
+  armDelete('#pvFromList',()=>{const k=prevCalc(c);let n=0;
+    k.vetri.forEach(g=>{const cat=S.catalogo.find(x=>x.id===g.id)||S.catalogo.find(x=>x.nome===g.nome);const p=cat&&S.listino.vetri[cat.id];if(p!=null&&p!==''){pv.prezzi[g.id]=p;n++}});
+    save();paintPrevVetri(c);paintPrevTot(c);toast(n?`Prezzi aggiornati: ${n}`:'Il listino non ha prezzi per questi vetri')});
+  $('lavAdd').onclick=()=>{const x={id:uid(),desc:'',qta:'1',um:'pz',prezzo:''};pv.lav.push(x);save();paintPrevLav(c);paintPrevTot(c);const e=$('ld_'+x.id);if(e)e.focus()};
+  const qDef=(k,um)=>um==='m²'?+k.mq.toFixed(2):um==='m'?+k.mlin.toFixed(2):um==='pz'?k.vani:1;
+  document.querySelectorAll('[data-ql]').forEach(b=>b.onclick=()=>{const L=S.listino.lav.find(x=>x.id===b.dataset.ql);if(!L)return;const k=prevCalc(c);
+    pv.lav.push({id:uid(),desc:L.desc,qta:String(qDef(k,L.um)).replace('.',','),um:L.um,prezzo:L.prezzo});save();paintPrevLav(c);paintPrevTot(c);toast('Aggiunta: '+(L.desc||'lavorazione'))});
+  $('pvCopy').onclick=()=>copy(prevText(c),$('pvTa'));
+  paintPrevVetri(c);paintPrevLav(c);paintPrevTot(c);
+}
+function paintPrevVetri(c){const k=prevCalc(c),box=$('pvVetri');if(!box)return;
+  if(!k.vetri.length){box.innerHTML='<p class="note">Nessun vetro: inserisci le misure dei vani nel cantiere.</p>';return}
+  box.innerHTML=`<div class="pv-list"><div class="pv-row pv-h"><span>Vetro</span><span>€/m²</span><span>Importo</span></div>
+    ${k.vetri.map(g=>`<div class="pv-row"><div class="pv-n">${esc(g.nome)}<small>${g.n} pz · ${fmt(g.fmq,2)} m²</small></div>
+      <div class="unit pv-p"><input class="num" id="pz_${g.id}" data-gid="${g.id}" inputmode="decimal" value="${esc(c.prev.prezzi[g.id]??'')}" placeholder="–" aria-label="Prezzo al metro quadro di ${esc(g.nome)}"><span>€</span></div>
+      <span class="pv-i" id="pi_${g.id}">${g.pr>0?fmtE(g.imp):'–'}</span></div>`).join('')}
+    <div class="pv-row pv-f"><span>Totale vetri</span><span id="pvTV">${fmtE(k.totV)}</span></div></div>`;
+  box.querySelectorAll('[data-gid]').forEach(i=>i.addEventListener('input',e=>{c.prev.prezzi[e.target.dataset.gid]=e.target.value.replace(',','.');save();refreshPrev(c)}))}
+function paintPrevLav(c){const box=$('pvLav');if(!box)return;const pv=c.prev;
+  if(!pv.lav.length){box.innerHTML='<p class="note">Nessuna lavorazione. Aggiungine una o sceglila dal listino.</p>';return}
+  box.innerHTML=pv.lav.map(x=>`<div class="lav-row" data-lid="${x.id}">
+    <input class="lv-d" id="ld_${x.id}" data-lf="desc" value="${esc(x.desc)}" placeholder="Descrizione" aria-label="Descrizione">
+    <input class="num lv-q" id="lq_${x.id}" data-lf="qta" inputmode="decimal" value="${esc(x.qta)}" placeholder="Q.tà" aria-label="Quantità">
+    <select class="lv-u" id="lu_${x.id}" data-lf="um" aria-label="Unità di misura">${UM.map(u=>`<option ${u===x.um?'selected':''}>${u}</option>`).join('')}</select>
+    <div class="unit lv-p"><input class="num" id="lpr_${x.id}" data-lf="prezzo" inputmode="decimal" value="${esc(x.prezzo)}" placeholder="Prezzo" aria-label="Prezzo unitario"><span>€</span></div>
+    <span class="lv-i" id="li_${x.id}">${fmtE((num(x.qta)||0)*(num(x.prezzo)||0))}</span>
+    <button class="btn danger sm lv-x" type="button" data-ldel="${x.id}" aria-label="Elimina lavorazione">✕</button></div>`).join('');
+  box.querySelectorAll('[data-lf]').forEach(i=>i.addEventListener(i.tagName==='SELECT'?'change':'input',e=>{const x=pv.lav.find(y=>y.id===e.target.closest('[data-lid]').dataset.lid);x[e.target.dataset.lf]=e.target.value;save();refreshPrev(c)}));
+  armDelete('#pvLav [data-ldel]',b=>{pv.lav=pv.lav.filter(y=>y.id!==b.dataset.ldel);save();paintPrevLav(c);paintPrevTot(c)})}
+function refreshPrev(c){const k=prevCalc(c);
+  k.vetri.forEach(g=>{const e=$('pi_'+g.id);if(e)e.textContent=g.pr>0?fmtE(g.imp):'–'});const tv=$('pvTV');if(tv)tv.textContent=fmtE(k.totV);
+  k.lav.forEach(x=>{const e=$('li_'+x.id);if(e)e.textContent=fmtE(x.imp)});paintPrevTot(c,k)}
+function paintPrevTot(c,k){k=k||prevCalc(c);const pv=k.pv,t=$('pvTot');
+  if(t)t.innerHTML=kv([['Vetri',eur(k.totV)],['Altre lavorazioni',eur(k.totL)],['Imponibile',eur(k.imp)],
+    ...(k.sc>0?[[`Sconto ${fmtQ(num(pv.sconto))}%`,'− '+eur(k.sc)],['Imponibile scontato',eur(k.base)]]:[]),[`IVA ${fmtQ(num(pv.iva)||0)}%`,eur(k.iva)],['Totale',eur(k.tot)]]);
+  const s=$('pvSub');if(s)s.textContent=`${(STATI.find(x=>x[0]===pv.stato)||STATI[0])[1]} · Totale ${eur(k.tot)}${k.mancanti?` · ${k.mancanti} ${k.mancanti===1?'prezzo mancante':'prezzi mancanti'}`:''}`}
+function prevText(c){const k=prevCalc(c),pv=k.pv,st=S.set;let t='';
+  if(st.ditta)t+=st.ditta+'\n';if(st.contatto)t+=st.contatto+'\n';if(t)t+='\n';
+  t+=`PREVENTIVO${pv.numero?' n. '+pv.numero:''}${pv.data?' del '+fmtData(pv.data):''}\n`;
+  if(pv.cliente)t+=`Cliente: ${pv.cliente}\n`;
+  t+=`Lavoro: ${c.nome}${c.indirizzo?' – '+c.indirizzo:''}\n`;
+  if(k.vetri.length){t+='\nVETRI\n';k.vetri.forEach(g=>{t+=`- ${g.nome}: ${g.n} pz, ${fmt(g.fmq,2)} m²${g.pr>0?` × ${eur(g.pr)} = ${eur(g.imp)}`:''}\n`})}
+  if(k.lav.length){t+='\nALTRE LAVORAZIONI\n';k.lav.forEach(x=>{t+=`- ${x.desc||'Lavorazione'}: ${fmtQ(num(x.qta)||0)} ${x.um} × ${eur(num(x.prezzo)||0)} = ${eur(x.imp)}\n`})}
+  t+=`\nImponibile: ${eur(k.imp)}\n`;
+  if(k.sc>0)t+=`Sconto ${fmtQ(num(pv.sconto))}%: − ${eur(k.sc)}\nImponibile scontato: ${eur(k.base)}\n`;
+  t+=`IVA ${fmtQ(num(pv.iva)||0)}%: ${eur(k.iva)}\nTOTALE: ${eur(k.tot)}\n`;
+  if(num(pv.validita)>0)t+=`\nValidità dell'offerta: ${pv.validita} giorni\n`;
+  if(pv.note)t+=`\nNote: ${pv.note}\n`;
+  return t}
+function renderListino(){
+  const L=S.listino;
+  $('hdr').innerHTML=`<div class="brand"><button class="back" id="backBtn" type="button" aria-label="Torna ai preventivi">${ICON.back}</button>
+    <div class="titles"><span class="crumb">Preventivi</span><h1>Listino prezzi</h1><span class="sync" id="sync"></span></div>
+    <button class="hbtn" id="setBtn" type="button" aria-label="Impostazioni generali">${ICON.gear}</button></div>`;
+  removeNav();
+  setMain(),$('main').innerHTML=`
+  <section class="card">${cardH('Prezzi dei vetri','listVetri','hp_lv')}
+    <div class="tablebox"><table class="pvtab"><thead><tr><th class="l">Vetro</th><th>€/m²</th></tr></thead><tbody>
+    ${S.catalogo.map(v=>`<tr><td class="t l">${esc(v.nome)}</td><td><input class="num" id="lv_${v.id}" data-lv="${v.id}" inputmode="decimal" value="${esc(L.vetri[v.id]??'')}" placeholder="–" aria-label="Prezzo al metro quadro di ${esc(v.nome)}"></td></tr>`).join('')}</tbody></table></div>
+    <p class="note">L'elenco dei vetri si modifica in Impostazioni generali › Vetri predefiniti.</p></section>
+  <section class="card">${cardH('Lavorazioni frequenti','listLav','hp_ll')}
+    <div id="llav" class="lav-list"></div><div class="row"><button class="btn" id="llAdd" type="button">+ Aggiungi lavorazione</button></div></section>
+  <section class="card">${cardH('Valori di partenza dei preventivi','listAltro','hp_la')}
+    <div class="fields">${fld({id:'lIva',label:'IVA',unit:'%',val:L.iva})}${fld({id:'lVal',label:'Validità',unit:'giorni',val:L.validita})}
+      ${FATT_FIELDS.map(([k,l,u,h])=>fld({id:'lf_'+k,label:l,unit:u,val:L.fatt[k]??'',help:h,attrs:`data-lfk="${k}"`})).join('')}</div>
+    ${fld({id:'lCond',label:'Note standard per il cliente',ctrl:`<textarea id="lCond" rows="3" placeholder="Es. pagamento 40% all'ordine e saldo a fine lavori">${esc(L.cond)}</textarea>`})}
+  </section>`;
+  $('backBtn').onclick=()=>goHome('preventivi');$('setBtn').onclick=openSettings;
+  document.querySelectorAll('[data-lv]').forEach(i=>i.addEventListener('input',e=>{L.vetri[e.target.dataset.lv]=e.target.value.replace(',','.');save()}));
+  $('lIva').oninput=e=>{L.iva=e.target.value;save()};$('lVal').oninput=e=>{L.validita=e.target.value;save()};$('lCond').oninput=e=>{L.cond=e.target.value;save()};
+  document.querySelectorAll('[data-lfk]').forEach(i=>i.addEventListener('input',e=>{const n=num(e.target.value);L.fatt[e.target.dataset.lfk]=isFinite(n)?n:0;save()}));
+  $('llAdd').onclick=()=>{const x={id:uid(),desc:'',um:'pz',prezzo:''};L.lav.push(x);save();paintListLav();const e=$('lld_'+x.id);if(e)e.focus()};
+  paintListLav();
+}
+function paintListLav(){const L=S.listino,box=$('llav');if(!box)return;
+  box.innerHTML=L.lav.length?L.lav.map(x=>`<div class="lav-row lst" data-llid="${x.id}">
+    <input class="lv-d" id="lld_${x.id}" data-llf="desc" value="${esc(x.desc)}" placeholder="Descrizione" aria-label="Descrizione">
+    <select class="lv-u" id="llu_${x.id}" data-llf="um" aria-label="Unità di misura">${UM.map(u=>`<option ${u===x.um?'selected':''}>${u}</option>`).join('')}</select>
+    <div class="unit lv-p"><input class="num" id="llp_${x.id}" data-llf="prezzo" inputmode="decimal" value="${esc(x.prezzo)}" placeholder="Prezzo" aria-label="Prezzo unitario"><span>€</span></div>
+    <button class="btn danger sm lv-x" type="button" data-lldel="${x.id}" aria-label="Elimina lavorazione">✕</button></div>`).join(''):'<p class="note">Nessuna lavorazione nel listino.</p>';
+  box.querySelectorAll('[data-llf]').forEach(i=>i.addEventListener(i.tagName==='SELECT'?'change':'input',e=>{const x=L.lav.find(y=>y.id===e.target.closest('[data-llid]').dataset.llid);x[e.target.dataset.llf]=e.target.value;save()}));
+  armDelete('#llav [data-lldel]',b=>{L.lav=L.lav.filter(y=>y.id!==b.dataset.lldel);save();paintListLav()})}
+
 /* ---------- impostazioni generali ---------- */
 function renderSettings(){
   $('hdr').innerHTML=`<div class="brand"><button class="back" id="backBtn" type="button" aria-label="Indietro">${ICON.back}</button>
     <div class="titles"><span class="crumb">Calcolo vetrate</span><h1>Impostazioni generali</h1><span class="sync" id="sync"></span></div></div>`;
   removeNav();
   const st=S.set;let kb=0;try{kb=Math.max(1,Math.round((localStorage.getItem(KEY)||'').length/1024))}catch(e){}
-  const ctx={key:'predef',h:S.predef,cantiere:null,vetri:S.catalogo,fatt:()=>S.predef.fatt,usage:null,rerender:renderSettings,onChange:null};
+  const ctx={key:'predef',h:S.predef,cantiere:null,vetri:S.catalogo,usage:null,rerender:renderSettings,onChange:null};
   setMain(),$('main').innerHTML=`
   <section class="card">${cardH('Aspetto','aspetto','hp_asp')}
     <div class="setrow"><span class="setl">Tema</span>${seg('sTema',st.tema,[['auto','Automatico'],['light','Chiaro'],['dark','Scuro']])}</div>
@@ -926,13 +1174,11 @@ function renderSettings(){
   <section class="card">${cardH('Misure dei vetri','arrot','hp_arr')}
     <div class="setrow"><span class="setl">Arrotonda le misure di taglio</span>${seg('sArr',st.arrotVetro,[['decimo','Al decimo di mm'],['mm-giu','Al mm per difetto'],['mm','Al mm più vicino']])}</div>
   </section>
-  <section class="card">${cardH('Intestazione della distinta','intest','hp_int')}
+  <section class="card">${cardH('Dati della ditta','intest','hp_int')}
     <div class="fields">${fld({id:'sDitta',label:'Ditta',val:st.ditta,attrs:'placeholder="Es. Rossi Serramenti"'})}${fld({id:'sCont',label:'Contatto',val:st.contatto,attrs:'placeholder="Telefono o email"'})}</div>
     ${fld({id:'sNote',label:'Note per il vetraio',ctrl:`<textarea id="sNote" rows="2" placeholder="Es. filo lucido, consegna in cantiere">${esc(st.noteOrdine)}</textarea>`})}
   </section>
   ${tipHTML(ctx,'Tipologie predefinite','tipPredef')}
-  <section class="card">${cardH('Fatturazione predefinita','fatturPre','hp_fpre')}<div class="fields">
-    ${FATT_FIELDS.map(([k,l,u,h])=>fld({id:'pf_'+k,label:l,unit:u,val:S.predef.fatt[k]??'',help:h,attrs:`data-pfk="${k}"`})).join('')}</div></section>
   <section class="card">${cardH('Vetri predefiniti','vetriPre','hp_vpre')}${vetriHTML(S.catalogo,'gv')}</section>
   <section class="card">${cardH('Dati e backup','backup','hp_bk')}
     <dl class="kv"><dt>Ultimo backup</dt><dd>${st.lastBackup?new Date(st.lastBackup).toLocaleDateString('it-IT'):'mai'}</dd><dt>Cantieri salvati</dt><dd>${S.cantieri.length}</dd><dt>Spazio usato</dt><dd>${kb} KB</dd></dl>
@@ -949,7 +1195,6 @@ function renderSettings(){
   const segBind=(id,fn)=>$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{fn(b.dataset.v);save();applySettings();renderSettings()});
   segBind('sTema',v=>st.tema=v);segBind('sTesto',v=>st.testo=v);segBind('sAiuti',v=>st.aiuti=v==='1');segBind('sArr',v=>st.arrotVetro=v);
   $('sDitta').oninput=e=>{st.ditta=e.target.value;save()};$('sCont').oninput=e=>{st.contatto=e.target.value;save()};$('sNote').oninput=e=>{st.noteOrdine=e.target.value;save()};
-  document.querySelectorAll('[data-pfk]').forEach(i=>i.addEventListener('input',e=>{const n=num(e.target.value);S.predef.fatt[e.target.dataset.pfk]=isFinite(n)?n:0;save();provaUpdate(ctx)}));
   bindTip(ctx);
   bindVetri(S,'catalogo','gv',renderSettings,null);
   $('bkBtn').onclick=()=>doBackup().then(ok=>{if(ok)renderSettings()});
@@ -976,7 +1221,6 @@ if('serviceWorker' in navigator){
 }
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 })();
-
 </script>
 
 </body>
