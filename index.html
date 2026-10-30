@@ -775,7 +775,7 @@ const ICON={
  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M10.3 3h3.4l.5 2.4 1.7.7 2-1.4 2.4 2.4-1.4 2 .7 1.7 2.4.5v3.4l-2.4.5-.7 1.7 1.4 2-2.4 2.4-2-1.4-1.7.7-.5 2.4h-3.4l-.5-2.4-1.7-.7-2 1.4-2.4-2.4 1.4-2-.7-1.7L3 13.7v-3.4l2.4-.5.7-1.7-1.4-2 2.4-2.4 2 1.4 1.7-.7z"/></svg>',
  logo:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#dfe7ee" stroke-width="1.5"><rect x="3" y="4" width="18" height="16"/><path d="M12 4v16" stroke="#3cc3d8"/><path d="M6 15l3-6" stroke-width="1"/></svg>'
 };
-const APP_VER='13 · 30/10/2026';
+const APP_VER='14 · 30/10/2026';
 const TABS=[['struttura','Struttura'],['vista','Vista'],['riepilogo','Riepilogo'],['dati','Dati'],['strumenti','Strumenti']];
 function nav(o){Object.assign(S.ui,{imp:false,listino:false,prev:null,c:null},o);save();render();window.scrollTo(0,0)}
 function go(c,tab){nav({c,tab:tab||S.ui.tab})}
@@ -969,19 +969,20 @@ function bindStruttura(c){
 /* ---------- disegni ---------- */
 function vanoThumb(r){
   if(!r.ok)return'<span class="note">Inserisci le misure</span>';
-  const L=r.L,Hm=Math.max(r.Hs,r.Hd),fs=Math.max(L,Hm)/14,Y=h=>Hm-h,pad=fs*1.6;
-  let g=`<svg viewBox="${-pad} ${-fs*0.6} ${L+pad*1.4} ${Hm+fs*3.1}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anteprima del vano">`;
+  const L=r.L,Hm=Math.max(r.Hs,r.Hd),fs=Math.max(L,Hm)/14,Y=h=>Hm-h,pad=fs*1.6,sl=!r.flat,padR=sl?pad*1.15:pad*0.4;
+  let g=`<svg viewBox="${-pad} ${-fs*0.6} ${L+pad+padR} ${Hm+fs*3.1}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anteprima del vano">`;
   g+=`<polygon points="0,${Y(0)} ${L},${Y(0)} ${L},${Y(r.Hd)} 0,${Y(r.Hs)}" fill="none" stroke="var(--ink)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`;
   const sc=r.s.schema==='scorrevole';
   r.panes.forEach((q,k)=>{const b=q.by,fill=sc&&k%2?'var(--glass-2)':'var(--glass)';
     g+=`<polygon points="${q.gx},${Y(b)} ${q.gx+q.gw},${Y(b)} ${q.gx+q.gw},${Y(b+q.hr)} ${q.gx},${Y(b+q.hl)}" fill="${fill}" fill-opacity="${sc?.85:1}" stroke="var(--accent)" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
     g+=`<text x="${q.gx+q.gw/2}" y="${Y(b+(q.hl+q.hr)/4)}" font-size="${fs*0.8}" text-anchor="middle" dominant-baseline="middle" fill="var(--ink)" font-family="IBM Plex Mono,monospace" font-weight="600">${q.i}</text>`});
   if(r.s.mobili&&r.verso){const ya=Y(Math.min(r.Hs,r.Hd)*0.2);versoSegs(r.verso).forEach(([a,b])=>{g+=frecciaSvg(a*L,b*L,ya,fs*0.55)})}
+  const Q='stroke="var(--hi)" stroke-width="1" vector-effect="non-scaling-stroke"',T=`font-size="${fs*0.75}" text-anchor="middle" fill="var(--hi)" font-family="IBM Plex Mono,monospace"`;
   const yb=Hm+fs*0.9;
-  g+=`<path d="M0 ${yb-fs*.3}V${yb+fs*.3}M${L} ${yb-fs*.3}V${yb+fs*.3}M0 ${yb}H${L}" stroke="var(--hi)" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
-  g+=`<text x="${L/2}" y="${yb+fs*1.15}" font-size="${fs*0.75}" text-anchor="middle" fill="var(--hi)" font-family="IBM Plex Mono,monospace">${fmt(L)}</text>`;
-  const xl=-fs*0.7;g+=`<path d="M${xl-fs*.3} ${Y(0)}H${xl+fs*.3}M${xl-fs*.3} ${Y(r.Hs)}H${xl+fs*.3}M${xl} ${Y(0)}V${Y(r.Hs)}" stroke="var(--hi)" stroke-width="1" vector-effect="non-scaling-stroke"/>`;
-  g+=`<text x="${xl-fs*0.35}" y="${Y(r.Hs/2)}" font-size="${fs*0.75}" text-anchor="middle" fill="var(--hi)" font-family="IBM Plex Mono,monospace" transform="rotate(-90 ${xl-fs*0.35} ${Y(r.Hs/2)})">${fmt(r.Hs)}</text>`;
+  g+=`<path d="M0 ${yb-fs*.3}V${yb+fs*.3}M${L} ${yb-fs*.3}V${yb+fs*.3}M0 ${yb}H${L}" ${Q}/><text x="${L/2}" y="${yb+fs*1.15}" ${T}>${fmt(L)}</text>`;
+  const qv=(xd,h,tx)=>`<path d="M${xd-fs*.3} ${Y(0)}H${xd+fs*.3}M${xd-fs*.3} ${Y(h)}H${xd+fs*.3}M${xd} ${Y(0)}V${Y(h)}" ${Q}/><text x="${tx}" y="${Y(h/2)}" ${T} transform="rotate(-90 ${tx} ${Y(h/2)})">${fmt(h)}</text>`;
+  g+=qv(-fs*0.7,r.Hs,-fs*1.05);
+  if(sl)g+=qv(L+fs*0.7,r.Hd,L+fs*1.6);
   return g+'</svg>';
 }
 function planSvg(c,sel,mini){
@@ -1011,26 +1012,36 @@ function planSvg(c,sel,mini){
 function elevSvg(c,lati,multi){
   let Hm=0;lati.forEach(l=>l.vani.forEach(v=>{const a=num(v.Hs),b=isFinite(num(v.Hd))?num(v.Hd):a;if(a>0)Hm=Math.max(Hm,a,b)}));
   if(!Hm)return'<p class="note">Inserisci le misure dei vani per vedere il prospetto.</p>';
-  const fs=Hm/18,gap=multi?Hm*0.35:0;let x=0,body='';
-  lati.forEach(l=>{const x0=x,pil=num(l.pil)||0;
-    l.vani.forEach((v,vi)=>{const r=compute(v,c);const L=num(v.L);if(!(L>0))return;
-      const Hs=num(v.Hs)||0,Hd=isFinite(num(v.Hd))?num(v.Hd):Hs,Y=h=>Hm-h;
-      if(vi>0&&pil>0)body+=`<rect x="${x-pil}" y="${Y(Math.max(Hs,Hd))}" width="${pil}" height="${Math.max(Hs,Hd)}" fill="var(--line)"/>`;
+  const fs=Hm/18,tz=fs*0.72,dO=fs*0.45,tO=fs*0.3,DW=dO+tO+tz*0.75+fs*0.4,gap=multi?Hm*0.35:0,Y=h=>Hm-h;
+  const Q='stroke="var(--hi)" stroke-width="1" vector-effect="non-scaling-stroke"',TQ=`font-size="${tz}" text-anchor="middle" fill="var(--hi)" font-family="IBM Plex Mono,monospace"`;
+  /* quota verticale: linea in xd dalla base all'altezza h, testo all'esterno (dir −1 a sinistra, +1 a destra), si legge dal basso */
+  const qV=(xd,h,dir)=>{const tx=dir<0?xd-tO:xd+tO+tz*0.72,ym=Y(h/2);
+    return`<path d="M${xd-fs*.22} ${Y(0)}H${xd+fs*.22}M${xd-fs*.22} ${Y(h)}H${xd+fs*.22}M${xd} ${Y(0)}V${Y(h)}" ${Q}/><text x="${tx}" y="${ym}" ${TQ} transform="rotate(-90 ${tx} ${ym})">${fmt(h)}</text>`};
+  let x=0,body='';
+  lati.forEach(l=>{const pil=num(l.pil)||0;
+    const it=l.vani.map(v=>{const L=num(v.L);if(!(L>0))return null;const Hs=num(v.Hs)||0,Hd=isFinite(num(v.Hd))?num(v.Hd):Hs;return{v,L,Hs,Hd}}).filter(Boolean);
+    /* altezza destra: solo se il vano è inclinato e il vano accanto non riparte dalla stessa altezza */
+    it.forEach((o,i)=>{const nx=it[i+1];o.qR=Math.abs(o.Hs-o.Hd)>.5&&(!nx||Math.abs(nx.Hs-o.Hd)>.5)});
+    let xa=x,xb=x;
+    it.forEach((o,i)=>{const prev=it[i-1],{v,L,Hs,Hd}=o,r=compute(v,c);
+      if(prev){const pr=prev.qR?DW:0;if(pil>0){const hp=Math.min(prev.Hd,Hs);body+=`<rect x="${x+pr}" y="${Y(hp)}" width="${pil}" height="${hp}" fill="var(--line)"/>`}x+=pr+pil}
+      x+=DW;if(!i)xa=x;
       body+=`<polygon points="${x},${Y(0)} ${x+L},${Y(0)} ${x+L},${Y(Hd)} ${x},${Y(Hs)}" fill="none" stroke="var(--ink)" stroke-width="1.6" vector-effect="non-scaling-stroke"/>`;
       if(r.ok){const sc=r.s.schema==='scorrevole';r.panes.forEach((q,k)=>{const fill=sc&&k%2?'var(--glass-2)':'var(--glass)',X=x+q.gx,b=q.by;
         body+=`<polygon points="${X},${Y(b)} ${X+q.gw},${Y(b)} ${X+q.gw},${Y(b+q.hr)} ${X},${Y(b+q.hl)}" fill="${fill}" fill-opacity="${sc?.85:1}" stroke="var(--accent)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>`;
         body+=`<text x="${X+q.gw/2}" y="${Y(b+(q.hl+q.hr)/4)}" font-size="${fs*0.9}" text-anchor="middle" dominant-baseline="middle" fill="var(--ink)" font-family="IBM Plex Sans Condensed,sans-serif" font-weight="700">${q.i}</text>`});
         if(r.s.mobili&&r.verso){const ya=Y(Math.min(Hs,Hd)*0.2);versoSegs(r.verso).forEach(([a,b])=>{body+=frecciaSvg(x+a*L,x+b*L,ya,fs*0.5)})}}
       body+=`<text x="${x+L/2}" y="${Y(Math.max(Hs,Hd))-fs*0.55}" font-size="${fs*0.78}" text-anchor="middle" fill="var(--ink)" font-family="IBM Plex Sans,sans-serif" font-weight="600">${esc(v.nome)}</text>`;
-      body+=`<text x="${x+L/2}" y="${Hm+fs*1.2}" font-size="${fs*0.72}" text-anchor="middle" fill="var(--hi)" font-family="IBM Plex Mono,monospace">${fmt(L)}</text>`;
-      body+=`<text x="${x+fs*0.3}" y="${Y(Hs)+fs*1.1}" font-size="${fs*0.62}" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${fmt(Hs)}</text>`;
-      if(Math.abs(Hs-Hd)>.5)body+=`<text x="${x+L-fs*0.3}" y="${Y(Hd)+fs*1.1}" font-size="${fs*0.62}" text-anchor="end" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${fmt(Hd)}</text>`;
-      x+=L+pil});
-    if(l.vani.length&&pil>0)x-=pil;
-    if(multi){body+=`<line x1="${x0}" y1="${Hm+fs*2}" x2="${x}" y2="${Hm+fs*2}" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/>
-      <text x="${(x0+x)/2}" y="${Hm+fs*3.3}" font-size="${fs}" text-anchor="middle" fill="var(--accent)" font-family="IBM Plex Sans Condensed,sans-serif" font-weight="700">${letter(c.lati.indexOf(l))} · ${esc(l.nome)}</text>`;x+=gap}});
+      const yb=Hm+fs*0.6;
+      body+=`<path d="M${x} ${yb-fs*.22}V${yb+fs*.22}M${x+L} ${yb-fs*.22}V${yb+fs*.22}M${x} ${yb}H${x+L}" ${Q}/><text x="${x+L/2}" y="${yb+fs*1.0}" ${TQ}>${fmt(L)}</text>`;
+      body+=qV(x-dO,Hs,-1);
+      if(o.qR)body+=qV(x+L+dO,Hd,1);
+      x+=L;xb=x});
+    if(it.length&&it[it.length-1].qR)x+=DW;
+    if(multi){if(it.length)body+=`<line x1="${xa}" y1="${Hm+fs*2.3}" x2="${xb}" y2="${Hm+fs*2.3}" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke"/>
+      <text x="${(xa+xb)/2}" y="${Hm+fs*3.6}" font-size="${fs}" text-anchor="middle" fill="var(--accent)" font-family="IBM Plex Sans Condensed,sans-serif" font-weight="700">${letter(c.lati.indexOf(l))} · ${esc(l.nome)}</text>`;x+=gap}});
   if(multi)x-=gap;
-  const W=Math.max(x,1),top=fs*2,bot=multi?fs*4:fs*1.9,side=fs*0.8,vbW=W+side*2,vbH=Hm+top+bot;
+  const W=Math.max(x,1),top=fs*2,bot=multi?fs*4.3:fs*2.1,side=fs*0.4,vbW=W+side*2,vbH=Hm+top+bot;
   const minPx=Math.round(Math.min(4000,300*vbW/vbH));
   return`<svg viewBox="${-side} ${-top} ${vbW} ${vbH}" style="min-width:${minPx}px" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Prospetto">${body}</svg>`;
 }
@@ -1725,7 +1736,11 @@ function mkPdf(){
     rect(x,y,w,h,o={}){if(!o.f&&!o.s)o={...o,s:PC.ink};ops.push(`q ${paint(o)}${X(x)} ${Y(y+h)} ${n(w*KPT)} ${n(h*KPT)} re ${opF(o)} Q`)},
     poly(pts,o={}){if(pts.length<2)return;if(!o.f&&!o.s)o={...o,s:PC.ink};
       ops.push(`q ${paint(o)}${pts.map((p,i)=>`${X(p[0])} ${Y(p[1])} ${i?'l':'m'}`).join(' ')}${o.open?' S':' h '+opF(o)} Q`)},
-    text(x,y,s,o={}){s=String(s??'');if(!s)return;const sz=o.sz||9,b=!!o.b,w=tw(s,sz,b),xx=o.al==='r'?x-w:o.al==='c'?x-w/2:x;
+    text(x,y,s,o={}){s=String(s??'');if(!s)return;const sz=o.sz||9,b=!!o.b,w=tw(s,sz,b);
+      if(o.rot){/* ruotato di 90°, si legge dal basso verso l'alto: x è la linea di base, y il punto di allineamento */
+        const yy=o.al==='r'?y+w:o.al==='c'?y+w/2:y;
+        ops.push(`BT /${b?'F2':'F1'} ${n(sz)} Tf ${col(o.c||PC.ink)} rg 0 1 -1 0 ${X(x)} ${Y(yy)} Tm ${pStr(s)} Tj ET`);return}
+      const xx=o.al==='r'?x-w:o.al==='c'?x-w/2:x;
       ops.push(`BT /${b?'F2':'F1'} ${n(sz)} Tf ${col(o.c||PC.ink)} rg ${X(xx)} ${Y(y)} Td ${pStr(s)} Tj ET`)},
     bytes(title){
       const objs=[null,null],add=s=>{objs.push(s);return objs.length};
@@ -1811,25 +1826,33 @@ const dittaTxt=()=>{const st=S.set,t=[st.ditta,st.indDitta,st.contatto,st.piva?'
 
 /* disegni nel PDF */
 function pdfElev(P,c,l,li,x,y,w,hMax){
-  const pil=num(l.pil)||0,it=[];let X=0,Hm=0;
+  const pil=num(l.pil)||0,it=[];let Hm=0;
   l.vani.forEach((v,vi)=>{const L=num(v.L);if(!(L>0))return;const Hs=num(v.Hs)||0,Hd=isFinite(num(v.Hd))?num(v.Hd):Hs;
-    if(it.length)X+=pil;it.push({v,vi,x:X,L,Hs,Hd,r:compute(v,c)});X+=L;Hm=Math.max(Hm,Hs,Hd)});
+    it.push({v,vi,L,Hs,Hd,r:compute(v,c)});Hm=Math.max(Hm,Hs,Hd)});
   if(!it.length||!Hm)return 0;
-  const top=6,bot=8.5,s=Math.min(w/X,(hMax-top-bot)/Hm),dw=X*s,dh=Hm*s,ox=x+(w-dw)/2,base=y+top+dh;
-  const PX=a=>ox+a*s,PY=b=>base-b*s;
-  it.forEach((o,i)=>{
-    if(i&&pil>0){const hp=Math.min(o.Hs,it[i-1].Hd);P.rect(PX(o.x-pil),PY(hp),pil*s,hp*s,{f:PC.line})}
-    P.poly([[PX(o.x),PY(0)],[PX(o.x+o.L),PY(0)],[PX(o.x+o.L),PY(o.Hd)],[PX(o.x),PY(o.Hs)]],{s:PC.ink,w:.35});
-    if(o.r.ok){const sc=o.r.s.schema==='scorrevole';o.r.panes.forEach((q,k)=>{const X0=o.x+q.gx,b=q.by;
-      P.poly([[PX(X0),PY(b)],[PX(X0+q.gw),PY(b)],[PX(X0+q.gw),PY(b+q.hr)],[PX(X0),PY(b+q.hl)]],{f:sc&&k%2?PC.gl2:PC.gl,s:PC.acc,w:.25});
-      const fs=Math.max(5,Math.min(9,q.gw*s*1.3));P.text(PX(X0+q.gw/2),PY(b+(q.hl+q.hr)/4)+fs*0.13,String(q.i),{sz:fs,b:true,al:'c'})});
+  /* altezza destra: solo se il vano è inclinato e il vano accanto non riparte dalla stessa altezza */
+  it.forEach((o,i)=>{const nx=it[i+1];o.qR=Math.abs(o.Hs-o.Hd)>.5&&(!nx||Math.abs(nx.Hs-o.Hd)>.5)});
+  const tz=6.6,capH=tz*0.72/KPT,dO=1.6,tO=0.9,DW=dO+tO+capH+1.6,tk=1.2;
+  const nQ=it.length+it.filter(o=>o.qR).length,Xm=it.reduce((a,o)=>a+o.L,0)+pil*(it.length-1);
+  const top=6,bot=8.5,s=Math.max(0.001,Math.min((w-nQ*DW)/Xm,(hMax-top-bot)/Hm)),dw=Xm*s+nQ*DW,dh=Hm*s,base=y+top+dh,PY=b=>base-b*s;
+  const qV=(xd,h,dir)=>{P.line(xd,PY(0),xd,PY(h),{c:PC.hi,w:.2});P.line(xd-tk,PY(0),xd+tk,PY(0),{c:PC.hi,w:.2});P.line(xd-tk,PY(h),xd+tk,PY(h),{c:PC.hi,w:.2});
+    P.text(dir<0?xd-tO:xd+tO+capH,PY(h/2),fmt(h),{sz:tz,c:PC.hi,al:'c',rot:true})};
+  let cx=x+(w-dw)/2;
+  it.forEach((o,i)=>{const prev=it[i-1];
+    if(prev){const pr=prev.qR?DW:0;if(pil>0){const hp=Math.min(o.Hs,prev.Hd);P.rect(cx+pr,PY(hp),pil*s,hp*s,{f:PC.line})}cx+=pr+pil*s}
+    cx+=DW;const PX=a=>cx+a*s;
+    P.poly([[PX(0),PY(0)],[PX(o.L),PY(0)],[PX(o.L),PY(o.Hd)],[PX(0),PY(o.Hs)]],{s:PC.ink,w:.35});
+    if(o.r.ok){const sc=o.r.s.schema==='scorrevole';o.r.panes.forEach((q,k)=>{const b=q.by;
+      P.poly([[PX(q.gx),PY(b)],[PX(q.gx+q.gw),PY(b)],[PX(q.gx+q.gw),PY(b+q.hr)],[PX(q.gx),PY(b+q.hl)]],{f:sc&&k%2?PC.gl2:PC.gl,s:PC.acc,w:.25});
+      const fs=Math.max(5,Math.min(9,q.gw*s*1.3));P.text(PX(q.gx+q.gw/2),PY(b+(q.hl+q.hr)/4)+fs*0.13,String(q.i),{sz:fs,b:true,al:'c'})});
       if(o.r.s.mobili&&o.r.verso){const ya=PY(Math.min(o.Hs,o.Hd)*0.2),k=Math.max(1.3,Math.min(2.6,Math.min(o.L,Hm)*s*0.05));
-        versoSegs(o.r.verso).forEach(([a,b])=>{const xa=PX(o.x+a*o.L),xb=PX(o.x+b*o.L),d=xb>xa?1:-1;P.line(xa,ya,xb,ya,{c:PC.hi,w:.5});P.line(xb,ya,xb-d*k,ya-k*.7,{c:PC.hi,w:.5});P.line(xb,ya,xb-d*k,ya+k*.7,{c:PC.hi,w:.5})})}}
-    P.text(PX(o.x+o.L/2),PY(Math.max(o.Hs,o.Hd))-1.8,fitTxt(`${letter(li)}${o.vi+1} · ${o.v.nome}`,Math.max(8,o.L*s-1),6.4,true),{sz:6.4,b:true,al:'c'});
-    const yd=base+2.4;P.line(PX(o.x),yd,PX(o.x+o.L),yd,{c:PC.hi,w:.2});P.line(PX(o.x),yd-1.2,PX(o.x),yd+1.2,{c:PC.hi,w:.2});P.line(PX(o.x+o.L),yd-1.2,PX(o.x+o.L),yd+1.2,{c:PC.hi,w:.2});
-    P.text(PX(o.x+o.L/2),yd+3.9,fmt(o.L),{sz:6.6,c:PC.hi,al:'c'});
-    P.text(PX(o.x)+0.9,PY(o.Hs)+3.6,fmt(o.Hs),{sz:5.8,c:PC.mut});
-    if(Math.abs(o.Hs-o.Hd)>.5)P.text(PX(o.x+o.L)-0.9,PY(o.Hd)+3.6,fmt(o.Hd),{sz:5.8,c:PC.mut,al:'r'})});
+        versoSegs(o.r.verso).forEach(([a,b])=>{const xa=PX(a*o.L),xb=PX(b*o.L),d=xb>xa?1:-1;P.line(xa,ya,xb,ya,{c:PC.hi,w:.5});P.line(xb,ya,xb-d*k,ya-k*.7,{c:PC.hi,w:.5});P.line(xb,ya,xb-d*k,ya+k*.7,{c:PC.hi,w:.5})})}}
+    P.text(PX(o.L/2),PY(Math.max(o.Hs,o.Hd))-1.8,fitTxt(`${letter(li)}${o.vi+1} · ${o.v.nome}`,Math.max(8,o.L*s-1),6.4,true),{sz:6.4,b:true,al:'c'});
+    const yd=base+2.4;P.line(PX(0),yd,PX(o.L),yd,{c:PC.hi,w:.2});P.line(PX(0),yd-tk,PX(0),yd+tk,{c:PC.hi,w:.2});P.line(PX(o.L),yd-tk,PX(o.L),yd+tk,{c:PC.hi,w:.2});
+    P.text(PX(o.L/2),yd+3.9,fmt(o.L),{sz:tz,c:PC.hi,al:'c'});
+    qV(cx-dO,o.Hs,-1);
+    if(o.qR)qV(PX(o.L)+dO,o.Hd,1);
+    cx+=o.L*s});
   return top+dh+bot}
 function pdfPlan(P,c,x,y,w,h){
   let X=0,Y=0,dx=0,dy=1;const sg=[];
