@@ -1,7 +1,7 @@
 // Copia offline dell'app. Cambia VERSIONE quando aggiorni i file.
 // I file dell'app vengono sempre chiesti prima al server (senza usare copie vecchie),
 // e la copia salvata serve solo quando manca internet.
-const VERSIONE = 'vetrate-v10';
+const VERSIONE = 'vetrate-v11';
 const FILE = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -26,6 +26,10 @@ function pulita(r) {
   return r.blob().then(b => new Response(b, { status: r.status, statusText: r.statusText, headers: r.headers }));
 }
 
+function copiaSalvata(req) {
+  return caches.match(req, { ignoreSearch: true }).then(r => r || caches.match('index.html'));
+}
+
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
@@ -35,11 +39,11 @@ self.addEventListener('fetch', e => {
       fetch(e.request.url, { cache: 'no-cache', credentials: 'same-origin' })
         .then(pulita)
         .then(r => {
-          if (r.ok) { const c = r.clone(); caches.open(VERSIONE).then(x => x.put(e.request, c)); }
-          return r;
+          if (r.ok) { const c = r.clone(); caches.open(VERSIONE).then(x => x.put(e.request, c)); return r; }
+          // sito non disponibile (es. 404 se la pubblicazione è spenta): usa la copia salvata
+          return copiaSalvata(e.request).then(m => m || r);
         })
-        .catch(() => caches.match(e.request, { ignoreSearch: true })
-          .then(r => r || caches.match('index.html')))
+        .catch(() => copiaSalvata(e.request))
     );
   } else if (/fonts\.(googleapis|gstatic)\.com$/.test(url.hostname)) {
     e.respondWith(
