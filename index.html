@@ -209,9 +209,9 @@ details summary::-webkit-details-marker{display:none}
 .lrow .hb{width:18px;height:18px;font-size:.62rem}
 .help{font:400 .84rem/1.55 var(--f-body);letter-spacing:0;text-transform:none;color:var(--ink);background:var(--accent-soft);border-left:3px solid var(--accent);border-radius:4px;padding:10px 12px;max-width:72ch}
 .help b{font-weight:600}
-.card-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.card-h h2{flex:1;min-width:0}
-.card-h-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.card-h{display:flex;align-items:flex-start;justify-content:space-between;gap:8px 10px;flex-wrap:wrap}
+.card-h h2{flex:1 1 150px;min-width:0}
+.card-h-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-left:auto}
 .h3row{display:flex;align-items:center;gap:8px;margin-top:4px}
 .h3row h3{flex:1;margin:0}
 .vano>.help{margin:10px 12px 0}
@@ -351,7 +351,7 @@ const HELP={
  vg:'Il vetro serve per calcolare peso ed eventuale costo. L\'elenco dei vetri del cantiere si modifica in Parametri.',
  pianta:'Vista dall\'alto della veranda. I lati sono disegnati in sequenza con gli angoli inseriti in Struttura; la linea tratteggiata è la parete di appoggio. Le tacche indicano dove finisce un vano e inizia il successivo. Tocca un lato per vederne il prospetto.',
  prospetto:'Il lato visto dall\'esterno, con i vani, i vetri numerati e le misure. Nelle tipologie ad ante sovrapposte le ante hanno due tonalità alternate. Tutti i lati mostra lo sviluppo completo della veranda, un lato dopo l\'altro.',
- totali:'Vani, vetri, m² e peso di tutto il cantiere. Copia distinta copia un testo pronto da incollare in un messaggio o in una email al vetraio, con i dati della ditta impostati in Impostazioni generali. Prezzi e costi stanno nel preventivo del cantiere.',
+ totali:'Vani, vetri, m² e peso di tutto il cantiere. Distinta PDF crea il documento per il vetraio, con i disegni di ogni lato e le misure di ogni vetro: si apre il menu Condividi per mandarlo, salvarlo in File o stamparlo. Copia distinta copia lo stesso contenuto come testo. Prezzi e costi stanno nel preventivo.',
  ordine:'Pezzi, superfici e pesi raggruppati per tipo di vetro: è il riassunto da usare per l\'ordine al vetraio.',
  distinta:'Tutti i vetri del cantiere, lato per lato, con le misure di taglio. Nei vani in pendenza l\'altezza è indicata come sinistra / destra.',
  datiCantiere:'Con Veranda addossata a una parete la pianta viene chiusa da una linea tratteggiata tra l\'ultimo e il primo lato. Esporta cantiere crea un file da mandare a un collega, che lo apre con Importa cantiere nella schermata iniziale.',
@@ -368,28 +368,28 @@ const HELP={
  angoloLati:'Per trovare l\'angolo reale tra due lati della veranda: dall\'angolo segna un punto su ciascun lato (per esempio a 1000 mm) e misura la distanza tra i due punti. L\'app calcola l\'angolo con il teorema del coseno: inseriscilo in Struttura come angolo interno.',
  aspetto:'Automatico segue l\'impostazione chiaro o scuro dell\'iPad. Testo grande ingrandisce tutta l\'app, comodo in cantiere. Puoi nascondere i pulsanti «!» quando non ti servono più: le spiegazioni restano disponibili riattivandoli da qui.',
  arrot:'Come vengono arrotondate le misure di taglio dei vetri. Al mm per difetto è la scelta più prudente per l\'ordine: il vetro non risulta mai più grande del calcolo. Superfici e pesi vengono calcolati sulle misure arrotondate.',
- intest:'Ditta e contatto compaiono in testa alla distinta per il vetraio e ai preventivi. Le note per il vetraio vanno in fondo alla distinta.',
+ intest:'Ditta, indirizzo, contatto e partita IVA compaiono in testa ai PDF (distinte, ordini e preventivi) e ai testi copiati. Le note per il vetraio vanno in fondo alla distinta vetri.',
  tipPredef:'Tipologie con cui parte ogni nuovo cantiere. Modificarle qui non cambia i cantieri esistenti: per aggiornarne uno, aprilo e in Parametri usa Ricarica le predefinite.',
  fatturPre:'Fatturazione con cui parte ogni nuovo cantiere. Non cambia i cantieri esistenti.',
  vetriPre:'Vetri con cui parte ogni nuovo cantiere. Modificarli qui non cambia i cantieri esistenti.',
  backup:'I dati sono salvati solo su questo dispositivo. Backup completo crea un file con tutti i cantieri e le impostazioni: salvalo in File, su iCloud o mandalo via email. Ripristina backup sostituisce tutti i dati con quelli del file. Elimina tutti i dati cancella tutto da questo dispositivo.',
  prevLista:'Ogni cantiere ha un solo preventivo che comprende vetrate, finestre e zanzariere. Qui vedi stato e totale di ciascuno e le somme per stato. Il Listino prezzi contiene i prezzi di partenza: i preventivi li usano da soli per le voci nuove. I filtri mostrano solo bozze, inviati, accettati o rifiutati.',
- prevDati:'Cliente, numero e data compaiono in testa al preventivo copiato. Lo stato serve a tenere traccia dei preventivi: bozza, inviato al cliente, accettato o rifiutato. Prezzi dal listino aggiorna tutti i prezzi (vetri, finestre, zanzariere) con quelli del listino. Apri cantiere porta alle misure e ai disegni.',
+ prevDati:'Cliente, numero e data compaiono in testa al preventivo. Lo stato serve a tenere traccia dei preventivi: bozza, inviato al cliente, accettato o rifiutato. PDF crea il preventivo da mandare al cliente. Prezzi dal listino aggiorna tutti i prezzi (vetri, finestre, zanzariere) con quelli del listino. Apri cantiere porta alle misure e ai disegni.',
  prevVetri:'Ogni tipo di vetro usato nelle vetrate compare con pezzi e m² da preventivare: inserisci il prezzo al m² e l\'importo si calcola da solo. I m² seguono le Regole di calcolo (superficie minima per lastra, arrotondamento dei lati, sfrido).',
  prevLav:'Voci da aggiungere ai vetri: posa, profili, trasporto, smaltimento e altro. Per ogni voce scrivi descrizione, quantità, unità di misura e prezzo unitario. Con i pulsanti Dal listino aggiungi una voce già pronta: la quantità viene proposta dal cantiere (m² di vetro, metri lineari dei lati o numero di vani) e puoi correggerla.',
  prevTot:'Lo sconto si applica all\'imponibile (vetri più lavorazioni), poi si aggiunge l\'IVA. Imposta l\'aliquota IVA giusta per il tipo di lavoro.',
- prevNote:'Le note per il cliente finiscono in fondo al preventivo copiato: tempi, esclusioni, pagamento. Le note interne restano solo nell\'app. Copia preventivo copia un testo pronto da incollare in un messaggio o in una email.',
+ prevNote:'Le note per il cliente finiscono in fondo al preventivo: tempi, esclusioni, pagamento. Le note interne restano solo nell\'app. Preventivo PDF crea il documento da mandare al cliente, con spazio per la firma di accettazione; Copia testo copia la versione in testo.',
  listVetri:'Prezzo al m² di ogni vetro predefinito. Ogni nuovo cantiere parte con questi prezzi nel suo preventivo; per aggiornare un preventivo esistente usa Prezzi dal listino.',
  listLav:'Lavorazioni che usi spesso, con unità di misura e prezzo: nei preventivi le aggiungi con un tocco.',
  listAltro:'IVA, validità, regole dei m² e note con cui parte ogni nuovo preventivo. Non cambiano i preventivi già esistenti.',
  voce:'Un vano dove va una finestra, una zanzariera o entrambe. Inserisci la misura del vano: la misura da ordinare si calcola con le regole della tipologia, che imposti in Parametri. Il disegno mostra il vano visto dall\'interno, con il simbolo di apertura della finestra; la retinatura arancione indica la zanzariera.',
  fzVani:'Qui inserisci i vani di finestre e zanzariere del cliente. + Da un vano delle vetrate riusa un vano già misurato nella sezione Vetrate e scorrevoli: le misure restano collegate e si aggiornano in entrambe le sezioni finché non lo scolleghi.',
  fApertura:'Tipo di apertura della finestra. Nel disegno le linee convergono verso il lato della maniglia; per anta-ribalta e vasistas ci sono anche le linee verso l\'alto.',
- fVerso:'Lato delle cerniere guardando la finestra dall\'interno: DX cerniere a destra, SX a sinistra. Controlla sempre la convenzione usata nel modulo d\'ordine del tuo fornitore.',
+ fVerso:'Lato delle cerniere guardando la finestra dall\'interno: DX cerniere a destra, SX a sinistra. Con 2 o più ante indica l\'anta principale, quella con la maniglia e la ribalta (se vuoto: destra). Controlla sempre la convenzione usata nel modulo d\'ordine del tuo fornitore.',
  zMont:'In luce: la zanzariera sta dentro il vano. A sormonto: si monta sopra il telaio o sul muro e copre il vano. La misura da ordinare usa le deduzioni (in luce) o le aggiunte (a sormonto) della tipologia.',
  fzOrd:'Totale dei pezzi e dei m² da ordinare. Finestre e zanzariere hanno ordini separati, perché di solito vanno a fornitori diversi.',
- fzOrdFin:'Le finestre da ordinare con misura, apertura, vetro e colore. Copia ordine finestre crea un testo da mandare al fornitore.',
- fzOrdZan:'Le zanzariere da ordinare con misura, montaggio, colore, rete e comando. Copia ordine zanzariere crea un testo da mandare al fornitore.',
+ fzOrdFin:'Le finestre da ordinare con misura, apertura, vetro e colore. PDF crea l\'ordine con lo schema di apertura di ogni finestra, visto dall\'interno. Copia testo crea un testo da incollare in un messaggio.',
+ fzOrdZan:'Le zanzariere da ordinare con misura, montaggio, colore, rete e comando. PDF crea l\'ordine da mandare al fornitore; Copia testo crea un testo da incollare in un messaggio.',
  tipFin:'Tipologie di finestra di questo cantiere. Per ognuna imposti materiale, apertura e ante proposte e come passare dalla misura del vano a quella da ordinare. Se il fornitore vuole la misura del foro lascia le deduzioni a 0.',
  tipZan:'Tipologie di zanzariera di questo cantiere, con le regole per la misura da ordinare (in luce e a sormonto) e le misure massime fornibili. Se il fornitore vuole la misura del vano lascia tutto a 0.',
  tipFinPre:'Tipologie di finestra con cui parte ogni nuovo cantiere. Modificarle qui non cambia i cantieri esistenti.',
@@ -430,7 +430,7 @@ const FATT_FIELDS=[
  ['sfrido','Maggiorazione sfrido','%','Percentuale aggiunta ai m² dei vetri per coprire scarti e rotture. Non cambia le misure di taglio.']];
 const DEF_FATT={minMq:0.5,arrot:0,sfrido:0};
 const DEF_SP={gp:0,telL:0,telH:0,sorm:0,fuga:0,vetL:0,vetH:0,minN:1,maxN:8,maxW:1500,maxH:3000,maxKg:120,binari:0};
-const DEF_SET={tema:'auto',testo:'normale',aiuti:true,arrotVetro:'decimo',ditta:'',contatto:'',noteOrdine:'',lastBackup:null,bkDismiss:null};
+const DEF_SET={tema:'auto',testo:'normale',aiuti:true,arrotVetro:'decimo',ditta:'',indDitta:'',contatto:'',piva:'',noteOrdine:'',lastBackup:null,bkDismiss:null};
 const UM=['pz','m','m²','h','corpo'];
 const DEF_LAV=[['Posa in opera','m²'],['Profili e accessori','m'],['Trasporto','corpo'],['Smaltimento vecchi infissi','corpo'],['Sopralluogo e rilievo misure','corpo']];
 const newListino=fatt=>({vetri:{},fin:{},zan:{},fatt:{...DEF_FATT,...(fatt||{})},iva:22,validita:30,cond:'',lav:DEF_LAV.map(([desc,um])=>({id:uid(),desc,um,prezzo:''}))});
@@ -687,7 +687,7 @@ const ICON={
  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M10.3 3h3.4l.5 2.4 1.7.7 2-1.4 2.4 2.4-1.4 2 .7 1.7 2.4.5v3.4l-2.4.5-.7 1.7 1.4 2-2.4 2.4-2-1.4-1.7.7-.5 2.4h-3.4l-.5-2.4-1.7-.7-2 1.4-2.4-2.4 1.4-2-.7-1.7L3 13.7v-3.4l2.4-.5.7-1.7-1.4-2 2.4-2.4 2 1.4 1.7-.7z"/></svg>',
  logo:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#dfe7ee" stroke-width="1.5"><rect x="3" y="4" width="18" height="16"/><path d="M12 4v16" stroke="#3cc3d8"/><path d="M6 15l3-6" stroke-width="1"/></svg>'
 };
-const APP_VER='9 · 30/10/2026';
+const APP_VER='10 · 30/10/2026';
 const TABS=[['struttura','Struttura'],['vista','Vista'],['riepilogo','Riepilogo'],['parametri','Parametri'],['strumenti','Strumenti']];
 function nav(o){Object.assign(S.ui,{imp:false,listino:false,prev:null,c:null},o);save();render();window.scrollTo(0,0)}
 function go(c,tab){nav({c,tab:tab||S.ui.tab})}
@@ -948,7 +948,7 @@ function latoDetail(c,l){return l.vani.map(v=>{const r=compute(v,c);return`<div 
 /* ---------- riepilogo ---------- */
 function viewRiepilogo(c){
   const t=totals(c),byG={},d=DEC(),st=S.set;let rows='';
-  let txt=(st.ditta?st.ditta+'\n':'')+(st.contatto?st.contatto+'\n':'')+((st.ditta||st.contatto)?'\n':'')+`CANTIERE: ${c.nome}${c.indirizzo?' – '+c.indirizzo:''}\n`;
+  let txt=dittaTxt()+`CANTIERE: ${c.nome}${c.indirizzo?' – '+c.indirizzo:''}\n`;
   c.lati.forEach((l,li)=>{rows+=`<tr class="grp"><td colspan="7">${letter(li)} · ${esc(l.nome)}</td></tr>`;txt+=`\n== ${letter(li)} · ${l.nome} ==\n`;
     l.vani.forEach(v=>{const r=compute(v,c);if(!r.ok){rows+=`<tr><td class="t l">${esc(v.nome)}</td><td class="t l" colspan="6">Misure incomplete</td></tr>`;return}
       const g=byG[r.gl.id]||(byG[r.gl.id]={nome:r.gl.nome,n:0,mq:0,kg:0});g.n+=r.N*r.qta;g.mq+=r.mq;g.kg+=r.kg;
@@ -960,7 +960,7 @@ function viewRiepilogo(c){
   txt+='\n\nORDINE VETRI:\n'+gl.map(g=>`${g.nome}: ${g.n} pz · ${fmt(g.mq,2)} m²`).join('\n');
   if(st.noteOrdine)txt+='\n\nNOTE: '+st.noteOrdine;
   setMain(),$('main').innerHTML=`
-  <section class="card">${cardH('Totali cantiere','totali','hp_tot',`<button class="btn sm" id="toPrev" type="button">Preventivo</button><button class="btn primary sm" id="copyAll" type="button">Copia distinta</button>`)}
+  <section class="card">${cardH('Totali cantiere','totali','hp_tot',`<button class="btn sm" id="toPrev" type="button">Preventivo</button><button class="btn sm" id="copyAll" type="button">Copia distinta</button><button class="btn primary sm" id="pdfDist" type="button">Distinta PDF</button>`)}
     <div class="stats"><div class="stat"><span>Vani</span><b>${t.vani}</b></div><div class="stat"><span>Vetri</span><b>${t.vetri}</b></div>
     <div class="stat"><span>m² di vetro</span><b>${fmt(t.mq,2)}</b></div><div class="stat"><span>Peso</span><b>${fmt(t.kg,0)} kg</b></div></div>
     ${t.warn?`<div class="msg">Ci sono ${t.warn} avvisi nei vani: controllali in Struttura.</div>`:''}
@@ -971,6 +971,7 @@ function viewRiepilogo(c){
   <section class="card">${cardH('Distinta vetri per lato','distinta','hp_dis')}
     <div class="tablebox"><table><thead><tr><th class="l">Vano</th><th class="l">N°</th><th>Larghezza</th><th>Altezza</th><th>Pz</th><th>m²</th><th>kg</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
   $('copyAll').onclick=()=>copy(txt,$('distTa'));
+  $('pdfDist').onclick=()=>sharePdf(pdfDistinta(c));
   $('toPrev').onclick=()=>goPrev(c.id);
 }
 
@@ -1190,7 +1191,7 @@ function renderPrev(c){
     <button class="hbtn" id="setBtn" type="button" aria-label="Impostazioni generali">${ICON.gear}</button></div>`;
   removeNav();
   setMain(),$('main').innerHTML=`
-  <section class="card">${cardH('Dati del preventivo','prevDati','hp_pd',`<button class="btn sm" id="openC" type="button">Apri cantiere</button><button class="btn sm" id="pvFromList" type="button">Prezzi dal listino</button>`)}
+  <section class="card">${cardH('Dati del preventivo','prevDati','hp_pd',`<button class="btn sm" id="openC" type="button">Apri cantiere</button><button class="btn sm" id="pvFromList" type="button">Prezzi dal listino</button><button class="btn primary sm" id="pvPdfTop" type="button">PDF</button>`)}
     <div class="fields">${fld({id:'pvCli',label:'Cliente',val:pv.cliente,wide:true,attrs:'placeholder="Nome e cognome o ragione sociale"'})}
       ${fld({id:'pvNum',label:'Numero',val:pv.numero,attrs:'placeholder="Es. 12/2026"'})}
       ${fld({id:'pvData',label:'Data',ctrl:`<input type="date" id="pvData" value="${esc(pv.data)}">`})}
@@ -1221,7 +1222,7 @@ function renderPrev(c){
   <section class="card">${cardH('Note','prevNote','hp_pn')}
     ${fld({id:'pvNote',label:'Note per il cliente',ctrl:`<textarea id="pvNote" rows="3" placeholder="Es. tempi di consegna, esclusioni, modalità di pagamento">${esc(pv.note)}</textarea>`})}
     ${fld({id:'pvInt',label:'Note interne',ctrl:`<textarea id="pvInt" rows="2" placeholder="Restano solo nell'app e non finiscono nel preventivo">${esc(pv.interne||'')}</textarea>`})}
-    <div class="row"><button class="btn primary" id="pvCopy" type="button">Copia preventivo</button></div>
+    <div class="row"><button class="btn primary" id="pvPdf" type="button">Preventivo PDF</button><button class="btn" id="pvCopy" type="button">Copia testo</button></div>
     <textarea id="pvTa" rows="10" class="num" hidden></textarea>
   </section>`;
   const apri=()=>{const fzSolo=!c.lati.some(l=>l.vani.length)&&c.fz.voci.length;nav({c:c.id,sez:fzSolo?'fz':(S.ui.sez||'vetrate')})};
@@ -1247,6 +1248,7 @@ function renderPrev(c){
   document.querySelectorAll('[data-ql]').forEach(b=>b.onclick=()=>{const L=S.listino.lav.find(x=>x.id===b.dataset.ql);if(!L)return;const k=prevCalc(c);
     pv.lav.push({id:uid(),desc:L.desc,qta:String(qDef(k,L.um)).replace('.',','),um:L.um,prezzo:L.prezzo});save();paintPrevLav(c);paintPrevTot(c);toast('Aggiunta: '+(L.desc||'lavorazione'))});
   $('pvCopy').onclick=()=>copy(prevText(c),$('pvTa'));
+  $('pvPdf').onclick=$('pvPdfTop').onclick=()=>sharePdf(pdfPreventivo(c));
   paintPrevVetri(c);paintPrevLav(c);paintPrevTot(c);
 }
 function paintPrevVetri(c){const k=prevCalc(c),box=$('pvVetri');if(!box)return;
@@ -1282,8 +1284,7 @@ function rigaFz(c,kind,l){const e=l.e,x=l.x,o=l.o;
   if(e.modo==='mq')t+=` – ${l.q>1?l.q+' pz × ':''}${fmt(l.mqF,2)} m²${l.mqF>o.mq?' (minimo)':''} × ${eur(l.pr)}/m²`;
   else t+=` – ${l.q} ${l.q===1?'pz':'pz'} × ${eur(l.pr)}`;
   return t+` = ${eur(l.imp)}\n`}
-function prevText(c){const k=prevCalc(c),pv=k.pv,st=S.set;let t='';
-  if(st.ditta)t+=st.ditta+'\n';if(st.contatto)t+=st.contatto+'\n';if(t)t+='\n';
+function prevText(c){const k=prevCalc(c),pv=k.pv;let t=dittaTxt();
   t+=`PREVENTIVO${pv.numero?' n. '+pv.numero:''}${pv.data?' del '+fmtData(pv.data):''}\n`;
   if(pv.cliente)t+=`Cliente: ${pv.cliente}\n`;
   t+=`Lavoro: ${c.nome}${c.indirizzo?' – '+c.indirizzo:''}\n`;
@@ -1359,7 +1360,7 @@ const fmtMis=(a,b)=>`${fmtMm(a)} × ${fmtMm(b)} mm`;
 const tipFinOf=(c,x)=>c.tipFin.find(t=>t.id===x.fin.tipo)||c.tipFin[0];
 const tipZanOf=(c,x)=>c.tipZan.find(t=>t.id===x.zan.tipo)||c.tipZan[0];
 const zTipo=k=>(ZTIPI.find(z=>z[0]===k)||ZTIPI[0])[1];
-function descFin(c,x){const t=tipFinOf(c,x),f=x.fin,n=+f.ante||1;return[t?t.nome:'Finestra',`${f.apertura||'Anta'}, ${n} ${n===1?'anta':'ante'}${f.verso?' '+f.verso:''}`].join(' · ')}
+function descFin(c,x){const t=tipFinOf(c,x),f=x.fin,n=+f.ante||1,ap=f.apertura||'Anta',dup=t&&t.nome.toLowerCase().includes(ap.toLowerCase());return[t?t.nome:'Finestra',`${dup?'':ap+', '}${n} ${n===1?'anta':'ante'}${f.verso?' '+f.verso:''}`].join(' · ')}
 function descZan(c,x){const t=tipZanOf(c,x);return[t?t.nome:'Zanzariera',x.zan.mont==='sormonto'?'a sormonto':'in luce'].join(' · ')}
 
 function viewFzVani(c){
@@ -1428,14 +1429,14 @@ function fzThumb(x,r){
   let g=`<svg viewBox="${-pad} ${-fs*0.6} ${L+pad*1.4} ${H+fs*3.1}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Anteprima del vano, vista interna">
     <defs><pattern id="${id}" width="${fs*0.45}" height="${fs*0.45}" patternUnits="userSpaceOnUse"><path d="M0 0H${fs*0.45}M0 0V${fs*0.45}" stroke="var(--muted)" stroke-width="${fs*0.03}" fill="none"/></pattern></defs>`;
   g+=`<rect x="0" y="0" width="${L}" height="${H}" fill="none" stroke="var(--ink)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`;
-  if(r.fin){const f=x.fin,n=Math.max(1,Math.min(4,+f.ante||1)),a=f.apertura||'Anta',w=(L-2*fw)/n;
+  if(r.fin){const f=x.fin,n=Math.max(1,Math.min(4,+f.ante||1)),a=f.apertura||'Anta',w=(L-2*fw)/n,prim=f.verso==='SX'?0:n-1;
     g+=`<rect x="${fw/2}" y="${fw/2}" width="${L-fw}" height="${H-fw}" fill="none" stroke="var(--ink)" stroke-width="${fw}" stroke-opacity=".18"/>`;
     for(let i=0;i<n;i++){const x0=fw+i*w,y0=fw,h=H-2*fw,cerSx=n===1?f.verso!=='DX':i<n/2;
       g+=`<rect x="${x0}" y="${y0}" width="${w}" height="${h}" fill="var(--glass)" stroke="var(--accent)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>`;
       const ln=(x1,y1,x2,y2,d)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--ink)" stroke-width="1" ${d?'stroke-dasharray="4 3"':''} vector-effect="non-scaling-stroke"/>`;
       const hx=cerSx?x0:x0+w,mx=cerSx?x0+w:x0;
       if(a==='Anta'||a==='Anta-ribalta'){g+=ln(hx,y0,mx,y0+h/2)+ln(hx,y0+h,mx,y0+h/2)}
-      if(a==='Anta-ribalta'||a==='Vasistas'){g+=ln(x0,y0+h,x0+w/2,y0,a==='Anta-ribalta')+ln(x0+w,y0+h,x0+w/2,y0,a==='Anta-ribalta')}
+      if(a==='Vasistas'||(a==='Anta-ribalta'&&(n===1||i===prim))){g+=ln(x0,y0+h,x0+w/2,y0,a==='Anta-ribalta')+ln(x0+w,y0+h,x0+w/2,y0,a==='Anta-ribalta')}
       if(a==='Bilico'){g+=ln(x0,y0+h/2,x0+w,y0+h/2)+ln(x0+w/2,y0,x0+w/2,y0+h,1)}
       if(a==='Scorrevole'||a==='Alzante scorrevole'){const dir=i%2?-1:1,cy=y0+h/2,ax=x0+w*0.25,bx=x0+w*0.75,tip=dir>0?bx:ax,fsA=Math.min(w,h)*0.08;
         g+=ln(ax,cy,bx,cy)+ln(tip,cy,tip-dir*fsA,cy-fsA)+ln(tip,cy,tip-dir*fsA,cy+fsA)}
@@ -1489,19 +1490,20 @@ function viewFzOrdine(c){
     ${incompl?`<div class="msg">${incompl} ${incompl===1?'vano senza misure non è':'vani senza misure non sono'} nell'ordine.</div>`:''}
     ${warn?`<div class="msg">Ci sono ${warn} avvisi nei vani: controllali in Vani.</div>`:''}
   </section>
-  <section class="card">${cardH('Ordine finestre','fzOrdFin','hp_fzof',fin.length?'<button class="btn primary sm" id="cpFin" type="button">Copia ordine finestre</button>':'')}
+  <section class="card">${cardH('Ordine finestre','fzOrdFin','hp_fzof',fin.length?'<button class="btn sm" id="cpFin" type="button">Copia testo</button><button class="btn primary sm" id="pdfFin" type="button">PDF</button>':'')}
     ${fin.length?`<div class="tablebox"><table><thead><tr><th class="l">N°</th><th class="l">Vano</th><th>Pz</th><th class="l">Tipologia</th><th class="l">Apertura</th><th>Misura da ordinare</th><th class="l">Vetro</th><th class="l">Colore</th><th class="l">Note</th></tr></thead><tbody>
       ${fin.map((o,i)=>{const f=o.x.fin,t=o.r.fin.t,n=+f.ante||1;return`<tr><td class="l">${i+1}</td><td class="t l">${esc(o.x.nome)}</td><td>${o.r.q}</td><td class="t l">${esc(t.nome)}</td><td class="t l">${esc(f.apertura)}, ${n} ${n===1?'anta':'ante'}${f.verso?' '+f.verso:''}</td><td>${fmtMis(o.r.fin.oL,o.r.fin.oH)}</td><td class="t l">${esc(f.vetro||'–')}</td><td class="t l">${esc(f.colore||'–')}</td><td class="t l">${esc(f.note||'')}</td></tr>`}).join('')}
       </tbody></table></div>`:'<p class="note">Nessuna finestra con misure.</p>'}
     <textarea id="taFin" rows="8" class="num" hidden></textarea></section>
-  <section class="card">${cardH('Ordine zanzariere','fzOrdZan','hp_fzoz',zan.length?'<button class="btn primary sm" id="cpZan" type="button">Copia ordine zanzariere</button>':'')}
+  <section class="card">${cardH('Ordine zanzariere','fzOrdZan','hp_fzoz',zan.length?'<button class="btn sm" id="cpZan" type="button">Copia testo</button><button class="btn primary sm" id="pdfZan" type="button">PDF</button>':'')}
     ${zan.length?`<div class="tablebox"><table><thead><tr><th class="l">N°</th><th class="l">Vano</th><th>Pz</th><th class="l">Tipologia</th><th class="l">Montaggio</th><th>Misura da ordinare</th><th class="l">Colore</th><th class="l">Rete</th><th class="l">Comando</th><th class="l">Note</th></tr></thead><tbody>
       ${zan.map((o,i)=>{const z=o.x.zan;return`<tr><td class="l">${i+1}</td><td class="t l">${esc(o.x.nome)}</td><td>${o.r.q}</td><td class="t l">${esc(o.r.zan.t.nome)}</td><td class="t l">${o.r.zan.mont}</td><td>${fmtMis(o.r.zan.oL,o.r.zan.oH)}</td><td class="t l">${esc(z.colore||'–')}</td><td class="t l">${esc(z.rete||'–')}</td><td class="t l">${esc(z.comando||'–')}</td><td class="t l">${esc(z.note||'')}</td></tr>`}).join('')}
       </tbody></table></div>`:'<p class="note">Nessuna zanzariera con misure.</p>'}
     <textarea id="taZan" rows="8" class="num" hidden></textarea></section>`;
-  const head=tit=>{const st=S.set;let t=(st.ditta?st.ditta+'\n':'')+(st.contatto?st.contatto+'\n':'');if(t)t+='\n';
-    return t+`${tit}\nCantiere: ${c.nome}${c.indirizzo?' – '+c.indirizzo:''}\nData: ${new Date().toLocaleDateString('it-IT')}\n\n`};
+  const head=tit=>{return dittaTxt()+`${tit}\nCantiere: ${c.nome}${c.indirizzo?' – '+c.indirizzo:''}\nData: ${new Date().toLocaleDateString('it-IT')}\n\n`};
   $('toPrev').onclick=()=>goPrev(c.id);
+  if($('pdfFin'))$('pdfFin').onclick=()=>sharePdf(pdfOrdine(c,'fin'));
+  if($('pdfZan'))$('pdfZan').onclick=()=>sharePdf(pdfOrdine(c,'zan'));
   if($('cpFin'))$('cpFin').onclick=()=>{let t=head('ORDINE FINESTRE');
     fin.forEach((o,i)=>{const f=o.x.fin,n=+f.ante||1;t+=`${i+1}) ${o.x.nome} – ${o.r.fin.t.nome} – ${f.apertura}, ${n} ${n===1?'anta':'ante'}${f.verso?' '+f.verso:''}\n   Misura: ${fmtMis(o.r.fin.oL,o.r.fin.oH)} – Q.tà ${o.r.q}${f.vetro?'\n   Vetro: '+f.vetro:''}${f.colore?'\n   Colore: '+f.colore:''}${f.note?'\n   Note: '+f.note:''}\n`});
     t+=`\nTotale: ${tot(fin)} ${tot(fin)===1?'finestra':'finestre'}`;copy(t,$('taFin'))};
@@ -1572,6 +1574,239 @@ function viewFzParam(c){
   bindFzTip('fin',ctx);bindFzTip('zan',ctx);
 }
 
+/* ---------- PDF: generatore integrato (A4, Helvetica, testo, linee, poligoni) ---------- */
+const PW=[278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584,350,556,350,222,556,333,1000,556,556,333,1000,667,333,1000,350,611,350,350,222,222,333,333,350,556,1000,333,1000,500,333,944,350,500,667,278,333,556,556,556,556,260,556,333,737,370,556,584,333,737,333,400,584,333,333,333,556,537,278,333,333,365,556,834,834,834,611,667,667,667,667,667,667,1000,722,667,667,667,667,278,278,278,278,722,722,778,778,778,778,778,584,778,722,722,722,722,667,667,611,556,556,556,556,556,556,889,500,556,556,556,556,278,278,278,278,556,556,556,556,556,556,556,584,611,556,556,556,556,500,556,500];
+const PWB=[278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584,350,556,350,278,556,500,1000,556,556,333,1000,667,333,1000,350,611,350,350,278,278,500,500,350,556,1000,333,1000,556,333,944,350,500,667,278,333,556,556,556,556,280,556,333,737,370,556,584,333,737,333,400,584,333,333,333,611,556,278,333,333,365,556,834,834,834,611,722,722,722,722,722,722,1000,722,667,667,667,667,278,278,278,278,722,722,778,778,778,778,778,584,778,722,722,722,722,667,667,611,556,556,556,556,556,556,889,556,556,556,556,556,278,278,278,278,611,611,611,611,611,611,611,584,611,611,611,611,611,556,611,556];
+const WINMAP={0x20AC:128,0x201A:130,0x0192:131,0x201E:132,0x2026:133,0x2020:134,0x2021:135,0x02C6:136,0x2030:137,0x0160:138,0x2039:139,0x0152:140,0x017D:142,
+  0x2018:145,0x2019:146,0x201C:147,0x201D:148,0x2022:149,0x2013:150,0x2014:151,0x02DC:152,0x2122:153,0x0161:154,0x203A:155,0x0153:156,0x017E:158,0x0178:159,0x2212:150};
+const winC=u=>u>=32&&u<127?u:u>=160&&u<256?u:WINMAP[u]||(u===0x202F||u===0x2009||u===0x2007||u===9?32:63);
+const pStr=s=>{let o='';for(const ch of String(s??'')){const c=winC(ch.codePointAt(0));o+=c===40||c===41||c===92?'\\'+String.fromCharCode(c):c>126?'\\'+c.toString(8).padStart(3,'0'):String.fromCharCode(c)}return'('+o+')'};
+const KPT=72/25.4;
+const tw=(s,sz,b)=>{const W=b?PWB:PW;let t=0;for(const ch of String(s??''))t+=W[winC(ch.codePointAt(0))-32]||0;return t*sz/1000/KPT};
+const lhOf=sz=>sz*0.46;
+const fitTxt=(s,w,sz,b)=>{s=String(s??'');if(tw(s,sz,b)<=w)return s;while(s.length>1&&tw(s+'…',sz,b)>w)s=s.slice(0,-1);return s.trimEnd()+'…'};
+const PC={ink:[.06,.09,.13],mut:[.38,.43,.48],line:[.80,.84,.88],acc:[.04,.45,.53],accS:[.89,.95,.96],hi:[.85,.33,.04],gl:[.80,.90,.93],gl2:[.64,.81,.86],bg:[.95,.96,.97],wh:[1,1,1]};
+const oggi=()=>new Date().toLocaleDateString('it-IT');
+const safeName=s=>String(s).replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,' ').trim();
+function mkPdf(){
+  const pages=[];let ops=null;
+  const n=v=>(+v).toFixed(2),X=x=>n(x*KPT),Y=y=>n((297-y)*KPT),col=c=>c.map(v=>(+v).toFixed(3)).join(' ');
+  const paint=o=>(o.f?col(o.f)+' rg ':'')+(o.s?col(o.s)+' RG '+n((o.w||.25)*KPT)+' w ':'')+(o.d?'['+o.d.map(v=>n(v*KPT)).join(' ')+'] 0 d ':'');
+  const opF=o=>o.f&&o.s?'B':o.f?'f':'S';
+  return{
+    page(){ops=[];pages.push(ops)},
+    get n(){return pages.length},
+    go(i){ops=pages[i]},
+    line(x1,y1,x2,y2,o={}){ops.push(`q ${paint({s:o.c||PC.ink,w:o.w||.25,d:o.d})}${X(x1)} ${Y(y1)} m ${X(x2)} ${Y(y2)} l S Q`)},
+    rect(x,y,w,h,o={}){if(!o.f&&!o.s)o={...o,s:PC.ink};ops.push(`q ${paint(o)}${X(x)} ${Y(y+h)} ${n(w*KPT)} ${n(h*KPT)} re ${opF(o)} Q`)},
+    poly(pts,o={}){if(pts.length<2)return;if(!o.f&&!o.s)o={...o,s:PC.ink};
+      ops.push(`q ${paint(o)}${pts.map((p,i)=>`${X(p[0])} ${Y(p[1])} ${i?'l':'m'}`).join(' ')}${o.open?' S':' h '+opF(o)} Q`)},
+    text(x,y,s,o={}){s=String(s??'');if(!s)return;const sz=o.sz||9,b=!!o.b,w=tw(s,sz,b),xx=o.al==='r'?x-w:o.al==='c'?x-w/2:x;
+      ops.push(`BT /${b?'F2':'F1'} ${n(sz)} Tf ${col(o.c||PC.ink)} rg ${X(xx)} ${Y(y)} Td ${pStr(s)} Tj ET`)},
+    bytes(title){
+      const objs=[null,null],add=s=>{objs.push(s);return objs.length};
+      const f1=add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>');
+      const f2=add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
+      const kids=pages.map(p=>{const s=p.join('\n'),cs=add(`<< /Length ${s.length} >>\nstream\n${s}\nendstream`);
+        return add(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 ${f1} 0 R /F2 ${f2} 0 R >> >> /Contents ${cs} 0 R >>`)});
+      objs[0]='<< /Type /Catalog /Pages 2 0 R >>';
+      objs[1]=`<< /Type /Pages /Kids [${kids.map(k=>k+' 0 R').join(' ')}] /Count ${kids.length} >>`;
+      const d=new Date(),p2=v=>String(v).padStart(2,'0');
+      const info=add(`<< /Title ${pStr(title)} /Creator (Calcolo Vetrate) /Producer (Calcolo Vetrate) /CreationDate (D:${d.getFullYear()}${p2(d.getMonth()+1)}${p2(d.getDate())}${p2(d.getHours())}${p2(d.getMinutes())}${p2(d.getSeconds())}) >>`);
+      let out='%PDF-1.4\n%âãÏÓ\n';const off=[];
+      objs.forEach((o,i)=>{off.push(out.length);out+=`${i+1} 0 obj\n${o}\nendobj\n`});
+      const xr=out.length;
+      out+=`xref\n0 ${objs.length+1}\n0000000000 65535 f \n${off.map(o=>String(o).padStart(10,'0')+' 00000 n \n').join('')}trailer\n<< /Size ${objs.length+1} /Root 1 0 R /Info ${info} 0 R >>\nstartxref\n${xr}\n%%EOF\n`;
+      const b=new Uint8Array(out.length);for(let i=0;i<out.length;i++)b[i]=out.charCodeAt(i)&255;return b}
+  }}
+/* impaginazione: intestazione, piè di pagina con numeri, titoli, tabelle con intestazione ripetuta */
+function mkDoc(o){
+  const P=mkPdf(),M=15,W=180,TOP=13,BOT=297-17,st=S.set;let y=0;
+  const firstHead=()=>{let yl=TOP+5,yr=TOP+5;
+    if(st.ditta){P.text(M,yl,fitTxt(st.ditta,105,13,true),{sz:13,b:true});yl+=5}
+    [st.indDitta,st.contatto,st.piva?'P. IVA '+st.piva:''].filter(Boolean).forEach(t=>{P.text(M,yl,fitTxt(t,105,8,false),{sz:8,c:PC.mut});yl+=3.8});
+    P.text(M+W,yr,o.title.toUpperCase(),{sz:15,b:true,c:PC.acc,al:'r'});yr+=5.5;
+    (o.meta||[]).forEach(([k,v])=>{P.text(M+W,yr,`${k} ${v}`,{sz:8.5,al:'r'});yr+=4});
+    const yy=Math.max(yl,yr)+1.5;P.line(M,yy,M+W,yy,{w:.6});return yy+6};
+  const nextHead=()=>{P.text(M,TOP+3,fitTxt(st.ditta||o.title,80,8,true),{sz:8,b:true});P.text(M+W,TOP+3,fitTxt(`${o.title} · ${o.ref}`,95,7.5,false),{sz:7.5,c:PC.mut,al:'r'});
+    P.line(M,TOP+5.5,M+W,TOP+5.5,{c:PC.line,w:.3});return TOP+11};
+  const newPage=()=>{P.page();y=P.n===1?firstHead():nextHead()};
+  function wrap(s,w,sz,b){const out=[];String(s??'').split('\n').forEach(par=>{let cur='';
+    par.split(/ +/).forEach(wd=>{if(!wd)return;const t=cur?cur+' '+wd:wd;if(tw(t,sz,b)<=w){cur=t;return}
+      if(cur)out.push(cur);if(tw(wd,sz,b)<=w){cur=wd;return}
+      let part='';for(const ch of wd){if(part&&tw(part+ch,sz,b)>w){out.push(part);part=ch}else part+=ch}cur=part});
+    out.push(cur)});return out}
+  newPage();
+  const D={P,M,W,wrap,
+    get y(){return y},set y(v){y=v},
+    need(h){if(y+h>BOT){newPage();return true}return false},
+    gap(h){y+=h},
+    para(s,op={}){const sz=op.sz||9,lh=lhOf(sz),x=op.x??M,w=op.w??W;wrap(s,w,sz,op.b).forEach(t=>{D.need(lh);P.text(x,y+lh*0.75,t,{sz,b:op.b,c:op.c});y+=lh})},
+    h2(t,right){D.need(18);y+=3;P.text(M,y+4.2,t,{sz:11,b:true});if(right)P.text(M+W,y+4.2,fitTxt(right,W-tw(t,11,true)-8,7.6,false),{sz:7.6,c:PC.mut,al:'r'});y+=6.2;P.line(M,y,M+W,y,{c:PC.acc,w:.5});y+=3.2},
+    bar(t,right){const h=7.2;P.rect(M,y,W,h,{f:PC.ink});P.text(M+2.5,y+4.9,t,{sz:9,b:true,c:PC.wh});
+      if(right)P.text(M+W-2.5,y+4.9,fitTxt(right,W-tw(t,9,true)-10,7.4,false),{sz:7.4,c:PC.wh,al:'r'});y+=h+1},
+    pairsAt(list,x,w){let yy=y;list.filter(p=>p&&p[1]).forEach(([l,v])=>{P.text(x,yy+2.6,l.toUpperCase(),{sz:6.4,b:true,c:PC.mut});yy+=3.6;
+      wrap(v,w,10,true).forEach(t=>{P.text(x,yy+lhOf(10)*0.75,t,{sz:10,b:true});yy+=lhOf(10)});yy+=2.4});return yy-y},
+    stats(items){const h=13,g=3,n=items.length,bw=(W-g*(n-1))/n;D.need(h+2);
+      items.forEach(([l,v],i)=>{const x=M+i*(bw+g);P.rect(x,y,bw,h,{f:PC.bg,s:PC.line,w:.2});P.text(x+3,y+4.6,l.toUpperCase(),{sz:6.4,b:true,c:PC.mut});P.text(x+3,y+10.6,v,{sz:12.5,b:true})});y+=h+4},
+    table(cols,rows,op={}){
+      const sz=op.sz||8.2,pad=1.5,hh=6,tot=cols.reduce((a,c)=>a+c.w,0);cols=cols.map(c=>({...c,w:c.w*W/tot}));
+      const tx=(c,x)=>c.al==='r'?x+c.w-pad:c.al==='c'?x+c.w/2:x+pad;
+      const head=()=>{P.rect(M,y,W,hh,{f:PC.bg});let x=M;cols.forEach(c=>{P.text(tx(c,x),y+hh-2,fitTxt(c.t.toUpperCase(),c.w-2*pad,6.3,true),{sz:6.3,b:true,c:PC.mut,al:c.al});x+=c.w});
+        P.line(M,y+hh,M+W,y+hh,{c:PC.line,w:.3});y+=hh};
+      const cellLines=(cell,w,b)=>{const main=cell&&typeof cell==='object'?cell.t:cell,sub=cell&&typeof cell==='object'?cell.s:'';
+        const L=wrap(main??'',w,sz,b).map(t=>({t,sz,b}));if(sub)wrap(sub,w,sz-1,false).forEach(t=>L.push({t,sz:sz-1,b:false,c:PC.mut}));return L};
+      D.need(hh+9);head();
+      rows.forEach(r=>{
+        if(r.grp){const h=6.6;if(D.need(h+9))head();P.rect(M,y,W,h,{f:PC.accS});P.text(M+pad,y+h-2.2,fitTxt(r.grp,W*0.55,7.8,true),{sz:7.8,b:true,c:PC.acc});
+          if(r.right)P.text(M+W-pad,y+h-2.2,fitTxt(r.right,W-Math.min(tw(r.grp,7.8,true),W*0.55)-pad*5,7.2,false),{sz:7.2,c:PC.acc,al:'r'});y+=h;return}
+        const L=cols.map((c,i)=>cellLines(r.cells[i],c.w-2*pad,r.b||c.b)),hOf=ls=>ls.reduce((a,l)=>a+lhOf(l.sz),0);
+        const h=Math.max(r.h||0,...L.map(hOf))+2*pad;
+        if(D.need(h))head();
+        if(r.f)P.rect(M,y,W,h,{f:r.f});
+        let x=M;cols.forEach((c,i)=>{let yy=y+pad;L[i].forEach(l=>{const lh=lhOf(l.sz);P.text(tx(c,x),yy+lh*0.75,l.t,{sz:l.sz,b:l.b,c:l.c||PC.ink,al:c.al});yy+=lh});
+          if(c.draw&&r.draw)r.draw(x,y,c.w,h);x+=c.w});
+        P.line(M,y+h,M+W,y+h,{c:PC.line,w:.2});y+=h})},
+    totals(rows,fin){const w=88,x=M+W-w,rh=6.2,h=rows.length*rh+10;D.need(h+2);
+      rows.forEach(([l,v],i)=>{const yy=y+i*rh;P.text(x+2,yy+4.3,l,{sz:8.6,c:PC.mut});P.text(x+w-2,yy+4.3,v,{sz:8.6,al:'r'});P.line(x,yy+rh,x+w,yy+rh,{c:PC.line,w:.2})});
+      const yf=y+rows.length*rh+1.2;P.rect(x,yf,w,8.4,{f:PC.acc});P.text(x+2.5,yf+5.7,fin[0],{sz:9.5,b:true,c:PC.wh});P.text(x+w-2.5,yf+5.8,fin[1],{sz:11.5,b:true,c:PC.wh,al:'r'});y+=h+3},
+    firma(){D.need(30);y+=8;const w=(W-14)/2;[['Luogo e data',M],['Firma del cliente per accettazione',M+w+14]].forEach(([t,x])=>{P.line(x,y+12,x+w,y+12,{w:.3});P.text(x,y+16,t,{sz:7.5,c:PC.mut})});y+=20},
+    finish(){const n=P.n;for(let i=0;i<n;i++){P.go(i);P.line(M,297-12.5,M+W,297-12.5,{c:PC.line,w:.2});
+        P.text(M,297-8.5,fitTxt(`${o.title} · ${o.ref}`,140,7,false),{sz:7,c:PC.mut});P.text(M+W,297-8.5,`Pagina ${i+1} di ${n}`,{sz:7,c:PC.mut,al:'r'})}
+      return P.bytes(`${o.title} – ${o.ref}`)}
+  };
+  return D}
+/* consegna: menu Condividi (iPad e iPhone) oppure download */
+function sharePdf(res){if(!res)return;const name=safeName(res.name);let file;
+  try{file=new File([res.bytes],name,{type:'application/pdf'})}catch(e){file=new Blob([res.bytes],{type:'application/pdf'})}
+  const dl=()=>{try{const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),5000);toast('PDF creato: '+name)}catch(e){toast('Impossibile creare il PDF su questo dispositivo')}};
+  try{if(file instanceof File&&navigator.canShare&&navigator.canShare({files:[file]})){navigator.share({files:[file],title:name}).catch(e=>{if(!e||e.name!=='AbortError')dl()});return}}catch(e){}
+  dl()}
+const dittaTxt=()=>{const st=S.set,t=[st.ditta,st.indDitta,st.contatto,st.piva?'P. IVA '+st.piva:''].filter(Boolean).join('\n');return t?t+'\n\n':''};
+
+/* disegni nel PDF */
+function pdfElev(P,c,l,li,x,y,w,hMax){
+  const pil=num(l.pil)||0,it=[];let X=0,Hm=0;
+  l.vani.forEach((v,vi)=>{const L=num(v.L);if(!(L>0))return;const Hs=num(v.Hs)||0,Hd=isFinite(num(v.Hd))?num(v.Hd):Hs;
+    if(it.length)X+=pil;it.push({v,vi,x:X,L,Hs,Hd,r:compute(v,c)});X+=L;Hm=Math.max(Hm,Hs,Hd)});
+  if(!it.length||!Hm)return 0;
+  const top=6,bot=8.5,s=Math.min(w/X,(hMax-top-bot)/Hm),dw=X*s,dh=Hm*s,ox=x+(w-dw)/2,base=y+top+dh;
+  const PX=a=>ox+a*s,PY=b=>base-b*s;
+  it.forEach((o,i)=>{
+    if(i&&pil>0){const hp=Math.min(o.Hs,it[i-1].Hd);P.rect(PX(o.x-pil),PY(hp),pil*s,hp*s,{f:PC.line})}
+    P.poly([[PX(o.x),PY(0)],[PX(o.x+o.L),PY(0)],[PX(o.x+o.L),PY(o.Hd)],[PX(o.x),PY(o.Hs)]],{s:PC.ink,w:.35});
+    if(o.r.ok){const sc=o.r.s.schema==='scorrevole';o.r.panes.forEach((q,k)=>{const X0=o.x+q.gx,b=q.by;
+      P.poly([[PX(X0),PY(b)],[PX(X0+q.gw),PY(b)],[PX(X0+q.gw),PY(b+q.hr)],[PX(X0),PY(b+q.hl)]],{f:sc&&k%2?PC.gl2:PC.gl,s:PC.acc,w:.25});
+      const fs=Math.max(5,Math.min(9,q.gw*s*1.3));P.text(PX(X0+q.gw/2),PY(b+(q.hl+q.hr)/4)+fs*0.13,String(q.i),{sz:fs,b:true,al:'c'})})}
+    P.text(PX(o.x+o.L/2),PY(Math.max(o.Hs,o.Hd))-1.8,fitTxt(`${letter(li)}${o.vi+1} · ${o.v.nome}`,Math.max(8,o.L*s-1),6.4,true),{sz:6.4,b:true,al:'c'});
+    const yd=base+2.4;P.line(PX(o.x),yd,PX(o.x+o.L),yd,{c:PC.hi,w:.2});P.line(PX(o.x),yd-1.2,PX(o.x),yd+1.2,{c:PC.hi,w:.2});P.line(PX(o.x+o.L),yd-1.2,PX(o.x+o.L),yd+1.2,{c:PC.hi,w:.2});
+    P.text(PX(o.x+o.L/2),yd+3.9,fmt(o.L),{sz:6.6,c:PC.hi,al:'c'});
+    P.text(PX(o.x)+0.9,PY(o.Hs)+3.6,fmt(o.Hs),{sz:5.8,c:PC.mut});
+    if(Math.abs(o.Hs-o.Hd)>.5)P.text(PX(o.x+o.L)-0.9,PY(o.Hd)+3.6,fmt(o.Hd),{sz:5.8,c:PC.mut,al:'r'})});
+  return top+dh+bot}
+function pdfPlan(P,c,x,y,w,h){
+  let X=0,Y=0,dx=0,dy=1;const sg=[];
+  c.lati.forEach((l,li)=>{const len=latoLen(l)||1000,s={l,li,x0:X,y0:Y,dx,dy};X+=dx*len;Y+=dy*len;s.x1=X;s.y1=Y;sg.push(s);
+    const t=(180-(num(l.angolo)||90))*Math.PI/180;[dx,dy]=[dx*Math.cos(t)+dy*Math.sin(t),-dx*Math.sin(t)+dy*Math.cos(t)]});
+  if(!sg.length)return;
+  const xs=sg.flatMap(s=>[s.x0,s.x1]),ys=sg.flatMap(s=>[s.y0,s.y1]),mnX=Math.min(...xs),mxX=Math.max(...xs),mnY=Math.min(...ys),mxY=Math.max(...ys);
+  const pad=9,sc=Math.min((w-2*pad)/Math.max(mxX-mnX,1),(h-2*pad)/Math.max(mxY-mnY,1));
+  const ox=x+(w-(mxX-mnX)*sc)/2,oy=y+(h-(mxY-mnY)*sc)/2,PX=v=>ox+(v-mnX)*sc,PY=v=>oy+(v-mnY)*sc;
+  if(c.parete&&sg.length>1){const a=sg[0],b=sg[sg.length-1];P.line(PX(b.x1),PY(b.y1),PX(a.x0),PY(a.y0),{c:PC.mut,w:.5,d:[1.2,1]})}
+  sg.forEach(s=>{P.line(PX(s.x0),PY(s.y0),PX(s.x1),PY(s.y1),{c:PC.acc,w:.9});
+    let acc=0;s.l.vani.forEach((v,i)=>{acc+=num(v.L)||0;if(i<s.l.vani.length-1){const px=PX(s.x0+s.dx*acc),py=PY(s.y0+s.dy*acc);P.line(px+s.dy*1.2,py-s.dx*1.2,px-s.dy*1.2,py+s.dx*1.2,{c:PC.acc,w:.3});acc+=num(s.l.pil)||0}});
+    const nx=-s.dy,ny=s.dx,mx=(PX(s.x0)+PX(s.x1))/2+nx*5,my=(PY(s.y0)+PY(s.y1))/2+ny*5;
+    P.text(mx,my-0.2,letter(s.li),{sz:8,b:true,al:'c'});P.text(mx,my+2.6,fmt(latoLen(s.l)),{sz:5.8,c:PC.mut,al:'c'})})}
+function pdfWin(P,x,y,w,h,f,oL,oH){
+  const s=Math.min(w/(oL||1),h/(oH||1)),dw=(oL||1)*s,dh=(oH||1)*s,x0=x+(w-dw)/2,y0=y+(h-dh)/2;
+  const fr=Math.min(dw,dh)*0.08,n=Math.max(1,Math.min(4,+f.ante||1)),a=f.apertura||'Anta',sw=(dw-2*fr)/n;
+  P.rect(x0,y0,dw,dh,{f:PC.bg,s:PC.ink,w:.3});
+  const L=(x1,y1,x2,y2,d)=>P.line(x1,y1,x2,y2,{c:PC.ink,w:.2,d:d?[.8,.6]:null});
+  const prim=f.verso==='SX'?0:n-1;
+  for(let i=0;i<n;i++){const ax=x0+fr+i*sw,ay=y0+fr,ah=dh-2*fr,cs=n===1?f.verso!=='DX':i<n/2,hx=cs?ax:ax+sw,mx=cs?ax+sw:ax,tilt=a==='Vasistas'||(a==='Anta-ribalta'&&(n===1||i===prim));
+    P.rect(ax,ay,sw,ah,{f:PC.gl,s:PC.acc,w:.25});
+    if(a==='Anta'||a==='Anta-ribalta'){L(hx,ay,mx,ay+ah/2);L(hx,ay+ah,mx,ay+ah/2)}
+    if(tilt){L(ax,ay+ah,ax+sw/2,ay,a==='Anta-ribalta');L(ax+sw,ay+ah,ax+sw/2,ay,a==='Anta-ribalta')}
+    if(a==='Bilico'){L(ax,ay+ah/2,ax+sw,ay+ah/2);L(ax+sw/2,ay,ax+sw/2,ay+ah,true)}
+    if(a==='Scorrevole'||a==='Alzante scorrevole'){const dir=i%2?-1:1,cy=ay+ah/2,p1=ax+sw*.25,p2=ax+sw*.75,tip=dir>0?p2:p1,k=Math.min(sw,ah)*.1;L(p1,cy,p2,cy);L(tip,cy,tip-dir*k,cy-k);L(tip,cy,tip-dir*k,cy+k)}
+    if(a==='Fisso')P.text(ax+sw/2,ay+ah/2+1.2,'F',{sz:7,b:true,c:PC.mut,al:'c'})}}
+
+/* documenti */
+function pdfDistinta(c){
+  const t=totals(c);if(!t.vetri){toast('Nessun vetro da mettere in distinta: inserisci le misure dei vani.');return null}
+  const D=mkDoc({title:'Distinta vetri',ref:c.nome,meta:[['Data',oggi()]]}),P=D.P,M=D.M,W=D.W;
+  const plan=c.lati.filter(l=>latoLen(l)>0).length>=2,pw=74,ph=48;
+  const h1=D.pairsAt([['Cantiere',c.nome],['Indirizzo',c.indirizzo],['Cliente',c.prev&&c.prev.cliente]],M,plan?W-pw-8:W);
+  if(plan){P.rect(M+W-pw,D.y,pw,ph,{s:PC.line,w:.25});P.text(M+W-pw+2.5,D.y+4,'PIANTA',{sz:6.2,b:true,c:PC.mut});pdfPlan(P,c,M+W-pw,D.y+3,pw,ph-3)}
+  D.y+=Math.max(h1,plan?ph:0)+4;
+  D.stats([['Vani',String(t.vani)],['Vetri',String(t.vetri)],['m² di vetro',fmt(t.mq,2)],['Peso',fmt(t.kg,0)+' kg']]);
+  const byG={};c.lati.forEach(l=>l.vani.forEach(v=>{const r=compute(v,c);if(!r.ok)return;const g=byG[r.gl.id]||(byG[r.gl.id]={nome:r.gl.nome,n:0,mq:0,kg:0});g.n+=r.N*r.qta;g.mq+=r.mq;g.kg+=r.kg}));
+  D.h2('Vetri da ordinare');
+  D.table([{t:'Vetro',w:90},{t:'Pezzi',w:30,al:'r'},{t:'m²',w:30,al:'r'},{t:'Peso kg',w:30,al:'r'}],
+    [...Object.values(byG).map(g=>({cells:[g.nome,String(g.n),fmt(g.mq,2),fmt(g.kg,0)]})),{cells:['Totale',String(t.vetri),fmt(t.mq,2),fmt(t.kg,0)],b:true,f:PC.bg}]);
+  D.h2('Dettaglio per lato','Rif. = lato, vano e numero del vetro (es. A1-2) · misure in mm');
+  c.lati.forEach((l,li)=>{
+    const vv=l.vani.map((v,vi)=>({v,vi,r:compute(v,c)})).filter(o=>o.r.ok);if(!vv.length)return;
+    const nV=vv.reduce((a,o)=>a+o.r.N*o.r.qta,0),dh=60;
+    D.need(9+dh+24);
+    D.bar(`${letter(li)} · ${l.nome}`,`Lunghezza ${fmt(latoLen(l))} mm · ${pl(vv.length,'vano','vani')} · ${pl(nV,'vetro','vetri')}`);
+    D.y+=pdfElev(P,c,l,li,M,D.y+1,W,dh)+3;
+    const rows=[];
+    vv.forEach(({v,vi,r})=>{rows.push({grp:`${letter(li)}${vi+1} · ${v.nome}`,right:`${r.s.nome} · ${r.gl.nome} · vano ${fmt(r.L)} × ${r.flat?fmt(r.Hs):fmt(r.Hs)+'/'+fmt(r.Hd)}${r.qta>1?' · × '+r.qta:''}`});
+      r.panes.forEach(q=>rows.push({cells:[`${letter(li)}${vi+1}-${q.i}`,q.mob?'Anta mobile':'Fisso',fmtMm(q.gw),r.flat?fmtMm(q.hl):`${fmtMm(q.hl)} / ${fmtMm(q.hr)}`,String(r.qta),fmt(q.mq*r.qta,3),fmt(q.kg*r.qta,1)]}))});
+    D.table([{t:'Rif.',w:18},{t:'Tipo',w:30},{t:'Larghezza',w:28,al:'r'},{t:'Altezza',w:36,al:'r'},{t:'Pz',w:14,al:'r'},{t:'m²',w:26,al:'r'},{t:'kg',w:28,al:'r'}],rows);
+    D.gap(5)});
+  if(S.set.noteOrdine){D.h2('Note');D.para(S.set.noteOrdine)}
+  return{bytes:D.finish(),name:`Distinta vetri - ${c.nome}.pdf`}}
+function pdfOrdine(c,kind){
+  const fin=kind==='fin',rows=c.fz.voci.map(x=>({x,r:fzCalc(c,x)})).filter(o=>o.r.ok&&o.r[kind]);
+  if(!rows.length){toast(fin?'Nessuna finestra con misure.':'Nessuna zanzariera con misure.');return null}
+  const tit=fin?'Ordine finestre':'Ordine zanzariere',D=mkDoc({title:tit,ref:c.nome,meta:[['Data',oggi()]]});
+  D.y+=D.pairsAt([['Cantiere',c.nome],['Indirizzo',c.indirizzo]],D.M,D.W)+2;
+  const pz=rows.reduce((a,o)=>a+o.r.q,0),mq=rows.reduce((a,o)=>a+o.r[kind].mq*o.r.q,0);
+  D.stats([[fin?'Finestre':'Zanzariere',String(pz)],['Posizioni',String(rows.length)],['m² totali',fmt(mq,2)]]);
+  D.h2(fin?'Finestre da ordinare':'Zanzariere da ordinare',fin?'Misure da ordinare in mm · schema visto dall\'interno':'Misure da ordinare in mm');
+  const cols=fin?[{t:'N°',w:9},{t:'Schema',w:32,draw:true},{t:'Vano',w:28},{t:'Descrizione',w:59},{t:'Larghezza',w:19,al:'r'},{t:'Altezza',w:19,al:'r'},{t:'Q.tà',w:14,al:'r'}]
+    :[{t:'N°',w:9},{t:'Vano',w:34},{t:'Descrizione',w:85},{t:'Larghezza',w:19,al:'r'},{t:'Altezza',w:19,al:'r'},{t:'Q.tà',w:14,al:'r'}];
+  D.table(cols,rows.map((o,i)=>{const x=o.x,m=o.r[kind];
+    if(fin){const f=x.fin,n=+f.ante||1,det=[`${f.apertura}, ${pl(n,'anta','ante')}${f.verso?' '+f.verso:''}`,f.vetro?'Vetro: '+f.vetro:'',f.colore?'Colore: '+f.colore:'',f.note?'Note: '+f.note:''].filter(Boolean).join('\n');
+      return{cells:[String(i+1),'',x.nome,{t:m.t.nome,s:det},fmtMm(m.oL),fmtMm(m.oH),String(o.r.q)],h:24,draw:(cx,cy,cw,ch)=>pdfWin(D.P,cx+2,cy+2,cw-4,ch-4,f,m.oL,m.oH)}}
+    const z=x.zan,det=[`Montaggio ${m.mont}`,z.colore?'Colore: '+z.colore:'',z.rete?'Rete: '+z.rete:'',z.comando?'Comando: '+z.comando:'',z.note?'Note: '+z.note:''].filter(Boolean).join('\n');
+    return{cells:[String(i+1),x.nome,{t:m.t.nome,s:det},fmtMm(m.oL),fmtMm(m.oH),String(o.r.q)]}}).concat([{cells:fin?['','','Totale','','','',String(pz)]:['','Totale','','','',String(pz)],b:true,f:PC.bg}]));
+  return{bytes:D.finish(),name:`${tit} - ${c.nome}.pdf`}}
+function pdfPreventivo(c){
+  const k=prevCalc(c,true),pv=k.pv;save();
+  if(!k.vetri.length&&!k.fin.length&&!k.zan.length&&!k.lav.length){toast('Il preventivo è vuoto: aggiungi vani o lavorazioni.');return null}
+  const D=mkDoc({title:'Preventivo',ref:pv.cliente||c.nome,meta:[pv.numero?['N.',pv.numero]:null,['Data',fmtData(pv.data)||oggi()]].filter(Boolean)}),M=D.M,W=D.W,g=8,cw=(W-g)/2;
+  const h1=D.pairsAt([['Cliente',pv.cliente||'—']],M,cw),h2=D.pairsAt([['Lavoro',c.nome],['Indirizzo',c.indirizzo]],M+cw+g,cw);D.y+=Math.max(h1,h2)+1;
+  D.para('Importi in euro, IVA esclusa salvo dove indicato.',{sz:7.5,c:PC.mut});
+  if(k.vetri.length){D.h2('Vetrate e scorrevoli');
+    const vr=[];c.lati.forEach((l,li)=>l.vani.forEach((v,vi)=>{const r=compute(v,c);if(!r.ok)return;
+      vr.push({cells:[`${letter(li)}${vi+1}`,{t:`${v.nome} · ${l.nome}`,s:`${r.s.nome} · ${pl(r.N,r.s.mobili?'anta':'vetro',r.s.mobili?'ante':'vetri')} · ${r.gl.nome}`},`${fmt(r.L)} × ${r.flat?fmt(r.Hs):fmt(r.Hs)+'/'+fmt(r.Hd)}`,String(r.qta)]})}));
+    D.table([{t:'Rif.',w:13},{t:'Descrizione',w:109},{t:'Misure vano mm',w:38,al:'r'},{t:'Q.tà',w:20,al:'r'}],vr);D.gap(2.5);
+    D.table([{t:'Vetro',w:72},{t:'Pezzi',w:18,al:'r'},{t:'m²',w:24,al:'r'},{t:'Prezzo €/m²',w:32,al:'r'},{t:'Importo €',w:34,al:'r'}],
+      [...k.vetri.map(g=>({cells:[g.nome,String(g.n),fmt(g.fmq,2),g.pr>0?fmtE(g.pr):'da definire',g.pr>0?fmtE(g.imp):'–']})),{cells:['Totale vetrate','','','',fmtE(k.totV)],b:true,f:PC.bg}])}
+  const fzT=(kind,list,tv,lab)=>{D.h2(lab);
+    D.table([{t:'Rif.',w:12},{t:'Descrizione',w:80},{t:'Misura mm',w:30,al:'r'},{t:'Q.tà',w:12,al:'r'},{t:'Prezzo €',w:22,al:'r'},{t:'Importo €',w:24,al:'r'}],
+      [...list.map((l,i)=>{const x=l.x,o=l.o,e=l.e,f=x.fin,z=x.zan;
+        const det=kind==='fin'?[descFin(c,x),f.vetro,f.colore].filter(Boolean).join(' · '):[descZan(c,x),z.colore,z.rete?'rete '+z.rete.toLowerCase():''].filter(Boolean).join(' · ');
+        const prz=!(l.pr>0)?'da definire':e.modo==='mq'?{t:fmtE(l.pr)+'/m²',s:`${fmt(l.mqF,2)} m²${l.mqF>o.mq+1e-9?' (min.)':''} cad.`}:{t:fmtE(l.pr),s:'cad.'};
+        return{cells:[`${kind==='fin'?'F':'Z'}${i+1}`,{t:x.nome,s:det},`${fmtMm(o.oL)} × ${fmtMm(o.oH)}`,String(l.q),prz,l.pr>0?fmtE(l.imp):'–']}}),
+       {cells:['',`Totale ${lab.toLowerCase()}`,'','','',fmtE(tv)],b:true,f:PC.bg}])};
+  if(k.fin.length)fzT('fin',k.fin,k.totF,'Finestre');
+  if(k.zan.length)fzT('zan',k.zan,k.totZ,'Zanzariere');
+  if(k.lav.length){D.h2('Altre lavorazioni');
+    D.table([{t:'Descrizione',w:92},{t:'Q.tà',w:22,al:'r'},{t:'U.M.',w:14},{t:'Prezzo €',w:26,al:'r'},{t:'Importo €',w:26,al:'r'}],
+      [...k.lav.map(x=>({cells:[x.desc||'Lavorazione',fmtQ(num(x.qta)||0),x.um,fmtE(num(x.prezzo)||0),fmtE(x.imp)]})),{cells:['Totale altre lavorazioni','','','',fmtE(k.totL)],b:true,f:PC.bg}])}
+  D.gap(4);
+  D.totals([k.vetri.length?['Vetrate e scorrevoli',eur(k.totV)]:null,k.fin.length?['Finestre',eur(k.totF)]:null,k.zan.length?['Zanzariere',eur(k.totZ)]:null,k.lav.length?['Altre lavorazioni',eur(k.totL)]:null,
+    ['Imponibile',eur(k.imp)],...(k.sc>0?[[`Sconto ${fmtQ(num(pv.sconto))}%`,'– '+eur(k.sc)],['Imponibile scontato',eur(k.base)]]:[]),[`IVA ${fmtQ(num(pv.iva)||0)}%`,eur(k.iva)]].filter(Boolean),['Totale IVA inclusa',eur(k.tot)]);
+  const cond=[num(pv.validita)>0?`Offerta valida ${pv.validita} giorni dalla data del preventivo.`:'',pv.note||''].filter(Boolean);
+  if(cond.length){D.h2('Note e condizioni');cond.forEach(t=>{D.para(t);D.gap(1.5)})}
+  D.firma();
+  return{bytes:D.finish(),name:`Preventivo${pv.numero?' '+pv.numero:''} - ${pv.cliente||c.nome}.pdf`}}
+
 /* ---------- impostazioni generali ---------- */
 function renderSettings(){
   $('hdr').innerHTML=`<div class="brand"><button class="back" id="backBtn" type="button" aria-label="Indietro">${ICON.back}</button>
@@ -1590,7 +1825,8 @@ function renderSettings(){
     <div class="setrow"><span class="setl">Arrotonda le misure di taglio</span>${seg('sArr',st.arrotVetro,[['decimo','Al decimo di mm'],['mm-giu','Al mm per difetto'],['mm','Al mm più vicino']])}</div>
   </section>
   <section class="card">${cardH('Dati della ditta','intest','hp_int')}
-    <div class="fields">${fld({id:'sDitta',label:'Ditta',val:st.ditta,attrs:'placeholder="Es. Rossi Serramenti"'})}${fld({id:'sCont',label:'Contatto',val:st.contatto,attrs:'placeholder="Telefono o email"'})}</div>
+    <div class="fields">${fld({id:'sDitta',label:'Ditta',val:st.ditta,attrs:'placeholder="Es. Rossi Serramenti"'})}${fld({id:'sInd',label:'Indirizzo',val:st.indDitta,attrs:'placeholder="Via, numero, CAP e città"'})}
+      ${fld({id:'sCont',label:'Contatto',val:st.contatto,attrs:'placeholder="Telefono o email"'})}${fld({id:'sPiva',label:'Partita IVA',val:st.piva,attrs:'inputmode="numeric"'})}</div>
     ${fld({id:'sNote',label:'Note per il vetraio',ctrl:`<textarea id="sNote" rows="2" placeholder="Es. filo lucido, consegna in cantiere">${esc(st.noteOrdine)}</textarea>`})}
   </section>
   ${tipHTML(ctx,'Tipologie vetrate predefinite','tipPredef')}
@@ -1611,7 +1847,7 @@ function renderSettings(){
   $('backBtn').onclick=()=>{S.ui.imp=false;save();render();window.scrollTo(0,0)};
   const segBind=(id,fn)=>$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{fn(b.dataset.v);save();applySettings();renderSettings()});
   segBind('sTema',v=>st.tema=v);segBind('sTesto',v=>st.testo=v);segBind('sAiuti',v=>st.aiuti=v==='1');segBind('sArr',v=>st.arrotVetro=v);
-  $('sDitta').oninput=e=>{st.ditta=e.target.value;save()};$('sCont').oninput=e=>{st.contatto=e.target.value;save()};$('sNote').oninput=e=>{st.noteOrdine=e.target.value;save()};
+  $('sDitta').oninput=e=>{st.ditta=e.target.value;save()};$('sInd').oninput=e=>{st.indDitta=e.target.value;save()};$('sPiva').oninput=e=>{st.piva=e.target.value;save()};$('sCont').oninput=e=>{st.contatto=e.target.value;save()};$('sNote').oninput=e=>{st.noteOrdine=e.target.value;save()};
   bindTip(ctx);
   bindVetri(S,'catalogo','gv',renderSettings,null);
   bindFzTip('fin',fctx);bindFzTip('zan',fctx);
