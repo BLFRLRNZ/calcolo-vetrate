@@ -1,6 +1,8 @@
 // Copia offline dell'app. Cambia VERSIONE quando aggiorni i file.
-// I file dell'app vengono sempre chiesti prima al server (senza usare copie vecchie),
-// e la copia salvata serve solo quando manca internet.
+// I file dell'app vengono sempre chiesti prima al server (senza usare copie vecchie).
+// La copia salvata sul dispositivo si usa quando manca internet oppure quando il sito
+// non risponde correttamente (per esempio se la pubblicazione è sospesa): così l'app
+// installata continua a funzionare.
 const VERSIONE = 'vetrate-v11';
 const FILE = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 
@@ -26,8 +28,9 @@ function pulita(r) {
   return r.blob().then(b => new Response(b, { status: r.status, statusText: r.statusText, headers: r.headers }));
 }
 
-function copiaSalvata(req) {
-  return caches.match(req, { ignoreSearch: true }).then(r => r || caches.match('index.html'));
+function dallaCopia(req) {
+  return caches.match(req, { ignoreSearch: true })
+    .then(r => r || (req.mode === 'navigate' ? caches.match('index.html').then(x => x || caches.match('./')) : undefined));
 }
 
 self.addEventListener('fetch', e => {
@@ -39,11 +42,15 @@ self.addEventListener('fetch', e => {
       fetch(e.request.url, { cache: 'no-cache', credentials: 'same-origin' })
         .then(pulita)
         .then(r => {
-          if (r.ok) { const c = r.clone(); caches.open(VERSIONE).then(x => x.put(e.request, c)); return r; }
-          // sito non disponibile (es. 404 se la pubblicazione è spenta): usa la copia salvata
-          return copiaSalvata(e.request).then(m => m || r);
+          if (r.ok) {
+            const c = r.clone();
+            caches.open(VERSIONE).then(x => x.put(e.request, c));
+            return r;
+          }
+          // sito non disponibile (es. pagina non trovata): meglio la copia salvata
+          return dallaCopia(e.request).then(c => c || r);
         })
-        .catch(() => copiaSalvata(e.request))
+        .catch(() => dallaCopia(e.request))
     );
   } else if (/fonts\.(googleapis|gstatic)\.com$/.test(url.hostname)) {
     e.respondWith(
