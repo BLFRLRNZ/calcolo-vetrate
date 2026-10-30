@@ -235,7 +235,7 @@ details summary::-webkit-details-marker{display:none}
 .ver{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;font:500 .7rem var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:4px 0 8px}
 .upd{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--nav-h) + 16px + env(safe-area-inset-bottom,0px));z-index:21;display:flex;align-items:center;gap:12px;
   background:var(--surface);border:1px solid var(--accent);border-radius:var(--r);padding:8px 8px 8px 14px;font:500 .8rem var(--f-mono);box-shadow:0 6px 20px rgba(0,0,0,.18);white-space:nowrap}
-.htabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:12px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:4px}
+.htabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;margin-top:12px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r);padding:4px}
 .htabs button{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 10px;border-radius:4px;font:600 .9rem var(--f-body);color:var(--muted)}
 .htabs button svg{width:18px;height:18px}
 .htabs button[aria-selected="true"]{background:var(--ink);color:var(--surface)}
@@ -315,6 +315,23 @@ details.regole[open] summary{margin-bottom:10px}
 .pl-tot b{font:600 1rem var(--f-mono);font-variant-numeric:tabular-nums}
 .htabs button{white-space:normal;text-align:center;line-height:1.2}
 @media (max-width:480px){.htabs button{font-size:.8rem;gap:6px;padding:8px 6px}.htabs button svg{width:16px;height:16px;flex:none}}
+#avv:not(:empty){padding-top:14px}
+.psez{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (min-width:640px){.psez{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.psb{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--surface);font:600 .86rem var(--f-body);color:var(--ink)}
+.psb b{font:600 .78rem var(--f-mono);color:var(--muted);background:var(--surface-2);border-radius:99px;padding:2px 8px}
+.psb[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--surface)}
+.psb[aria-pressed="true"] b{background:rgba(127,127,127,.28);background:color-mix(in srgb,var(--surface) 18%,transparent);color:var(--surface)}
+.psb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pu-list{display:flex;flex-direction:column;gap:6px}
+.pu-row{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface-2)}
+.pu-d{flex:1 1 180px;min-width:0}
+.pu-d b{display:block;font-weight:600;overflow-wrap:anywhere}
+.pu-d small{display:block;font-size:.76rem;color:var(--muted)}
+.pu-a{margin-left:auto}
+.pu-row .pill{align-self:center}
+.pu-diff{flex-basis:100%;margin:0;padding-left:18px;font-size:.78rem;color:var(--muted)}
+.pu-diff b{color:var(--ink);font-weight:600}
 .toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:8px 14px;border-radius:4px;font:500 .82rem var(--f-mono);z-index:20}
 @media (prefers-reduced-motion:no-preference){.seg button,.btn,.bnav button{transition:background .15s,color .15s,border-color .15s}}
 </style>
@@ -323,6 +340,7 @@ details.regole[open] summary{margin-bottom:10px}
 <body>
 <div class="wrap">
 <header id="hdr"></header>
+<div id="avv"></div>
 <main id="main"></main>
 </div>
 
@@ -338,19 +356,19 @@ const clone=o=>JSON.parse(JSON.stringify(o));
 
 /* ---------- testi delle spiegazioni (pulsanti «!») ---------- */
 const HELP={
- nuovo:'Scegli il lavoro: Vetrate e scorrevoli, Finestre e zanzariere o entrambi. Si apre la sezione giusta e puoi sempre usare anche l\'altra. Il cantiere parte dalle tipologie e dai vetri predefiniti impostati in Impostazioni generali (ingranaggio in alto a destra). Con Importa cantiere apri un file ricevuto da un collega. Prezzi e preventivi stanno nella sezione Preventivi.',
+ nuovo:'Scegli il lavoro: Vetrate e scorrevoli, Finestre e zanzariere o entrambi. Si apre la sezione giusta e puoi sempre usare anche l\'altra. Nei vani scegli i profili creati nella sezione Profili. Con Importa cantiere apri un file ricevuto da un collega: i suoi profili che non hai vengono aggiunti ai tuoi.',
  lato:'Un lato è una parete della veranda, ad esempio il fronte o un fianco, e contiene uno o più vani. I vani vanno inseriti da sinistra a destra guardando il lato dall\'esterno. Le frecce cambiano l\'ordine dei lati, che è anche l\'ordine con cui vengono disegnati in pianta.',
  angolo:'Angolo tra questo lato e il successivo, misurato all\'interno della veranda: 90° per un angolo retto, 135° per un angolo smussato. Serve solo per disegnare la pianta e non cambia le misure dei vetri. Se non lo conosci, usa lo strumento Angolo tra due lati.',
  pil:'Spessore di pilastri, montanti o muretti che separano un vano dall\'altro sullo stesso lato. Si aggiunge alla lunghezza del lato e compare nel prospetto. Non cambia le misure dei vetri.',
- vano:'Per ogni vano l\'app calcola subito numero di vetri, misure di taglio, m² e peso, secondo la tipologia scelta. Il disegno mostra il vano visto dall\'esterno, con i vetri numerati, le quote in arancione e, per le vetrate apribili, la freccia del verso di apertura. Apri Misure dei vetri per la tabella completa e gli eventuali avvisi.',
+ vano:'Per ogni vano l\'app calcola subito numero di vetri, misure di taglio, m² e peso, secondo il profilo scelto. Il disegno mostra il vano visto dall\'esterno, con i vetri numerati, le quote in arancione e, per le vetrate apribili, la freccia del verso di apertura. Apri Misure dei vetri per la tabella completa e gli eventuali avvisi.',
  vL:'Larghezza del vano finito, da muro a muro o da pilastro a pilastro. Misurala in alto, al centro e in basso e usa la più piccola.',
  vHd:'Altezze ai due lati del vano, guardando dall\'esterno. Se sono diverse il vano è in pendenza e ogni vetro avrà due altezze. Lascia vuota l\'altezza destra se è uguale alla sinistra.',
  vq:'Quante vetrate identiche a questa ci sono. Moltiplica vetri, m² e pesi nei totali e nella distinta.',
- vt:'Il tipo di vetrata di questo vano. Detrazioni e limiti di ogni tipologia si impostano in Parametri.',
- vn:'Con Automatico l\'app usa il numero minimo di vetri che rispetta larghezza e peso massimi della tipologia. Puoi scegliere un numero preciso: se supera i limiti compare un avviso.',
- vg:'Il vetro serve per calcolare peso ed eventuale costo. L\'elenco dei vetri del cantiere si modifica in Parametri.',
+ vt:'Il profilo di questo vano, scelto tra quelli della sezione Profili. Le deduzioni si modificano in Profili: il cantiere conserva i valori con cui l\'hai calcolato e ti avvisa se nel frattempo il profilo è cambiato.',
+ vn:'Con Automatico l\'app usa il numero minimo di vetri che rispetta larghezza e peso massimi del profilo. Puoi scegliere un numero preciso: se supera i limiti compare un avviso.',
+ vg:'Il vetro serve per calcolare il peso e, nel preventivo, il prezzo. L\'elenco dei vetri si gestisce in Profili › Vetri.',
  pianta:'Vista dall\'alto della veranda. I lati sono disegnati in sequenza con gli angoli inseriti in Struttura; la linea tratteggiata è la parete di appoggio. Le tacche indicano dove finisce un vano e inizia il successivo. Tocca un lato per vederne il prospetto.',
- prospetto:'Il lato visto dall\'esterno, con i vani, i vetri numerati e le misure. Nelle tipologie ad ante sovrapposte le ante hanno due tonalità alternate; le frecce arancioni indicano il verso di apertura. Tutti i lati mostra lo sviluppo completo della veranda, un lato dopo l\'altro.',
+ prospetto:'Il lato visto dall\'esterno, con i vani, i vetri numerati e le misure. Nei profili ad ante sovrapposte le ante hanno due tonalità alternate; le frecce arancioni indicano il verso di apertura. Tutti i lati mostra lo sviluppo completo della veranda, un lato dopo l\'altro.',
  totali:'Vani, vetri, m² e peso di tutto il cantiere. Distinta PDF crea il documento per il vetraio, con i disegni di ogni lato e le misure di ogni vetro: si apre il menu Condividi per mandarlo, salvarlo in File o stamparlo. Copia distinta copia lo stesso contenuto come testo. Prezzi e costi stanno nel preventivo.',
  ordine:'Pezzi, superfici e pesi raggruppati per tipo di vetro: è il riassunto da usare per l\'ordine al vetraio.',
  distinta:'Tutti i vetri del cantiere, lato per lato, con le misure di taglio. Nei vani in pendenza l\'altezza è indicata come sinistra / destra.',
@@ -358,8 +376,7 @@ const HELP={
  calcolo:'<b>Come si calcola un vetro</b><br>1. Luce = larghezza vano − 2 × gioco di posa − deduzione telaio in larghezza.<br>2. Ante sovrapposte: anta = (luce + sormonti) ÷ numero di ante. Vetri affiancati: modulo = (luce − spazi tra vetri) ÷ numero di vetri.<br>3. Larghezza vetro = anta o modulo − deduzione vetro in larghezza.<br>4. Altezza vetro = altezza vano − 2 × gioco di posa − deduzione telaio in altezza − deduzione vetro in altezza.',
  schema:'Ante sovrapposte: le ante scorrono su binari diversi e da chiuse si sovrappongono (si usa il sormonto). Vetri affiancati: i vetri stanno uno accanto all\'altro, separati da una fuga, una guarnizione o un montante (impacchettabili, a libro, fisse).',
  mobili:'Indica se i vetri si aprono. Serve per le etichette Anta mobile o Fisso nella distinta e nei disegni.',
- prova:'Inserisci le misure di un vano di cui conosci già i vetri, per esempio un lavoro fatto con lo stesso sistema: se i risultati coincidono, la tipologia è tarata bene. La prova non viene salvata nel cantiere.',
- tipPre:'Salva come predefinite: queste tipologie diventano il punto di partenza per i nuovi cantieri. Ricarica le predefinite: sostituisce le tipologie di questo cantiere con quelle predefinite e ricollega i vani alla tipologia corrispondente.',
+ prova:'Inserisci le misure di un vano di cui conosci già i vetri, per esempio un lavoro fatto con lo stesso sistema: se i risultati coincidono, il profilo è tarato bene. La prova non modifica il profilo né i cantieri.',
  fattur:'Regole per calcolare i m² dei vetri da mettere in preventivo: superficie minima per lastra, arrotondamento dei lati e maggiorazione per sfrido. Non cambiano le misure di taglio dei vetri.',
  vetri:'Elenco dei vetri che puoi scegliere nei vani. Scrivendo lo spessore il peso viene stimato a 2,5 kg/m² per mm; puoi correggerlo a mano, per esempio per i vetrocamera. I prezzi si inseriscono nella sezione Preventivi.',
  inclinato:'Per i vani sotto una falda: con la base e le due altezze ricavi il lato superiore inclinato, la pendenza e le due diagonali, utili per controllare il vano o tagliare i profili. Puoi partire dalle misure di un vano del cantiere.',
@@ -369,9 +386,7 @@ const HELP={
  aspetto:'Automatico segue l\'impostazione chiaro o scuro dell\'iPad. Testo grande ingrandisce tutta l\'app, comodo in cantiere. Puoi nascondere i pulsanti «!» quando non ti servono più: le spiegazioni restano disponibili riattivandoli da qui.',
  arrot:'Come vengono arrotondate le misure di taglio dei vetri. Al mm per difetto è la scelta più prudente per l\'ordine: il vetro non risulta mai più grande del calcolo. Superfici e pesi vengono calcolati sulle misure arrotondate.',
  intest:'Ditta, indirizzo, contatto e partita IVA compaiono in testa ai PDF (distinte, ordini e preventivi) e ai testi copiati. Le note per il vetraio vanno in fondo alla distinta vetri.',
- tipPredef:'Tipologie con cui parte ogni nuovo cantiere. Modificarle qui non cambia i cantieri esistenti: per aggiornarne uno, aprilo e in Parametri usa Ricarica le predefinite.',
  fatturPre:'Fatturazione con cui parte ogni nuovo cantiere. Non cambia i cantieri esistenti.',
- vetriPre:'Vetri con cui parte ogni nuovo cantiere. Modificarli qui non cambia i cantieri esistenti.',
  backup:'I dati sono salvati solo su questo dispositivo. Backup completo crea un file con tutti i cantieri e le impostazioni: salvalo in File, su iCloud o mandalo via email. Ripristina backup sostituisce tutti i dati con quelli del file. Elimina tutti i dati cancella tutto da questo dispositivo.',
  prevLista:'Ogni cantiere ha un solo preventivo che comprende vetrate, finestre e zanzariere. Qui vedi stato e totale di ciascuno e le somme per stato. Il Listino prezzi contiene i prezzi di partenza: i preventivi li usano da soli per le voci nuove. I filtri mostrano solo bozze, inviati, accettati o rifiutati.',
  prevDati:'Cliente, numero e data compaiono in testa al preventivo. Lo stato serve a tenere traccia dei preventivi: bozza, inviato al cliente, accettato o rifiutato. PDF crea il preventivo da mandare al cliente. Prezzi dal listino aggiorna tutti i prezzi (vetri, finestre, zanzariere) con quelli del listino. Apri cantiere porta alle misure e ai disegni.',
@@ -379,33 +394,34 @@ const HELP={
  prevLav:'Voci da aggiungere ai vetri: posa, profili, trasporto, smaltimento e altro. Per ogni voce scrivi descrizione, quantità, unità di misura e prezzo unitario. Con i pulsanti Dal listino aggiungi una voce già pronta: la quantità viene proposta dal cantiere (m² di vetro, metri lineari dei lati o numero di vani) e puoi correggerla.',
  prevTot:'Lo sconto si applica all\'imponibile (vetri più lavorazioni), poi si aggiunge l\'IVA. Imposta l\'aliquota IVA giusta per il tipo di lavoro.',
  prevNote:'Le note per il cliente finiscono in fondo al preventivo: tempi, esclusioni, pagamento. Le note interne restano solo nell\'app. Preventivo PDF crea il documento da mandare al cliente, con spazio per la firma di accettazione; Copia testo copia la versione in testo.',
- listVetri:'Prezzo al m² di ogni vetro predefinito. Ogni nuovo cantiere parte con questi prezzi nel suo preventivo; per aggiornare un preventivo esistente usa Prezzi dal listino.',
+ listVetri:'Prezzo al m² di ogni vetro della sezione Profili. I preventivi lo usano per i vetri che non hanno ancora un prezzo; per aggiornare un preventivo esistente usa Prezzi dal listino.',
  listLav:'Lavorazioni che usi spesso, con unità di misura e prezzo: nei preventivi le aggiungi con un tocco.',
  listAltro:'IVA, validità, regole dei m² e note con cui parte ogni nuovo preventivo. Non cambiano i preventivi già esistenti.',
- voce:'Un vano dove va una finestra, una zanzariera o entrambe. Inserisci la misura del vano: la misura da ordinare si calcola con le regole della tipologia, che imposti in Parametri. Il disegno mostra il vano visto dall\'interno, con il simbolo di apertura della finestra; la retinatura arancione indica la zanzariera.',
+ voce:'Un vano dove va una finestra, una zanzariera o entrambe. Inserisci la misura del vano: la misura da ordinare si calcola con le regole del profilo scelto, che imposti nella sezione Profili. Il disegno mostra il vano visto dall\'interno, con il simbolo di apertura della finestra; la retinatura arancione indica la zanzariera.',
  fzVani:'Qui inserisci i vani di finestre e zanzariere del cliente. + Da un vano delle vetrate riusa un vano già misurato nella sezione Vetrate e scorrevoli: le misure restano collegate e si aggiornano in entrambe le sezioni finché non lo scolleghi.',
  fApertura:'Tipo di apertura della finestra. Nel disegno le linee convergono verso il lato della maniglia; per anta-ribalta e vasistas ci sono anche le linee verso l\'alto.',
  fVerso:'Lato delle cerniere guardando la finestra dall\'interno: DX cerniere a destra, SX a sinistra. Con 2 o più ante indica l\'anta principale, quella con la maniglia e la ribalta (se vuoto: destra). Controlla sempre la convenzione usata nel modulo d\'ordine del tuo fornitore.',
- zMont:'In luce: la zanzariera sta dentro il vano. A sormonto: si monta sopra il telaio o sul muro e copre il vano. La misura da ordinare usa le deduzioni (in luce) o le aggiunte (a sormonto) della tipologia.',
+ zMont:'In luce: la zanzariera sta dentro il vano. A sormonto: si monta sopra il telaio o sul muro e copre il vano. La misura da ordinare usa le deduzioni (in luce) o le aggiunte (a sormonto) del profilo.',
  fzOrd:'Totale dei pezzi e dei m² da ordinare. Finestre e zanzariere hanno ordini separati, perché di solito vanno a fornitori diversi.',
  fzOrdFin:'Le finestre da ordinare con misura, apertura, vetro e colore. PDF crea l\'ordine con lo schema di apertura di ogni finestra, visto dall\'interno. Copia testo crea un testo da incollare in un messaggio.',
  fzOrdZan:'Le zanzariere da ordinare con misura, montaggio, colore, rete e comando. PDF crea l\'ordine da mandare al fornitore; Copia testo crea un testo da incollare in un messaggio.',
- tipFin:'Tipologie di finestra di questo cantiere. Per ognuna imposti materiale, apertura e ante proposte e come passare dalla misura del vano a quella da ordinare. Se il fornitore vuole la misura del foro lascia le deduzioni a 0.',
- tipZan:'Tipologie di zanzariera di questo cantiere, con le regole per la misura da ordinare (in luce e a sormonto) e le misure massime fornibili. Se il fornitore vuole la misura del vano lascia tutto a 0.',
- tipFinPre:'Tipologie di finestra con cui parte ogni nuovo cantiere. Modificarle qui non cambia i cantieri esistenti.',
- tipZanPre:'Tipologie di zanzariera con cui parte ogni nuovo cantiere. Modificarle qui non cambia i cantieri esistenti.',
+ tipFin:'Profili di finestra. Per ognuno imposti materiale, apertura e ante proposte e come passare dalla misura del vano a quella da ordinare. Se il fornitore vuole la misura del foro lascia le deduzioni a 0. I cantieri che usano il profilo conservano i valori con cui sono stati calcolati.',
+ tipZan:'Profili di zanzariera, con le regole per la misura da ordinare (in luce e a sormonto) e le misure massime fornibili. Se il fornitore vuole la misura del vano lascia tutto a 0. I cantieri che usano il profilo conservano i valori con cui sono stati calcolati.',
  prevFin:'Una riga per ogni finestra del cantiere. Scegli se il prezzo è al pezzo o al m²; al m² puoi indicare un minimo fatturabile per pezzo. I prezzi di partenza vengono dal listino.',
  prevZan:'Una riga per ogni zanzariera del cantiere. Scegli se il prezzo è al pezzo o al m²; al m² puoi indicare un minimo fatturabile per pezzo. I prezzi di partenza vengono dal listino.',
- listFin:'Prezzo di partenza per ogni tipologia di finestra predefinita, al pezzo o al m² con eventuale minimo. I preventivi lo propongono da solo per le finestre nuove.',
- listZan:'Prezzo di partenza per ogni tipologia di zanzariera predefinita, al pezzo o al m² con eventuale minimo. I preventivi lo propongono da solo per le zanzariere nuove.',
+ listFin:'Prezzo di partenza per ogni profilo di finestra, al pezzo o al m² con eventuale minimo. I preventivi lo propongono da solo per le finestre nuove.',
+ listZan:'Prezzo di partenza per ogni profilo di zanzariera, al pezzo o al m² con eventuale minimo. I preventivi lo propongono da solo per le zanzariere nuove.',
  vVerso:'Da che parte si raccolgono le ante quando la vetrata è aperta. Sinistra e destra sono viste dall\'esterno, come nel disegno del lato: la freccia arancione mostra il verso. Apertura centrale: metà delle ante si raccoglie a sinistra e metà a destra. Se il modulo d\'ordine del fornitore usa la vista dall\'interno, sinistra e destra sono invertite.',
  vRot:'Per impacchettabili e vetrate a libro: se le ante, una volta raccolte, ruotano verso l\'interno o verso l\'esterno della veranda.',
+ profili:'Qui gestisci tutti i profili, divisi per sezione: vetrate scorrevoli, impacchettabili e a libro, vetrate fisse, finestre, zanzariere e vetri. Nei cantieri scegli solo il profilo. Quando lo scegli, il cantiere ne copia i valori: se poi modifichi il profilo qui, i cantieri che lo usano restano com\'erano e ti mostrano un avviso, con il pulsante Aggiorna oppure la X per ignorarlo.',
+ profVetri:'Elenco dei vetri che puoi scegliere nei vani delle vetrate. Scrivendo lo spessore il peso viene stimato a 2,5 kg/m² per mm; puoi correggerlo a mano, per esempio per i vetrocamera. I prezzi si inseriscono nel Listino dei Preventivi.',
+ profUsati:'I profili e i vetri usati in questo cantiere, confrontati con la sezione Profili. Diverso dal profilo: nei Profili i valori sono cambiati (o il cantiere era stato fatto con valori suoi); sotto vedi cosa cambia. Aggiorna applica i valori dei Profili a questo cantiere; Ignora nasconde l\'avviso finché il profilo non cambia di nuovo. Solo in questo cantiere: il profilo è stato eliminato dai Profili, ma il cantiere conserva i suoi valori.',
+ profForn:'Facoltativo: marca, fornitore o serie del sistema, per riconoscere il profilo. Compare nell\'elenco dei profili usati dal cantiere.',
  app:'L\'app si aggiorna da sola quando la apri con internet. Cerca aggiornamenti forza subito il controllo. Non eliminare l\'icona dalla Home per aggiornare: cancelleresti i dati.'
 };
-HELP.tipologie='Ogni vano usa una tipologia. Qui scegli dal menu quale modificare, oppure con + Nuova tipologia ne crei una partendo da una preimpostazione, da una copia o da zero. Le modifiche valgono solo per questo cantiere.<br><br>'+HELP.calcolo+'<br><br>I valori preimpostati sono indicativi: confrontali con un lavoro di cui conosci già le misure usando la Prova rapida.';
-HELP.tipPredef=HELP.tipPredef+'<br><br>'+HELP.calcolo;
+HELP.tipologie='Scegli il profilo da modificare, oppure con + Nuovo profilo creane uno partendo da una preimpostazione, da una copia o da zero. Se cambi come si dividono i vetri o se sono mobili, il profilo passa nella sezione giusta. I cantieri che lo usano conservano i valori con cui sono stati calcolati e ti mostrano un avviso con Aggiorna.<br><br>'+HELP.calcolo+'<br><br>I valori preimpostati sono indicativi: confrontali con un lavoro di cui conosci già le misure usando la Prova rapida.';
 
-/* ---------- tipologie ---------- */
+/* ---------- profili di vetrata e verso di apertura ---------- */
 const VERSI={sx:'raccolta a sinistra',dx:'raccolta a destra',centro:'apertura centrale'},VERSI_OPT=[['','Da indicare'],['sx','← A sinistra'],['dx','A destra →'],['centro','← Centrale →']];
 const ROTAZ={int:"ante verso l'interno",est:"ante verso l'esterno"},ROTAZ_OPT=[['','Da indicare'],['int',"Verso l'interno"],['est',"Verso l'esterno"]];
 const versoTxt=r=>r&&r.s&&r.s.mobili&&r.verso&&VERSI[r.verso]?[VERSI[r.verso],r.s.schema==='affiancati'&&ROTAZ[r.rot]?ROTAZ[r.rot]:''].filter(Boolean).join(', '):'';
@@ -424,7 +440,7 @@ const SIS_FIELDS=[
   ['vetL','Deduzione vetro in larghezza','mm','Differenza tra la larghezza dell\'anta (o del modulo) e quella del vetro, sommando i due lati: profili dell\'anta più il gioco del vetro nella sede. Nei sistemi tutto vetro di solito è 0.'],
   ['vetH','Deduzione vetro in altezza','mm','Differenza tra l\'altezza dell\'anta (o del modulo) e quella del vetro, sommando sopra e sotto: traversi, carrelli, pinze e gioco.']]},
  {t:'Limiti e divisione automatica',f:[
-  ['minN','Numero minimo di vetri','n','Da quanti vetri parte la divisione automatica. Le tipologie ad ante sovrapposte partono comunque da almeno 2.'],
+  ['minN','Numero minimo di vetri','n','Da quanti vetri parte la divisione automatica. I profili ad ante sovrapposte partono comunque da almeno 2.'],
   ['maxN','Numero massimo di vetri','n','La divisione automatica non supera questo numero di vetri per vano.'],
   ['maxW','Larghezza massima vetro','mm','Larghezza massima consentita per un vetro. Se un vetro la supera, la divisione automatica aggiunge un vetro; se non basta compare un avviso.'],
   ['maxH','Altezza massima vetro','mm','Altezza massima consentita per un vetro. Aggiungere vetri non riduce l\'altezza, quindi qui compare solo un avviso.'],
@@ -495,28 +511,26 @@ const defVetri=()=>[['Temperato 8 mm',8,20],['Temperato 10 mm',10,25],['Stratifi
 
 function newVano(nome,o={}){return{id:uid(),nome,L:'',Hs:'',Hd:'',qta:'1',sistema:'',n:'auto',vetro:'',verso:'',rot:'',...o}}
 function newLato(nome,o={}){return{id:uid(),nome,angolo:90,pil:0,vani:[],...o}}
-function newVoce(nome,c,o={}){const tf=c.tipFin[0],tz=c.tipZan[0];return{id:uid(),nome,L:'',H:'',qta:'1',link:null,
+function newVoce(nome,c,o={},prof){const P=prof||S.prof,tf=c.tipFin[0]||P.tipFin[0],tz=c.tipZan[0]||P.tipZan[0];return{id:uid(),nome,L:'',H:'',qta:'1',link:null,
   fin:{on:true,tipo:tf?tf.id:'',apertura:tf?tf.apertura:'Anta',ante:String(tf?tf.ante:1),verso:'',vetro:'',colore:'',note:''},
   zan:{on:false,tipo:tz?tz.id:'',mont:'luce',colore:'',rete:'',comando:'',note:''},...o}}
+function newProf(){return normProf({sistemi:presetSistemi(),tipFin:FIN_PRESETS.map(finDaPreset),tipZan:ZAN_PRESETS.map(zanDaPreset),vetri:defVetri()})}
 function newPredef(){return{sistemi:presetSistemi(),tipFin:FIN_PRESETS.map(finDaPreset),tipZan:ZAN_PRESETS.map(zanDaPreset)}}
 function newPrev(L,vetri){L=L||newListino();const pz={};(vetri||[]).forEach(v=>{const p=L.vetri&&L.vetri[v.id];if(p!=null&&p!=='')pz[v.id]=p});
   return{stato:'bozza',numero:'',data:new Date().toISOString().slice(0,10),cliente:'',validita:L.validita??30,prezzi:pz,fatt:{...DEF_FATT,...L.fatt},lav:[],sconto:0,iva:L.iva??22,note:L.cond||'',interne:'',fz:{}}}
-function newCantiere(nome,predef,catalogo,listino){const vetri=clone(catalogo);return{id:uid(),nome,indirizzo:'',note:'',parete:true,creato:new Date().toISOString().slice(0,10),
-  sistemi:clone(predef&&predef.sistemi&&predef.sistemi.length?predef.sistemi:presetSistemi()),
-  tipFin:clone(predef&&predef.tipFin&&predef.tipFin.length?predef.tipFin:FIN_PRESETS.map(finDaPreset)),tipZan:clone(predef&&predef.tipZan&&predef.tipZan.length?predef.tipZan:ZAN_PRESETS.map(zanDaPreset)),
-  vetri,lati:[],fz:{voci:[]},prev:newPrev(listino,vetri)}}
-const sisBy=(c,key)=>c.sistemi.find(s=>s.preset===key)||c.sistemi[0];
-function esempio(predef,catalogo,listino){
-  const c=newCantiere('Veranda di esempio',predef,catalogo,listino);
+function newCantiere(nome,listino){return{id:uid(),nome,indirizzo:'',note:'',parete:true,creato:new Date().toISOString().slice(0,10),v3:true,
+  sistemi:[],tipFin:[],tipZan:[],vetri:[],lati:[],fz:{voci:[]},prev:newPrev(listino,[])}}
+function esempio(prof,listino){
+  const c=newCantiere('Veranda di esempio',listino);
   c.note='Misure di esempio: sostituiscile con quelle reali o crea un nuovo cantiere.';
-  const v=c.vetri.find(x=>x.nome.includes('10 mm'))||c.vetri[0],fx=sisBy(c,'fissavetro').id,sc=sisBy(c,'binari').id;
+  const pk=k=>(prof.sistemi.find(s=>s.preset===k)||prof.sistemi[0]).id,v=(prof.vetri.find(x=>x.nome.includes('10 mm'))||prof.vetri[0]).id,fx=pk('fissavetro'),sc=pk('binari');
   c.lati=[
-    newLato('Fianco sinistro',{vani:[newVano('Vano 1',{L:'2500',Hs:'2600',Hd:'2300',sistema:fx,vetro:v.id})]}),
-    newLato('Fronte',{pil:80,vani:[newVano('Vano scorrevole',{L:'3000',Hs:'2300',Hd:'2300',sistema:sc,vetro:v.id}),newVano('Vano fisso',{L:'1500',Hs:'2300',Hd:'2300',sistema:fx,vetro:v.id})]}),
-    newLato('Fianco destro',{vani:[newVano('Vano 1',{L:'2500',Hs:'2300',Hd:'2600',sistema:fx,vetro:v.id})]})];
-  const vf=newVoce('Cucina',c,{L:'1200',H:'1400'});vf.zan={...vf.zan,on:true};
-  const vb=newVoce('Bagno',c,{L:'600',H:'600'});const tv=c.tipFin.find(t=>t.preset==='f-vas');if(tv){vb.fin.tipo=tv.id;vb.fin.apertura=tv.apertura;vb.fin.ante='1'}
-  c.fz.voci=[vf,vb];
+    newLato('Fianco sinistro',{vani:[newVano('Vano 1',{L:'2500',Hs:'2600',Hd:'2300',sistema:fx,vetro:v})]}),
+    newLato('Fronte',{pil:80,vani:[newVano('Vano scorrevole',{L:'3000',Hs:'2300',Hd:'2300',sistema:sc,vetro:v}),newVano('Vano fisso',{L:'1500',Hs:'2300',Hd:'2300',sistema:fx,vetro:v})]}),
+    newLato('Fianco destro',{vani:[newVano('Vano 1',{L:'2500',Hs:'2300',Hd:'2600',sistema:fx,vetro:v})]})];
+  const vf=newVoce('Cucina',c,{L:'1200',H:'1400'},prof);vf.zan={...vf.zan,on:true};
+  const vb=newVoce('Bagno',c,{L:'600',H:'600'},prof);const tv=prof.tipFin.find(t=>t.preset==='f-vas');if(tv){vb.fin.tipo=tv.id;vb.fin.apertura=tv.apertura;vb.fin.ante='1'}
+  c.fz.voci=[vf,vb];ensureRefs(c,prof);
   return c;
 }
 /* migrazione dai formati precedenti */
@@ -524,42 +538,108 @@ function sistemiDaVecchi(p){p=p||{};const b={gp:p.gp??5,maxN:p.maxN??8,maxW:p.ma
   return[{id:uid(),nome:'Scorrevole (tuoi parametri)',schema:'scorrevole',mobili:true,note:'Parametri che avevi inserito nella prima versione.',preset:'',p:{...DEF_SP,...b,telL:p.sTelL??40,telH:p.sTelH??60,sorm:p.sorm??40,vetL:p.sAntaL??70,vetH:p.sAntaH??90,minN:p.minAnte??2,binari:p.binari??2}},
     {id:uid(),nome:'Fissa (tuoi parametri)',schema:'affiancati',mobili:false,note:'Parametri che avevi inserito nella prima versione.',preset:'',p:{...DEF_SP,...b,telL:p.fTelL??50,telH:p.fTelH??50,fuga:p.mont??50,vetL:p.fVetL??10,vetH:p.fVetH??10,minN:1}}]}
 function migraCantiere(c,L,P){
-  if(!(c.sistemi&&c.sistemi.length)){const old=sistemiDaVecchi(c.p);c.sistemi=[...old,...presetSistemi()];
+  if(!c.v3&&!(c.sistemi&&c.sistemi.length)){const old=sistemiDaVecchi(c.p);c.sistemi=[...old,...presetSistemi()];
     c.lati.forEach(l=>l.vani.forEach(v=>{v.sistema=v.tipo==='scorrevole'?old[0].id:old[1].id;delete v.tipo}));
     const p=c.p||{};c.p={minMq:p.minMq??0.5,arrot:p.arrot??0,sfrido:p.sfrido??0}}
-  c.sistemi.forEach(x=>x.p={...DEF_SP,...x.p});if(!c.vetri||!c.vetri.length)c.vetri=defVetri();
+  c.sistemi=c.sistemi||[];c.tipFin=c.tipFin||[];c.tipZan=c.tipZan||[];c.vetri=c.vetri||[];c.lati=c.lati||[];
+  c.sistemi.forEach(x=>x.p={...DEF_SP,...x.p});if(!c.v3&&!c.vetri.length)c.vetri=defVetri();
   if(!c.prev){c.prev=newPrev(L,[]);if(c.p)c.prev.fatt={...DEF_FATT,minMq:c.p.minMq??DEF_FATT.minMq,arrot:c.p.arrot??0,sfrido:c.p.sfrido??0};
     c.vetri.forEach(v=>{if(v.prezzo!=null&&v.prezzo!=='')c.prev.prezzi[v.id]=v.prezzo})}
   c.vetri.forEach(v=>{delete v.prezzo});delete c.p;
   c.prev={...newPrev(L,[]),...c.prev};c.prev.fatt={...DEF_FATT,...c.prev.fatt};c.prev.prezzi=c.prev.prezzi||{};c.prev.lav=c.prev.lav||[];
-  if(!c.tipFin||!c.tipFin.length)c.tipFin=clone(P&&P.tipFin&&P.tipFin.length?P.tipFin:FIN_PRESETS.map(finDaPreset));
-  if(!c.tipZan||!c.tipZan.length)c.tipZan=clone(P&&P.tipZan&&P.tipZan.length?P.tipZan:ZAN_PRESETS.map(zanDaPreset));
+  if(!c.v3&&!c.tipFin.length)c.tipFin=clone(P&&P.tipFin&&P.tipFin.length?P.tipFin:FIN_PRESETS.map(finDaPreset));
+  if(!c.v3&&!c.tipZan.length)c.tipZan=clone(P&&P.tipZan&&P.tipZan.length?P.tipZan:ZAN_PRESETS.map(zanDaPreset));
   c.fz=c.fz||{voci:[]};c.fz.voci=c.fz.voci||[];c.prev.fz=c.prev.fz||{};
   c.lati.forEach(l=>l.vani.forEach(v=>{if(v.link===undefined)v.link=null}));return c}
 function migraModello(m){if(m.sistemi)return m;
   return{id:m.id,nome:m.nome,sistemi:[...sistemiDaVecchi(m.p),...presetSistemi()],fatt:{minMq:m.p?.minMq??0.5,arrot:m.p?.arrot??0,sfrido:m.p?.sfrido??0}}}
 function migraStato(o){
-  if(!(o.predef&&o.predef.sistemi&&o.predef.sistemi.length)){
+  if(!o.prof&&!(o.predef&&o.predef.sistemi&&o.predef.sistemi.length)){
     const ms=(o.modelli||[]).map(migraModello),base=ms[0]?clone(ms[0]):newPredef(),nomi=new Set(base.sistemi.map(s=>s.nome));
     ms.slice(1).forEach(m=>m.sistemi.forEach(s=>{if(!nomi.has(s.nome)){nomi.add(s.nome);base.sistemi.push(clone(s))}}));
-    o.predef={sistemi:base.sistemi,fatt:{...DEF_FATT,...(base.fatt||{})}}}
+    o.predef={...(o.predef||{}),sistemi:base.sistemi,fatt:{...DEF_FATT,...(base.fatt||{})}}}
   delete o.modelli;
-  o.predef.sistemi.forEach(x=>x.p={...DEF_SP,...x.p});
   o.set={...DEF_SET,...(o.set||{})};
-  if(!o.catalogo||!o.catalogo.length)o.catalogo=defVetri();
-  if(!o.listino){o.listino=newListino(o.predef.fatt);o.catalogo.forEach(v=>{if(v.prezzo!=null&&v.prezzo!=='')o.listino.vetri[v.id]=v.prezzo})}
+  const PD=o.predef||{},CAT=o.catalogo&&o.catalogo.length?o.catalogo:null;
+  if(!o.listino){o.listino=newListino(PD.fatt);(CAT||[]).forEach(v=>{if(v.prezzo!=null&&v.prezzo!=='')o.listino.vetri[v.id]=v.prezzo})}
   o.listino={...newListino(),...o.listino};o.listino.fatt={...DEF_FATT,...o.listino.fatt};o.listino.vetri=o.listino.vetri||{};o.listino.lav=o.listino.lav||[];
-  o.catalogo.forEach(v=>{delete v.prezzo});delete o.predef.fatt;
-  if(!o.predef.tipFin||!o.predef.tipFin.length)o.predef.tipFin=FIN_PRESETS.map(finDaPreset);
-  if(!o.predef.tipZan||!o.predef.tipZan.length)o.predef.tipZan=ZAN_PRESETS.map(zanDaPreset);
   o.listino.fin=o.listino.fin||{};o.listino.zan=o.listino.zan||{};
-  o.cantieri=o.cantieri||[];o.cantieri.forEach(c=>migraCantiere(c,o.listino,o.predef));o.ui=o.ui||{};o.v=2;return o}
+  if(!o.prof)o.prof={sistemi:clone(PD.sistemi&&PD.sistemi.length?PD.sistemi:presetSistemi()),tipFin:clone(PD.tipFin&&PD.tipFin.length?PD.tipFin:FIN_PRESETS.map(finDaPreset)),
+    tipZan:clone(PD.tipZan&&PD.tipZan.length?PD.tipZan:ZAN_PRESETS.map(zanDaPreset)),vetri:clone(CAT||defVetri())};
+  normProf(o.prof);delete o.predef;delete o.catalogo;
+  o.cantieri=o.cantieri||[];o.cantieri.forEach(c=>{migraCantiere(c,o.listino,o.prof);if(!c.v3)adotta(o.prof,c);ensureRefs(c,o.prof)});
+  o.ui=o.ui||{};if(o.ui.tipSel)Object.keys(o.ui.tipSel).forEach(k=>{if(!k.startsWith('prof'))delete o.ui.tipSel[k]});o.v=2;return o}
 
+/* ---------- profili: catalogo centrale e copie nei cantieri ---------- */
+const PK=['sistemi','vetri','tipFin','tipZan'];
+/* firma dei valori che entrano nel calcolo: se è diversa dal profilo, il cantiere mostra l'avviso */
+const normP=p=>Object.keys(p||{}).filter(k=>+num(p[k])).sort().map(k=>k+':'+(+num(p[k]))).join('|');
+const SIG={sistemi:s=>[s.schema,s.mobili?1:0,normP(s.p)].join('#'),tipFin:t=>normP(t.p),tipZan:t=>normP(t.p),vetri:g=>[+num(g.sp)||0,+num(g.kg)||0].join('#')};
+/* dati descrittivi: quando li cambi nei Profili si aggiornano subito anche nei cantieri */
+const DESC={sistemi:['nome','forn','note'],vetri:['nome'],tipFin:['nome','forn','note','materiale','apertura','ante'],tipZan:['nome','forn','note','tipo']};
+const SEZ_VET=[['scorrevoli','Vetrate scorrevoli'],['pacchetto','Impacchettabili e a libro'],['fisse','Vetrate fisse']];
+const sezOf=s=>s.schema==='scorrevole'?'scorrevoli':s.mobili?'pacchetto':'fisse';
+function normProf(P){PK.forEach(k=>{P[k]=P[k]||[]});
+  P.sistemi.forEach(x=>{x.p={...DEF_SP,...x.p};x.forn=x.forn||'';x.note=x.note||''});
+  P.tipFin.forEach(x=>{x.p={detL:0,detH:0,...x.p};x.forn=x.forn||'';x.note=x.note||''});
+  P.tipZan.forEach(x=>{x.p={detL:0,detH:0,sorL:0,sorH:0,maxL:0,maxH:0,...x.p};x.forn=x.forn||'';x.note=x.note||''});
+  P.vetri.forEach(v=>{delete v.prezzo});return P}
+/* copia nel cantiere: stesso id del profilo, valori congelati al momento della scelta */
+function ensureCopy(c,k,id,prof=S.prof){if(!id)return null;let cp=c[k].find(x=>x.id===id);if(cp)return cp;
+  const src=prof[k].find(x=>x.id===id);if(!src)return null;cp=clone(src);delete cp.skip;c[k].push(cp);return cp}
+function usati(c,tutti){const u={sistemi:new Set(),vetri:new Set(),tipFin:new Set(),tipZan:new Set()};
+  c.lati.forEach(l=>l.vani.forEach(v=>{u.sistemi.add(v.sistema);u.vetri.add(v.vetro)}));
+  (c.fz&&c.fz.voci||[]).forEach(x=>{if(x.fin&&(tutti||x.fin.on))u.tipFin.add(x.fin.tipo);if(x.zan&&(tutti||x.zan.on))u.tipZan.add(x.zan.tipo)});return u}
+function pulisciCopie(c){const u=usati(c);PK.forEach(k=>{c[k]=(c[k]||[]).filter(x=>u[k].has(x.id))})}
+function ensureRefs(c,prof=S.prof){
+  const ok=(k,id)=>id&&(c[k].some(x=>x.id===id)||prof[k].some(x=>x.id===id));
+  const dv=k=>((c[k][0]||prof[k][0])||{}).id||'';
+  c.lati.forEach(l=>l.vani.forEach(v=>{if(!ok('sistemi',v.sistema))v.sistema=dv('sistemi');if(!ok('vetri',v.vetro))v.vetro=dv('vetri');
+    ensureCopy(c,'sistemi',v.sistema,prof);ensureCopy(c,'vetri',v.vetro,prof)}));
+  (c.fz&&c.fz.voci||[]).forEach(x=>[['tipFin',x.fin],['tipZan',x.zan]].forEach(([k,o])=>{if(!o)return;if(!ok(k,o.tipo))o.tipo=dv(k);if(o.on)ensureCopy(c,k,o.tipo,prof)}));
+  pulisciCopie(c)}
+/* porta nel catalogo i profili di un cantiere (dati vecchi o file importato), senza doppioni */
+function adotta(prof,c){
+  const map={},ref=usati(c,true);
+  PK.forEach(k=>{const cat=prof[k],m=map[k]={};
+    (c[k]||[]).forEach(cp=>{if(!ref[k].has(cp.id))return;
+      if(cat.some(x=>x.id===cp.id)){m[cp.id]=cp.id;return}
+      const sg=SIG[k](cp),alt=`${cp.nome} (${c.nome})`;
+      let hit=cat.find(x=>(x.nome===cp.nome||x.nome===alt)&&SIG[k](x)===sg)||cat.find(x=>cp.preset&&x.preset===cp.preset&&SIG[k](x)===sg);
+      if(!hit){hit=clone(cp);hit.id=uid();delete hit.skip;if(cat.some(x=>x.nome===hit.nome))hit.nome=alt;hit.forn=hit.forn||'';hit.note=hit.note||'';cat.push(hit)}
+      m[cp.id]=hit.id});
+    const seen={};c[k]=(c[k]||[]).map(cp=>{const id=m[cp.id];if(!id||seen[id])return null;seen[id]=1;const n=clone(cp);n.id=id;
+      const ci=cat.find(x=>x.id===id);if(ci)DESC[k].forEach(f=>{n[f]=ci[f]});return n}).filter(Boolean)});
+  c.lati.forEach(l=>l.vani.forEach(v=>{if(map.sistemi[v.sistema])v.sistema=map.sistemi[v.sistema];if(map.vetri[v.vetro])v.vetro=map.vetri[v.vetro]}));
+  (c.fz&&c.fz.voci||[]).forEach(x=>{if(x.fin&&map.tipFin[x.fin.tipo])x.fin.tipo=map.tipFin[x.fin.tipo];if(x.zan&&map.tipZan[x.zan.tipo])x.zan.tipo=map.tipZan[x.zan.tipo]});
+  if(c.prev&&c.prev.prezzi){const pz={};Object.entries(c.prev.prezzi).forEach(([k,v])=>{pz[map.vetri[k]||k]=v});c.prev.prezzi=pz}
+  c.v3=true}
+function statoCopia(k,cp){const src=S.prof[k].find(x=>x.id===cp.id);if(!src)return{st:'solo'};const sg=SIG[k](src);
+  if(SIG[k](cp)===sg)return{st:'ok',src};return{st:cp.skip===sg?'ign':'mod',src,sg}}
+function aggiornaCopia(c,k,cp){const src=S.prof[k].find(x=>x.id===cp.id),i=c[k].indexOf(cp);if(src&&i>=0)c[k][i]=clone(src)}
+function propaga(k,item){S.cantieri.forEach(c=>(c[k]||[]).forEach(cp=>{if(cp.id===item.id)DESC[k].forEach(f=>{cp[f]=item[f]})}))}
+/* differenze tra la copia del cantiere e il profilo: [voce, valore nel cantiere, valore nei Profili] */
+const PLAB={sistemi:Object.fromEntries(SIS_FIELDS.flatMap(g=>g.f.map(f=>[f[0],[f[1],f[2]]]))),tipFin:Object.fromEntries(FIN_FIELDS.map(f=>[f[0],[f[1],f[2]]])),tipZan:Object.fromEntries(ZAN_FIELDS.map(f=>[f[0],[f[1],f[2]]]))};
+function diffCopia(k,cp,src){const out=[],u=(n,un)=>n.toLocaleString('it-IT',{maximumFractionDigits:2})+(un&&un!=='n'?' '+un:'');
+  if(k==='vetri'){[['sp','Spessore','mm'],['kg','Peso','kg/m²']].forEach(([f,l,un])=>{const x=+num(cp[f])||0,y=+num(src[f])||0;if(x!==y)out.push([l,u(x,un),u(y,un)])});return out}
+  if(k==='sistemi'){const sc=v=>v==='scorrevole'?'ante sovrapposte':'vetri affiancati';
+    if(cp.schema!==src.schema)out.push(['Come si dividono i vetri',sc(cp.schema),sc(src.schema)]);
+    if(!!cp.mobili!==!!src.mobili)out.push(['Vetri',cp.mobili?'mobili':'fissi',src.mobili?'mobili':'fissi'])}
+  new Set([...Object.keys(cp.p||{}),...Object.keys(src.p||{})]).forEach(f=>{const x=+num(cp.p&&cp.p[f])||0,y=+num(src.p&&src.p[f])||0;
+    if(x!==y){const[l,un]=(PLAB[k]||{})[f]||[f,''];out.push([l,u(x,un),u(y,un)])}});
+  return out}
+const usoNota=u=>u?`<p class="note">${u===1?"Usato in 1 cantiere: se cambi i valori, il cantiere resta com'è e te lo segnala quando lo apri.":`Usato in ${u} cantieri: se cambi i valori, i cantieri restano come sono e te lo segnalano quando li apri.`}</p>`:'';
+const cantieriUsano=(k,id)=>S.cantieri.filter(c=>(c[k]||[]).some(x=>x.id===id)).length;
+const defRef=(c,k)=>((c[k][0]||S.prof[k][0])||{}).id||'';
+function profOpts(c,k,cur){const cat=S.prof[k],opt=x=>`<option value="${x.id}" ${x.id===cur?'selected':''}>${esc(x.nome)}</option>`;
+  const loc=(c[k]||[]).filter(x=>!cat.some(y=>y.id===x.id));
+  let h=k==='sistemi'?SEZ_VET.map(([sk,t])=>{const l=cat.filter(x=>sezOf(x)===sk);return l.length?`<optgroup label="${t}">${l.map(opt).join('')}</optgroup>`:''}).join(''):cat.map(opt).join('');
+  if(loc.length)h+=`<optgroup label="Solo in questo cantiere">${loc.map(opt).join('')}</optgroup>`;return h}
 /* ---------- stato ---------- */
 const KEY='vetrate.v2';
 let S;
-function fresh(){const f={v:2,predef:newPredef(),catalogo:defVetri(),listino:newListino(),cantieri:[],set:{...DEF_SET},ui:{c:null,tab:'struttura',lato:null,sviluppo:false,home:'cantieri'}};
-  f.cantieri=[esempio(f.predef,f.catalogo,f.listino)];return f}
+function fresh(){const f={v:2,prof:newProf(),listino:newListino(),cantieri:[],set:{...DEF_SET},ui:{c:null,tab:'struttura',lato:null,sviluppo:false,home:'cantieri'}};
+  f.cantieri=[esempio(f.prof,f.listino)];return f}
 function load(){let o=null;try{o=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
   if(!(o&&o.v===2&&o.cantieri))return fresh();return migraStato(o)}
 
@@ -577,14 +657,14 @@ async function shareFile(name,obj){
 function readFile(input,fn){const f=input.files&&input.files[0];if(!f)return;const r=new FileReader();
   r.onload=()=>{let o;try{o=JSON.parse(r.result)}catch(e){toast('File non valido');input.value='';return}input.value='';fn(o)};r.readAsText(f)}
 function importCantiere(c){if(!c||!c.lati){toast('Il file non contiene un cantiere');return}
-  c=migraCantiere(clone(c),S.listino,S.predef);if(S.cantieri.some(x=>x.id===c.id)){c.id=uid();c.nome+=' (importato)'}
+  c=migraCantiere(clone(c),S.listino,S.prof);adotta(S.prof,c);ensureRefs(c);if(S.cantieri.some(x=>x.id===c.id)){c.id=uid();c.nome+=' (importato)'}
   S.cantieri.unshift(c);save();toast('Cantiere importato: '+c.nome);return c}
 async function doBackup(){
-  const ok=await shareFile('vetrate-backup-'+new Date().toISOString().slice(0,10)+'.json',{v:2,tipo:'backup',predef:S.predef,catalogo:S.catalogo,listino:S.listino,set:{...S.set,lastBackup:null,bkDismiss:null},cantieri:S.cantieri});
+  const ok=await shareFile('vetrate-backup-'+new Date().toISOString().slice(0,10)+'.json',{v:2,tipo:'backup',prof:S.prof,listino:S.listino,set:{...S.set,lastBackup:null,bkDismiss:null},cantieri:S.cantieri});
   if(ok){S.set.lastBackup=Date.now();save();toast('Backup creato')}return ok}
 function restoreBackup(o){
-  if(!o||o.v!==2||!o.cantieri||!(o.predef||o.modelli)){toast('Questo file non è un backup completo');return}
-  const keep={...S.set};S=migraStato({v:2,predef:o.predef,modelli:o.modelli,catalogo:o.catalogo,listino:o.listino,cantieri:o.cantieri,set:{...keep,...(o.set||{}),lastBackup:keep.lastBackup},ui:{c:null,tab:'struttura'}});
+  if(!o||o.v!==2||!o.cantieri||!(o.prof||o.predef||o.modelli)){toast('Questo file non è un backup completo');return}
+  const keep={...S.set};S=migraStato({v:2,prof:o.prof,predef:o.predef,modelli:o.modelli,catalogo:o.catalogo,listino:o.listino,cantieri:o.cantieri,set:{...keep,...(o.set||{}),lastBackup:keep.lastBackup},ui:{c:null,tab:'struttura'}});
   save();applySettings();render();toast('Backup ripristinato')}
 function needsBackup(){
   if(!S.cantieri.some(c=>c.nome!=='Veranda di esempio'))return'';
@@ -651,14 +731,14 @@ function fzCalc(c,x){
   if(x.fin&&x.fin.on){const t=c.tipFin.find(y=>y.id===x.fin.tipo)||c.tipFin[0];
     if(t){const oL=rv(L-(num(t.p.detL)||0)),oH=rv(H-(num(t.p.detH)||0));r.fin={t,oL,oH,mq:oL*oH/1e6};
       if(!(oL>0&&oH>0))r.msgs.push(['bad','Finestra: misura da ordinare nulla o negativa, controlla le deduzioni.'])}
-    else r.msgs.push(['bad','Nessuna tipologia di finestra: aggiungine una in Parametri.'])}
+    else r.msgs.push(['bad','Nessun profilo di finestra: aggiungine uno nella sezione Profili.'])}
   if(x.zan&&x.zan.on){const t=c.tipZan.find(y=>y.id===x.zan.tipo)||c.tipZan[0];
     if(t){const so=x.zan.mont==='sormonto',p=t.p,oL=rv(so?L+(num(p.sorL)||0):L-(num(p.detL)||0)),oH=rv(so?H+(num(p.sorH)||0):H-(num(p.detH)||0));
       r.zan={t,oL,oH,mq:oL*oH/1e6,mont:so?'a sormonto':'in luce'};
       if(!(oL>0&&oH>0))r.msgs.push(['bad','Zanzariera: misura da ordinare nulla o negativa, controlla le deduzioni.']);
       if(num(p.maxL)>0&&oL>num(p.maxL))r.msgs.push(['warn',`Zanzariera larga ${fmt(oL)} mm: oltre il massimo di ${fmt(num(p.maxL))} mm.`]);
       if(num(p.maxH)>0&&oH>num(p.maxH))r.msgs.push(['warn',`Zanzariera alta ${fmt(oH)} mm: oltre il massimo di ${fmt(num(p.maxH))} mm.`])}
-    else r.msgs.push(['bad','Nessuna tipologia di zanzariera: aggiungine una in Parametri.'])}
+    else r.msgs.push(['bad','Nessun profilo di zanzariera: aggiungine uno nella sezione Profili.'])}
   return r}
 const fzCount=c=>(c.fz&&c.fz.voci||[]).reduce((a,x)=>{const q=Math.max(1,Math.round(num(x.qta))||1);if(x.fin&&x.fin.on)a.fin+=q;if(x.zan&&x.zan.on)a.zan+=q;return a},{fin:0,zan:0});
 
@@ -685,17 +765,18 @@ const ICON={
  struttura:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18M9 9v11M15 9v11"/></svg>',
  vista:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 18V8l8-4 8 4v10"/><path d="M4 18h16M8 18v-6h3v6M14 12h3v3h-3z"/></svg>',
  riepilogo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 3h14v18H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
- parametri:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>',
  strumenti:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 17L17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></svg>',
  euro:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17.5 6.6A6.5 6.5 0 0 0 7 12a6.5 6.5 0 0 0 10.5 5.4"/><path d="M4.5 10h8.5M4.5 14h8.5"/></svg>',
  finestra:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M12 3v18M4 12h16"/></svg>',
  link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
+ profili:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20V4h5v11h11v5z"/><path d="M9 9h3M9 12h3M12 15v5M16 15v5"/></svg>',
+ dati:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="4" width="14" height="17" rx="1"/><path d="M9 4V3h6v1M8.5 10h7M8.5 13.5h7M8.5 17h4"/></svg>',
  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>',
  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M10.3 3h3.4l.5 2.4 1.7.7 2-1.4 2.4 2.4-1.4 2 .7 1.7 2.4.5v3.4l-2.4.5-.7 1.7 1.4 2-2.4 2.4-2-1.4-1.7.7-.5 2.4h-3.4l-.5-2.4-1.7-.7-2 1.4-2.4-2.4 1.4-2-.7-1.7L3 13.7v-3.4l2.4-.5.7-1.7-1.4-2 2.4-2.4 2 1.4 1.7-.7z"/></svg>',
  logo:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#dfe7ee" stroke-width="1.5"><rect x="3" y="4" width="18" height="16"/><path d="M12 4v16" stroke="#3cc3d8"/><path d="M6 15l3-6" stroke-width="1"/></svg>'
 };
-const APP_VER='12 · 30/10/2026';
-const TABS=[['struttura','Struttura'],['vista','Vista'],['riepilogo','Riepilogo'],['parametri','Parametri'],['strumenti','Strumenti']];
+const APP_VER='13 · 30/10/2026';
+const TABS=[['struttura','Struttura'],['vista','Vista'],['riepilogo','Riepilogo'],['dati','Dati'],['strumenti','Strumenti']];
 function nav(o){Object.assign(S.ui,{imp:false,listino:false,prev:null,c:null},o);save();render();window.scrollTo(0,0)}
 function go(c,tab){nav({c,tab:tab||S.ui.tab})}
 const goPrev=id=>nav({prev:id});
@@ -704,29 +785,46 @@ const goListino=()=>nav({listino:true});
 function openSettings(){S.ui.imp=true;save();render();window.scrollTo(0,0)}
 function removeNav(){const n=$('bnav');if(n)n.remove()}
 function render(){
+  const av=$('avv');if(av)av.innerHTML='';
   if(S.ui.imp)renderSettings();
   else if(S.ui.listino)renderListino();
   else if(S.ui.prev&&S.cantieri.some(c=>c.id===S.ui.prev))renderPrev(S.cantieri.find(c=>c.id===S.ui.prev));
   else{S.ui.prev=null;const c=C();if(!c){S.ui.c=null;renderHome()}else renderCantiere(c)}
   paintStatus()}
-
 /* ---------- schermata cantieri ---------- */
 function renderHome(){
-  const sec=S.ui.home==='preventivi'?'preventivi':'cantieri';
-  $('hdr').innerHTML=`<div class="brand"><span class="logo">${ICON.logo}</span><div class="titles"><span class="crumb">Calcolo vetrate</span><h1>${sec==='preventivi'?'Preventivi':'Cantieri'}</h1><span class="sync" id="sync"></span></div>
+  const sec=['preventivi','profili'].includes(S.ui.home)?S.ui.home:'cantieri',tit={cantieri:'Cantieri',preventivi:'Preventivi',profili:'Profili'}[sec];
+  $('hdr').innerHTML=`<div class="brand"><span class="logo">${ICON.logo}</span><div class="titles"><span class="crumb">Calcolo vetrate</span><h1>${tit}</h1><span class="sync" id="sync"></span></div>
     <button class="hbtn" id="setBtn" type="button" aria-label="Impostazioni generali">${ICON.gear}</button></div>
-    <nav class="htabs" role="tablist"><button type="button" role="tab" data-home="cantieri" aria-selected="${sec==='cantieri'}">${ICON.struttura}<span>Cantieri</span></button><button type="button" role="tab" data-home="preventivi" aria-selected="${sec==='preventivi'}">${ICON.euro}<span>Preventivi</span></button></nav>`;
+    <nav class="htabs" role="tablist">${[['cantieri','Cantieri','struttura'],['preventivi','Preventivi','euro'],['profili','Profili','profili']].map(([k,t,ic])=>`<button type="button" role="tab" data-home="${k}" aria-selected="${sec===k}">${ICON[ic]}<span>${t}</span></button>`).join('')}</nav>`;
   removeNav();
   const rem=needsBackup();
   setMain(),$('main').innerHTML=(rem?`<section class="card remind"><div class="card-h"><h2>Fai un backup</h2><button class="xbtn" id="bkX" type="button" aria-label="Chiudi il promemoria">✕</button></div>
     <p class="note">${rem}</p><div class="row"><button class="btn primary" id="bkNow" type="button">Fai backup ora</button></div></section>`:'')
-    +(sec==='cantieri'?homeCantieriHTML():homePrevHTML());
+    +(sec==='cantieri'?homeCantieriHTML():sec==='preventivi'?homePrevHTML():homeProfHTML());
   $('setBtn').onclick=openSettings;
   document.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>goHome(b.dataset.home));
   if($('bkNow'))$('bkNow').onclick=()=>doBackup().then(ok=>{if(ok)renderHome()});
   if($('bkX'))$('bkX').onclick=()=>{S.set.bkDismiss=Date.now();save();renderHome();toast('Te lo ricorderò tra 2 settimane')};
-  if(sec==='cantieri')bindHomeCantieri();else bindHomePrev();
+  if(sec==='cantieri')bindHomeCantieri();else if(sec==='preventivi')bindHomePrev();else bindHomeProf();
+  paintStatus();
 }
+/* ---------- sezione Profili ---------- */
+const PSEZ=[...SEZ_VET,['finestre','Finestre'],['zanzariere','Zanzariere'],['vetri','Vetri']];
+const profSec=()=>PSEZ.some(x=>x[0]===S.ui.profSec)?S.ui.profSec:'scorrevoli';
+const profCount=k=>k==='finestre'?S.prof.tipFin.length:k==='zanzariere'?S.prof.tipZan.length:k==='vetri'?S.prof.vetri.length:S.prof.sistemi.filter(s=>sezOf(s)===k).length;
+const vetCtx=sec=>({key:'prof_'+sec,h:S.prof,catalogo:true,sec,filter:s=>sezOf(s)===sec,vetri:S.prof.vetri,usage:s=>cantieriUsano('sistemi',s.id),rerender:renderHome});
+const fzCtx=()=>({key:'prof',h:S.prof,catalogo:true,usage:(kind,t)=>cantieriUsano(kind==='fin'?'tipFin':'tipZan',t.id),rerender:renderHome});
+function homeProfHTML(){const sec=profSec(),lab=(PSEZ.find(x=>x[0]===sec)||PSEZ[0])[1];
+  const body=sec==='vetri'?`<section class="card">${cardH('Vetri','profVetri','hp_pvt')}${vetriHTML(S.prof.vetri,'gp')}</section>`
+    :sec==='finestre'?`<datalist id="dlMat">${['PVC','Alluminio','Legno-alluminio','Legno'].map(x=>`<option value="${x}">`).join('')}</datalist>${fzTipHTML('fin',fzCtx(),'Finestre','tipFin')}`
+    :sec==='zanzariere'?fzTipHTML('zan',fzCtx(),'Zanzariere','tipZan'):tipHTML(vetCtx(sec),lab,'tipologie');
+  return`<section class="card">${cardH('Sezioni','profili','hp_prof')}
+    <div class="psez">${PSEZ.map(([k,t])=>`<button type="button" class="psb" data-psec="${k}" aria-pressed="${k===sec}"><span>${t}</span><b>${profCount(k)}</b></button>`).join('')}</div></section>${body}`}
+function bindHomeProf(){const sec=profSec();
+  document.querySelectorAll('[data-psec]').forEach(b=>b.onclick=()=>{S.ui.profSec=b.dataset.psec;save();renderHome()});
+  if(sec==='vetri')bindVetri(S.prof,'vetri','gp',renderHome,(v,f)=>{if(f==='nome')propaga('vetri',v)});
+  else if(sec==='finestre')bindFzTip('fin',fzCtx());else if(sec==='zanzariere')bindFzTip('zan',fzCtx());else bindTip(vetCtx(sec))}
 function homeCantieriHTML(){const lav=S.ui.ncLav||'vetrate';return`
   <section class="card">${cardH('Nuovo cantiere','nuovo','hp_nuovo')}
     <div class="fields">${fld({id:'ncNome',label:'Nome',attrs:'placeholder="Es. Rossi, via Roma"'})}${fld({id:'ncInd',label:'Indirizzo',attrs:'placeholder="Facoltativo"'})}</div>
@@ -749,15 +847,16 @@ function apriCantiere(c){const haV=c.lati.some(l=>l.vani.length),haF=c.fz.voci.l
 function bindHomeCantieri(){
   document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{const c=S.cantieri.find(x=>x.id===b.dataset.open);if(c)apriCantiere(c)});
   $('ncLav').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.ui.ncLav=b.dataset.v;$('ncLav').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)))});
-  $('ncBtn').onclick=()=>{const lav=S.ui.ncLav||'vetrate',c=newCantiere($('ncNome').value.trim()||'Nuovo cantiere',S.predef,S.catalogo,S.listino);c.indirizzo=$('ncInd').value.trim();
-    if(lav!=='fz')c.lati=[newLato('Lato A',{vani:[newVano('Vano 1',{vetro:c.vetri[0]?.id,sistema:c.sistemi[0]?.id})]})];
-    if(lav!=='vetrate')c.fz.voci=[newVoce('Vano 1',c)];
+  $('ncBtn').onclick=()=>{const lav=S.ui.ncLav||'vetrate',c=newCantiere($('ncNome').value.trim()||'Nuovo cantiere',S.listino);c.indirizzo=$('ncInd').value.trim();
+    if(lav!=='fz')c.lati=[newLato('Lato A',{vani:[newVano('Vano 1',{vetro:defRef(c,'vetri'),sistema:defRef(c,'sistemi')})]})];
+    if(lav!=='vetrate')c.fz.voci=[newVoce('Vano 1',c)];ensureRefs(c);
     S.cantieri.unshift(c);nav({c:c.id,sez:lav==='fz'?'fz':'vetrate',tab:'struttura',tabFz:'vani'})};
   $('impC').onchange=e=>readFile(e.target,o=>{const c=importCantiere(o.cantiere||o);if(c)apriCantiere(c)});
 }
 
 /* ---------- cantiere ---------- */
 function renderCantiere(c){
+  ensureRefs(c);save();
   const sez=S.ui.sez==='fz'?'fz':'vetrate',tabs=sez==='fz'?TABS_FZ:TABS;
   let tab=sez==='fz'?(S.ui.tabFz||'vani'):(S.ui.tab||'struttura');if(!tabs.some(t=>t[0]===tab))tab=tabs[0][0];
   $('hdr').innerHTML=`<div class="brand"><button class="back" id="backBtn" type="button" aria-label="Torna ai cantieri">${ICON.back}</button>
@@ -769,16 +868,16 @@ function renderCantiere(c){
   $('backBtn').onclick=()=>goHome('cantieri');$('setBtn').onclick=openSettings;
   document.querySelectorAll('[data-sez]').forEach(b=>b.onclick=()=>nav({c:c.id,sez:b.dataset.sez}));
   document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>nav(sez==='fz'?{c:c.id,tabFz:b.dataset.tab}:{c:c.id,tab:b.dataset.tab}));
-  const V=sez==='fz'?{vani:viewFzVani,ordine:viewFzOrdine,parametri:viewFzParam,strumenti:viewStrumenti}
-    :{struttura:viewStruttura,vista:viewVista,riepilogo:viewRiepilogo,parametri:viewParametri,strumenti:viewStrumenti};
-  V[tab](c);updTot(c);
+  const V=sez==='fz'?{vani:viewFzVani,ordine:viewFzOrdine,dati:viewDati,strumenti:viewStrumenti}
+    :{struttura:viewStruttura,vista:viewVista,riepilogo:viewRiepilogo,dati:viewDati,strumenti:viewStrumenti};
+  V[tab](c);updTot(c);paintAvvisi(c);
 }
 function updTot(c){const t=totals(c),f=fzCount(c),e=$('cTot');if(!e)return;
   e.textContent=[c.indirizzo,t.vani?`${pl(t.vani,'vano','vani')} · ${pl(t.vetri,'vetro','vetri')} · ${fmt(t.mq,2)} m²`:'',f.fin||f.zan?`${pl(f.fin,'finestra','finestre')} · ${pl(f.zan,'zanzariera','zanzariere')}`:''].filter(Boolean).join(' · ')||'Cantiere vuoto'}
 
 /* ---------- struttura ---------- */
 function nOpts(schema,val){const lo=schema==='scorrevole'?2:1;return'<option value="auto">Automatico</option>'+Array.from({length:9-lo},(_,i)=>i+lo).map(n=>`<option value="${n}" ${String(val)===String(n)?'selected':''}>${n}</option>`).join('')}
-function vetroOpts(c,val){return c.vetri.map(v=>`<option value="${v.id}" ${v.id===val?'selected':''}>${esc(v.nome)}</option>`).join('')}
+function vetroOpts(c,val){return profOpts(c,'vetri',val)}
 
 function viewStruttura(c){
   setMain(),$('main').innerHTML=c.lati.map((l,li)=>`
@@ -817,7 +916,7 @@ function vanoCard(c,v){const s=sisOf(c,v);return`
       ${fld({id:'vq_'+v.id,label:'Quantità uguali',unit:'pz',val:v.qta,help:HELP.vq,attrs:'data-vf="qta"'})}
       ${fld({id:'vnn_'+v.id,label:s?.mobili?'Ante':'Vetri',help:HELP.vn,ctrl:`<select id="vnn_${v.id}" data-vs="n">${nOpts(s?.schema,v.n)}</select>`})}
       ${fld({id:'vg_'+v.id,label:'Vetro',help:HELP.vg,ctrl:`<select id="vg_${v.id}" data-vs="vetro">${vetroOpts(c,v.vetro)}</select>`})}
-      ${fld({id:'vt_'+v.id,label:'Tipologia',wide:true,help:HELP.vt,ctrl:`<select id="vt_${v.id}" data-vs="sistema">${c.sistemi.map(x=>`<option value="${x.id}" ${x===s?'selected':''}>${esc(x.nome)}</option>`).join('')}</select>`})}
+      ${fld({id:'vt_'+v.id,label:'Profilo',wide:true,help:HELP.vt,ctrl:`<select id="vt_${v.id}" data-vs="sistema">${profOpts(c,'sistemi',v.sistema)}</select>`})}
       ${s?.mobili?fld({id:'vv_'+v.id,label:'Verso di apertura',help:HELP.vVerso,ctrl:`<select id="vv_${v.id}" data-vs="verso">${VERSI_OPT.map(([k,t])=>`<option value="${k}" ${(v.verso||'')===k?'selected':''}>${t}</option>`).join('')}</select>`}):''}
       ${s?.mobili&&s.schema==='affiancati'?fld({id:'vrot_'+v.id,label:'Ante raccolte',help:HELP.vRot,ctrl:`<select id="vrot_${v.id}" data-vs="rot">${ROTAZ_OPT.map(([k,t])=>`<option value="${k}" ${(v.rot||'')===k?'selected':''}>${t}</option>`).join('')}</select>`}):''}
     </div></div>
@@ -848,21 +947,22 @@ function bindStruttura(c){
     if(t.dataset.lf){const l=findL(t);l[t.dataset.lf]=t.value;save();$('ll_'+l.id).value=fmt(latoLen(l));return}
     if(t.dataset.vf){const[l,v]=findV(t);v[t.dataset.vf]=t.value;if(t.dataset.vf==='L'||t.dataset.vf==='Hs')syncDaVano(c,v);save();if(t.dataset.vf!=='nome'){vanoResult(c,v);$('ll_'+l.id).value=fmt(latoLen(l));updTot(c)}}});
   m.addEventListener('change',e=>{const t=e.target;if(!t.dataset.vs)return;const[,v]=findV(t);v[t.dataset.vs]=t.value;
-    if(t.dataset.vs==='sistema'){v.n='auto';save();viewStruttura(c);updTot(c);return}save();vanoResult(c,v);updTot(c)});
+    if(t.dataset.vs==='sistema'){v.n='auto';ensureRefs(c);save();viewStruttura(c);updTot(c);paintAvvisi(c);return}
+    if(t.dataset.vs==='vetro'){ensureRefs(c);paintAvvisi(c)}save();vanoResult(c,v);updTot(c)});
   m.querySelectorAll('[data-addvano]').forEach(b=>b.onclick=()=>{const l=c.lati.find(x=>x.id===b.dataset.addvano);const prev=l.vani[l.vani.length-1];
-    l.vani.push(newVano('Vano '+(l.vani.length+1),prev?{Hs:prev.Hd||prev.Hs,Hd:prev.Hd||prev.Hs,vetro:prev.vetro,sistema:prev.sistema}:{vetro:c.vetri[0]?.id,sistema:c.sistemi[0]?.id}));save();viewStruttura(c);updTot(c)});
+    l.vani.push(newVano('Vano '+(l.vani.length+1),prev?{Hs:prev.Hd||prev.Hs,Hd:prev.Hd||prev.Hs,vetro:prev.vetro,sistema:prev.sistema}:{vetro:defRef(c,'vetri'),sistema:defRef(c,'sistemi')}));ensureRefs(c);save();viewStruttura(c);updTot(c)});
   m.querySelectorAll('[data-dupvano]').forEach(b=>b.onclick=()=>{const[l,v]=findV(b);const i=l.vani.indexOf(v);l.vani.splice(i+1,0,{...clone(v),id:uid(),nome:v.nome+' (copia)',link:null});save();viewStruttura(c);updTot(c)});
-  armDelete('[data-delvano]',b=>{const[l,v]=findV(b);scollega(c,v);l.vani=l.vani.filter(x=>x!==v);save();viewStruttura(c);updTot(c)});
-  armDelete('[data-dellato]',b=>{const lt=c.lati.find(l=>l.id===b.dataset.dellato);if(lt)lt.vani.forEach(v=>scollega(c,v));c.lati=c.lati.filter(l=>l.id!==b.dataset.dellato);save();viewStruttura(c);updTot(c)});
+  armDelete('[data-delvano]',b=>{const[l,v]=findV(b);scollega(c,v);l.vani=l.vani.filter(x=>x!==v);ensureRefs(c);paintAvvisi(c);save();viewStruttura(c);updTot(c)});
+  armDelete('[data-dellato]',b=>{const lt=c.lati.find(l=>l.id===b.dataset.dellato);if(lt)lt.vani.forEach(v=>scollega(c,v));c.lati=c.lati.filter(l=>l.id!==b.dataset.dellato);ensureRefs(c);paintAvvisi(c);save();viewStruttura(c);updTot(c)});
   m.querySelectorAll('[data-up],[data-down]').forEach(b=>b.onclick=()=>{const i=+(b.dataset.up??b.dataset.down),j=b.dataset.up!=null?i-1:i+1;
     [c.lati[i],c.lati[j]]=[c.lati[j],c.lati[i]];save();viewStruttura(c)});
   m.querySelectorAll('[data-vunlink]').forEach(b=>b.onclick=()=>{const[,v]=findV(b);scollega(c,v);save();viewStruttura(c);toast('Vano scollegato: ora le misure sono indipendenti')});
   m.querySelectorAll('[data-fromfz]').forEach(b=>b.onclick=()=>{const p=$('pk_'+b.dataset.fromfz);if(p)p.hidden=!p.hidden});
   m.querySelectorAll('[data-pkno]').forEach(b=>b.onclick=()=>{$('pk_'+b.dataset.pkno).hidden=true});
   m.querySelectorAll('[data-pkok]').forEach(b=>b.onclick=()=>{const l=c.lati.find(x=>x.id===b.dataset.pkok),x=findVoce(c,$('pks_'+l.id).value);if(!l||!x)return;
-    const prev=l.vani[l.vani.length-1],v=newVano(x.nome,{L:x.L,Hs:x.H,Hd:'',link:x.id,vetro:prev?prev.vetro:c.vetri[0]?.id,sistema:prev?prev.sistema:c.sistemi[0]?.id});
-    x.link=v.id;l.vani.push(v);save();viewStruttura(c);updTot(c);toast('Vano collegato: le misure si aggiornano in entrambe le sezioni')});
-  $('addLato').onclick=()=>{const l=newLato('Lato '+letter(c.lati.length),{vani:[newVano('Vano 1',{vetro:c.vetri[0]?.id,sistema:c.sistemi[0]?.id})]});c.lati.push(l);save();viewStruttura(c);updTot(c);
+    const prev=l.vani[l.vani.length-1],v=newVano(x.nome,{L:x.L,Hs:x.H,Hd:'',link:x.id,vetro:prev?prev.vetro:defRef(c,'vetri'),sistema:prev?prev.sistema:defRef(c,'sistemi')});
+    x.link=v.id;l.vani.push(v);ensureRefs(c);save();viewStruttura(c);updTot(c);toast('Vano collegato: le misure si aggiornano in entrambe le sezioni')});
+  $('addLato').onclick=()=>{const l=newLato('Lato '+letter(c.lati.length),{vani:[newVano('Vano 1',{vetro:defRef(c,'vetri'),sistema:defRef(c,'sistemi')})]});c.lati.push(l);ensureRefs(c);save();viewStruttura(c);updTot(c);
     const el=document.querySelector(`[data-l="${l.id}"]`);if(el)el.scrollIntoView({block:'start'})};
 }
 
@@ -986,31 +1086,34 @@ function viewRiepilogo(c){
   $('toPrev').onclick=()=>goPrev(c.id);
 }
 
-/* ---------- editor delle tipologie (cantiere e predefinite) ---------- */
-function tipSel(ctx){S.ui.tipSel=S.ui.tipSel||{};const l=ctx.h.sistemi;return l.find(s=>s.id===S.ui.tipSel[ctx.key])||l[0]}
-const usoTxt=u=>u==null?'':` · ${u} ${u===1?'vano':'vani'}`;
+/* ---------- editor dei profili di vetrata (sezione Profili) ---------- */
+function tipSel(ctx){S.ui.tipSel=S.ui.tipSel||{};const l=ctx.filter?ctx.h.sistemi.filter(ctx.filter):ctx.h.sistemi;return l.find(s=>s.id===S.ui.tipSel[ctx.key])||l[0]}
+const usoTxt=(u,cat)=>u==null?'':cat?(u?` · ${u} ${u===1?'cantiere':'cantieri'}`:''):` · ${u} ${u===1?'vano':'vani'}`;
 function tipHTML(ctx,title,hk){
-  const list=ctx.h.sistemi,sel=tipSel(ctx);
-  const opts=list.map(s=>`<option value="${s.id}" ${s===sel?'selected':''}>${esc(s.nome)}${usoTxt(ctx.usage?ctx.usage(s):null)}</option>`).join('');
-  const base=`<optgroup label="Preimpostazioni">${PRESETS.map(x=>`<option value="pre:${x.key}">${esc(x.nome)}</option>`).join('')}</optgroup>`+
-    (list.length?`<optgroup label="Copia di una tipologia">${list.map(s=>`<option value="copy:${s.id}">${esc(s.nome)}</option>`).join('')}</optgroup>`:'')+
-    `<optgroup label="Altro"><option value="vuota">Vuota, da compilare</option></optgroup>`;
+  const all=ctx.h.sistemi,list=ctx.filter?all.filter(ctx.filter):all,sel=tipSel(ctx);
+  const opts=list.map(s=>`<option value="${s.id}" ${s===sel?'selected':''}>${esc(s.nome)}${usoTxt(ctx.usage?ctx.usage(s):null,ctx.catalogo)}</option>`).join('');
+  const pre=PRESETS.filter(x=>!ctx.sec||sezOf(x)===ctx.sec);
+  const base=(pre.length?`<optgroup label="Preimpostazioni">${pre.map(x=>`<option value="pre:${x.key}">${esc(x.nome)}</option>`).join('')}</optgroup>`:'')+
+    (list.length?`<optgroup label="Copia di un profilo">${list.map(s=>`<option value="copy:${s.id}">${esc(s.nome)}</option>`).join('')}</optgroup>`:'')+
+    `<optgroup label="Altro"><option value="vuota">Vuoto, da compilare</option></optgroup>`;
   return`<section class="card" id="tipCard">${cardH(title,hk,'hp_tip')}
-   <div class="tip-top">${fld({id:'tipSel',label:'Tipologia da modificare',ctrl:`<select id="tipSel">${opts}</select>`})}
-     <button class="btn" id="tipNewBtn" type="button">+ Nuova tipologia</button></div>
+   <div class="tip-top">${list.length?fld({id:'tipSel',label:'Profilo da modificare',ctrl:`<select id="tipSel">${opts}</select>`}):''}
+     <button class="btn" id="tipNewBtn" type="button">+ Nuovo profilo</button></div>
    <div class="tip-new" id="tipNew" hidden>
      <div class="fields">${fld({id:'tipBase',label:'Parti da',ctrl:`<select id="tipBase">${base}</select>`})}${fld({id:'tipNome',label:'Nome',attrs:'placeholder="Facoltativo"'})}</div>
-     <div class="row"><button class="btn primary" id="tipCreate" type="button">Crea tipologia</button><button class="btn" id="tipAnn" type="button">Annulla</button></div>
+     <div class="row"><button class="btn primary" id="tipCreate" type="button">Crea profilo</button><button class="btn" id="tipAnn" type="button">Annulla</button></div>
    </div>
-   ${sel?tipBody(ctx,sel):'<p class="note">Nessuna tipologia: creane una.</p>'}
-   ${ctx.cantiere?`<div class="tip-pre">${h3H('Predefinite','tipPre','hp_tpre')}<div class="row"><button class="btn sm" id="tipToPre" type="button">Salva come predefinite</button><button class="btn sm" id="tipFromPre" type="button">Ricarica le predefinite</button></div></div>`:''}
+   ${sel?tipBody(ctx,sel):'<p class="note">Nessun profilo in questa sezione: creane uno con + Nuovo profilo.</p>'}
   </section>`}
 function tipBody(ctx,s){
   const pr=PRESETS.find(x=>x.key===s.preset),P=S.ui.prova||(S.ui.prova={L:'3000',H:'2200',n:'auto'});
   return`<div class="tip-body" data-s="${s.id}">
-   ${s.note?`<p class="note">${esc(s.note)}${pr?' Valori indicativi, da verificare con la Prova rapida.':''}</p>`:''}
+   ${ctx.usage?usoNota(ctx.usage(s)):''}
+   ${pr?'<p class="note">Valori preimpostati indicativi: verificali con la Prova rapida su un lavoro di cui conosci già le misure.</p>':''}
    <div class="fields">
      ${fld({id:'tsNome',label:'Nome',val:s.nome,wide:true})}
+     ${fld({id:'tsForn',label:'Fornitore / serie',wide:true,val:s.forn||'',help:HELP.profForn,attrs:'placeholder="Facoltativo"'})}
+     ${fld({id:'tsNote',label:'Note',wide:true,ctrl:`<textarea id="tsNote" rows="2">${esc(s.note||'')}</textarea>`})}
      ${fld({id:'tsSchema',label:'Come si dividono i vetri',wide:true,help:HELP.schema,ctrl:`<select id="tsSchema">${Object.entries(SCHEMI).map(([k,t])=>`<option value="${k}" ${s.schema===k?'selected':''}>${t}</option>`).join('')}</select>`})}
      ${fld({id:'tsMob',label:'Vetri',help:HELP.mobili,ctrl:`<select id="tsMob"><option value="1" ${s.mobili?'selected':''}>Mobili</option><option value="0" ${s.mobili?'':'selected'}>Fissi</option></select>`})}
    </div>
@@ -1020,7 +1123,7 @@ function tipBody(ctx,s){
    <div class="fields">${fld({id:'prL',label:'Larghezza vano',unit:'mm',val:P.L,attrs:'data-pv="L"'})}${fld({id:'prH',label:'Altezza vano',unit:'mm',val:P.H,attrs:'data-pv="H"'})}
      ${fld({id:'prN',label:s.mobili?'Ante':'Vetri',ctrl:`<select id="prN" data-pv="n">${nOpts(s.schema,P.n)}</select>`})}</div>
    <div class="prova-res" id="provaRes"></div>
-   <div class="row"><button class="btn sm" id="tsDup" type="button">Duplica</button>${pr?'<button class="btn sm" id="tsReset" type="button">Ripristina valori preimpostati</button>':''}<button class="btn sm danger" id="tsDel" type="button">Elimina tipologia</button></div>
+   <div class="row"><button class="btn sm" id="tsDup" type="button">Duplica</button>${pr?'<button class="btn sm" id="tsReset" type="button">Ripristina valori preimpostati</button>':''}<button class="btn sm danger" id="tsDel" type="button">Elimina profilo</button></div>
   </div>`}
 function provaUpdate(ctx){const box=$('provaRes');if(!box)return;const s=tipSel(ctx),P=S.ui.prova;
   const r=compute({L:P.L,Hs:P.H,Hd:'',qta:'1',sistema:s.id,n:P.n,vetro:ctx.vetri[0]?.id},{sistemi:ctx.h.sistemi,prev:{fatt:DEF_FATT},vetri:ctx.vetri});
@@ -1028,34 +1131,32 @@ function provaUpdate(ctx){const box=$('provaRes');if(!box)return;const s=tipSel(
   box.innerHTML=`<div class="thumb">${vanoThumb(r)}</div><div class="prova-tab">${r.msgs.map(([k,t])=>`<div class="msg ${k==='bad'?'bad':''}">${esc(t)}</div>`).join('')}${paneTable(r)}</div>`}
 function bindTip(ctx){
   const rer=ctx.rerender,chg=()=>ctx.onChange&&ctx.onChange();S.ui.tipSel=S.ui.tipSel||{};
-  $('tipSel').onchange=e=>{S.ui.tipSel[ctx.key]=e.target.value;save();rer()};
+  if($('tipSel'))$('tipSel').onchange=e=>{S.ui.tipSel[ctx.key]=e.target.value;save();rer()};
   $('tipNewBtn').onclick=()=>{const n=$('tipNew');n.hidden=!n.hidden;if(!n.hidden)$('tipBase').focus()};
   $('tipAnn').onclick=()=>{$('tipNew').hidden=true};
   $('tipCreate').onclick=()=>{const b=$('tipBase').value,nome=$('tipNome').value.trim();let n;
     if(b.startsWith('pre:'))n=sisDaPreset(PRESETS.find(x=>x.key===b.slice(4)));
     else if(b.startsWith('copy:')){const o=ctx.h.sistemi.find(x=>x.id===b.slice(5));n={...clone(o),id:uid(),nome:o.nome+' (copia)'}}
-    else n={id:uid(),nome:'Nuova tipologia',schema:'affiancati',mobili:false,note:'',preset:'',p:{...DEF_SP}};
-    if(nome)n.nome=nome;ctx.h.sistemi.push(n);S.ui.tipSel[ctx.key]=n.id;save();rer();chg();toast('Tipologia creata: '+n.nome)};
+    else{const sc=ctx.sec==='scorrevoli';n={id:uid(),nome:'Nuovo profilo',schema:sc?'scorrevole':'affiancati',mobili:ctx.sec!=='fisse',note:'',preset:'',p:{...DEF_SP,minN:sc?2:1}}}
+    n.forn=n.forn||'';n.note=n.note||'';if(nome)n.nome=nome;ctx.h.sistemi.push(n);S.ui.tipSel['prof_'+sezOf(n)]=n.id;S.ui.tipSel[ctx.key]=n.id;if(ctx.sec)S.ui.profSec=sezOf(n);save();rer();chg();toast('Profilo creato: '+n.nome)};
   const s=tipSel(ctx);if(!s)return;
   document.querySelectorAll('.tip-body [data-k]').forEach(i=>i.addEventListener('input',e=>{const n=num(e.target.value);s.p[e.target.dataset.k]=isFinite(n)?n:0;save();provaUpdate(ctx);chg()}));
-  $('tsNome').addEventListener('input',e=>{s.nome=e.target.value||'Tipologia';save();const o=$('tipSel').selectedOptions[0];if(o)o.textContent=s.nome+usoTxt(ctx.usage?ctx.usage(s):null)});
-  $('tsSchema').onchange=e=>{s.schema=e.target.value;save();rer();chg()};
-  $('tsMob').onchange=e=>{s.mobili=e.target.value==='1';save();rer();chg()};
+  const pg=()=>{if(ctx.catalogo)propaga('sistemi',s);save()};
+  $('tsNome').addEventListener('input',e=>{s.nome=e.target.value||'Profilo';pg();const o=$('tipSel')&&$('tipSel').selectedOptions[0];if(o)o.textContent=s.nome+usoTxt(ctx.usage?ctx.usage(s):null,ctx.catalogo)});
+  $('tsForn').addEventListener('input',e=>{s.forn=e.target.value;pg()});
+  $('tsNote').addEventListener('input',e=>{s.note=e.target.value;pg()});
+  const sposta=()=>{if(!ctx.sec)return;const ns=sezOf(s);if(ns===ctx.sec)return;S.ui.profSec=ns;S.ui.tipSel['prof_'+ns]=s.id;toast('Profilo spostato in «'+((SEZ_VET.find(x=>x[0]===ns)||[])[1]||'')+'»')};
+  $('tsSchema').onchange=e=>{s.schema=e.target.value;sposta();save();rer();chg()};
+  $('tsMob').onchange=e=>{s.mobili=e.target.value==='1';sposta();save();rer();chg()};
   document.querySelectorAll('.tip-body [data-pv]').forEach(i=>i.addEventListener(i.tagName==='SELECT'?'change':'input',e=>{S.ui.prova[e.target.dataset.pv]=e.target.value;save();provaUpdate(ctx)}));
-  $('tsDup').onclick=()=>{const n={...clone(s),id:uid(),nome:s.nome+' (copia)'};ctx.h.sistemi.splice(ctx.h.sistemi.indexOf(s)+1,0,n);S.ui.tipSel[ctx.key]=n.id;save();rer();toast('Tipologia duplicata')};
-  if($('tsReset'))armDelete('#tsReset',()=>{const x=PRESETS.find(k=>k.key===s.preset);if(!x)return;s.p={...DEF_SP,...x.p};s.schema=x.schema;s.mobili=x.mobili;s.note=x.note;save();rer();chg();toast('Valori ripristinati')});
+  $('tsDup').onclick=()=>{const n={...clone(s),id:uid(),nome:s.nome+' (copia)'};ctx.h.sistemi.splice(ctx.h.sistemi.indexOf(s)+1,0,n);S.ui.tipSel[ctx.key]=n.id;save();rer();toast('Profilo duplicato')};
+  if($('tsReset'))armDelete('#tsReset',()=>{const x=PRESETS.find(k=>k.key===s.preset);if(!x)return;s.p={...DEF_SP,...x.p};s.schema=x.schema;s.mobili=x.mobili;sposta();save();rer();chg();toast('Valori ripristinati')});
   armDelete('#tsDel',()=>{const u=ctx.usage?ctx.usage(s):0;
-    if(ctx.h.sistemi.length<2){toast('Serve almeno una tipologia');return}
-    if(u){toast(`Usata da ${u} ${u===1?'vano':'vani'}: cambia prima la tipologia di quei vani`);return}
-    ctx.h.sistemi=ctx.h.sistemi.filter(x=>x!==s);delete S.ui.tipSel[ctx.key];save();rer();toast('Tipologia eliminata')});
-  if(ctx.cantiere){const c=ctx.cantiere;
-    armDelete('#tipToPre',()=>{S.predef={sistemi:clone(c.sistemi)};save();toast('Salvate come predefinite per i nuovi cantieri')});
-    armDelete('#tipFromPre',()=>{const nuovi=clone(S.predef.sistemi).map(x=>({...x,id:uid()}));
-      c.lati.forEach(l=>l.vani.forEach(v=>{const old=sisOf(c,v);const n=nuovi.find(x=>old&&((x.preset&&x.preset===old.preset)||x.nome===old.nome))||nuovi[0];v.sistema=n.id}));
-      c.sistemi=nuovi;delete S.ui.tipSel[ctx.key];save();rer();chg();toast('Tipologie predefinite caricate')})}
+    if(ctx.h.sistemi.length<2){toast('Serve almeno un profilo di vetrata');return}
+    ctx.h.sistemi=ctx.h.sistemi.filter(x=>x!==s);delete S.ui.tipSel[ctx.key];save();rer();
+    toast(u?`Profilo eliminato: ${u===1?'il cantiere che lo usa conserva':'i '+u+' cantieri che lo usano conservano'} i suoi valori`:'Profilo eliminato')});
   provaUpdate(ctx)}
-
-/* ---------- elenco vetri (cantiere e predefiniti) ---------- */
+/* ---------- elenco vetri (sezione Profili) ---------- */
 function vetriHTML(list,key){return`<div data-gk="${key}"><div class="tablebox"><table class="vtab"><thead><tr><th class="l">Nome</th><th>Spessore mm</th><th>kg/m²</th><th></th></tr></thead><tbody>
   ${list.map(v=>`<tr data-g="${v.id}"><td><input id="${key}n_${v.id}" data-f="nome" value="${esc(v.nome)}" aria-label="Nome del vetro"></td>
     <td><input class="num" id="${key}s_${v.id}" data-f="sp" inputmode="decimal" value="${esc(v.sp)}" aria-label="Spessore"></td>
@@ -1065,32 +1166,52 @@ function vetriHTML(list,key){return`<div data-gk="${key}"><div class="tablebox">
 function bindVetri(holder,prop,key,rerender,onChange){const box=document.querySelector(`[data-gk="${key}"]`);if(!box)return;
   box.querySelectorAll('[data-g] input').forEach(i=>i.addEventListener('input',e=>{const v=holder[prop].find(x=>x.id===e.target.closest('tr').dataset.g),f=e.target.dataset.f;
     v[f]=f==='nome'?e.target.value:e.target.value.replace(',','.');
-    if(f==='sp'){const sp=num(e.target.value);if(sp>0){v.kg=+(sp*2.5).toFixed(1);$(key+'k_'+v.id).value=v.kg}}save();onChange&&onChange()}));
+    if(f==='sp'){const sp=num(e.target.value);if(sp>0){v.kg=+(sp*2.5).toFixed(1);$(key+'k_'+v.id).value=v.kg}}save();onChange&&onChange(v,f)}));
   armDelete(`[data-gk="${key}"] [data-delg]`,b=>{if(holder[prop].length<2){toast('Serve almeno un vetro');return}holder[prop]=holder[prop].filter(v=>v.id!==b.dataset.delg);save();rerender();onChange&&onChange()});
   box.querySelector('[data-addg]').onclick=()=>{holder[prop].push({id:uid(),nome:'Nuovo vetro',sp:8,kg:20});save();rerender()}}
 
-/* ---------- parametri del cantiere ---------- */
-function viewParametri(c){
-  const ctx={key:'c_'+c.id,h:c,cantiere:c,vetri:c.vetri,usage:s=>c.lati.reduce((a,l)=>a+l.vani.filter(v=>sisOf(c,v)===s).length,0),
-    rerender:()=>viewParametri(c),onChange:()=>updTot(c)};
+/* ---------- scheda Dati del cantiere e avvisi sui profili ---------- */
+function viewDati(c){
+  const grp=[['sistemi','Vetrate'],['vetri','Vetri'],['tipFin','Finestre'],['tipZan','Zanzariere']];
+  let haDiff=false;
+  const righe=grp.map(([k,t])=>{const l=c[k]||[];if(!l.length)return'';return`<h3>${t}</h3><div class="pu-list">${l.map(cp=>{const st=statoCopia(k,cp);
+    const pill=st.st==='ok'?'<span class="pill ok">Uguale al profilo</span>':st.st==='solo'?'<span class="pill fix">Solo in questo cantiere</span>':st.st==='ign'?'<span class="pill fix">Diverso · avviso nascosto</span>':'<span class="pill w">Diverso dal profilo</span>';
+    const dif=st.st==='mod'||st.st==='ign'?diffCopia(k,cp,st.src):[];if(dif.length)haDiff=true;
+    const sub=[k==='sistemi'?(SEZ_VET.find(x=>x[0]===sezOf(cp))||[])[1]:k==='vetri'?`${fmt(num(cp.kg),1)} kg/m²`:'',cp.forn].filter(Boolean).join(' · ');
+    return`<div class="pu-row" data-pk="${k}" data-pid="${cp.id}"><div class="pu-d"><b>${esc(cp.nome)}</b>${sub?`<small>${esc(sub)}</small>`:''}</div>${pill}
+      ${st.st==='mod'||st.st==='ign'?`<div class="row pu-a"><button class="btn sm primary" type="button" data-puup>Aggiorna</button>${st.st==='mod'?'<button class="btn sm" type="button" data-puign>Ignora</button>':''}</div>`:''}
+      ${dif.length?`<ul class="pu-diff">${dif.map(([n,x,y])=>`<li>${esc(n)}: <b>${esc(x)} → ${esc(y)}</b></li>`).join('')}</ul>`:''}</div>`}).join('')}</div>`}).join('');
   setMain(),$('main').innerHTML=`
   <section class="card">${cardH('Dati del cantiere','datiCantiere','hp_dc')}
     <div class="fields">${fld({id:'cn',label:'Nome',val:c.nome})}${fld({id:'ci',label:'Indirizzo',val:c.indirizzo})}</div>
     ${fld({id:'cno',label:'Note',ctrl:`<textarea id="cno" rows="2">${esc(c.note)}</textarea>`})}
     <label class="chk"><input type="checkbox" id="cpar" ${c.parete?'checked':''}> Veranda addossata a una parete</label>
     <div class="row"><button class="btn primary" id="expC" type="button">Esporta cantiere</button><button class="btn" id="dupC" type="button">Duplica cantiere</button><button class="btn danger" id="delC" type="button">Elimina cantiere</button></div></section>
-  ${tipHTML(ctx,'Tipologie di vetrata','tipologie')}
-  <section class="card">${cardH('Vetri di questo cantiere','vetri','hp_vc')}${vetriHTML(c.vetri,'gc')}</section>`;
+  <section class="card">${cardH('Profili usati','profUsati','hp_pu')}
+    ${righe||'<p class="note">Questo cantiere non usa ancora nessun profilo.</p>'}
+    ${haDiff?'<p class="note">Le differenze sono indicate come valore del cantiere → valore nella sezione Profili.</p>':''}
+    <div class="row"><button class="btn" id="toProf" type="button">Apri la sezione Profili</button></div></section>`;
   $('cn').oninput=e=>{c.nome=e.target.value||'Senza nome';save();document.querySelector('h1').textContent=c.nome};
   $('ci').oninput=e=>{c.indirizzo=e.target.value;save();updTot(c)};
   $('cno').oninput=e=>{c.note=e.target.value;save()};
   $('cpar').onchange=e=>{c.parete=e.target.checked;save()};
-  $('expC').onclick=()=>shareFile('cantiere-'+fileName(c.nome)+'.json',{v:2,tipo:'cantiere',cantiere:c});
+  $('expC').onclick=()=>{ensureRefs(c);shareFile('cantiere-'+fileName(c.nome)+'.json',{v:2,tipo:'cantiere',cantiere:c})};
   $('dupC').onclick=()=>{const n={...clone(c),id:uid(),nome:c.nome+' (copia)'};n.prev={...n.prev,stato:'bozza',numero:''};S.cantieri.unshift(n);go(n.id,'struttura');toast('Cantiere duplicato')};
   armDelete('#delC',()=>{S.cantieri=S.cantieri.filter(x=>x!==c);go(null);toast('Cantiere eliminato')});
-  bindTip(ctx);
-  bindVetri(c,'vetri','gc',()=>viewParametri(c),()=>updTot(c));
+  const rowOf=b=>{const r=b.closest('[data-pid]'),k=r.dataset.pk;return[k,c[k].find(x=>x.id===r.dataset.pid)]};
+  document.querySelectorAll('[data-puup]').forEach(b=>b.onclick=()=>{const[k,cp]=rowOf(b);if(cp)aggiornaCopia(c,k,cp);save();viewDati(c);paintAvvisi(c);updTot(c);toast('Valori aggiornati in questo cantiere')});
+  document.querySelectorAll('[data-puign]').forEach(b=>b.onclick=()=>{const[k,cp]=rowOf(b),st=cp&&statoCopia(k,cp);if(st&&st.sg)cp.skip=st.sg;save();viewDati(c);paintAvvisi(c)});
+  $('toProf').onclick=()=>goHome('profili');
 }
+function modificati(c){const out=[];PK.forEach(k=>(c[k]||[]).forEach(cp=>{const st=statoCopia(k,cp);if(st.st==='mod')out.push({k,cp,sg:st.sg})}));return out}
+function paintAvvisi(c){const box=$('avv');if(!box)return;const mods=c?modificati(c):[];
+  if(!mods.length){box.innerHTML='';return}
+  box.innerHTML=`<section class="card remind"><div class="card-h"><h2>Profili modificati</h2><button class="xbtn" id="avvX" type="button" aria-label="Ignora l'avviso">✕</button></div>
+    <p class="note">Nella sezione Profili, ${mods.map(m=>'«'+esc(m.cp.nome)+'»').join(', ')} ${mods.length===1?'ha':'hanno'} valori diversi da quelli usati in questo cantiere. Il cantiere resta com'è finché non lo aggiorni.</p>
+    <div class="row"><button class="btn primary" id="avvUp" type="button">Aggiorna il cantiere</button><button class="btn" id="avvDet" type="button">Vedi le differenze</button></div></section>`;
+  $('avvUp').onclick=()=>{mods.forEach(m=>aggiornaCopia(c,m.k,m.cp));save();render();toast('Cantiere aggiornato con i nuovi valori')};
+  $('avvX').onclick=()=>{mods.forEach(m=>{m.cp.skip=m.sg});save();render();toast('Avviso nascosto: ricomparirà se modifichi di nuovo il profilo')};
+  $('avvDet').onclick=()=>nav(S.ui.sez==='fz'?{c:c.id,tabFz:'dati'}:{c:c.id,tab:'dati'})}
 
 /* ---------- strumenti ---------- */
 function geoRows(L,Hs,Hd){const dh=Hd-Hs;
@@ -1145,9 +1266,9 @@ const fmtData=d=>{if(!d)return'';const[y,m,g]=String(d).split('-');return g?`${g
 const fmtE=n=>(isFinite(n)?n:0).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2,useGrouping:'always'});
 const eur=n=>'€ '+fmtE(n||0);
 const fmtQ=n=>isFinite(n)?n.toLocaleString('it-IT',{maximumFractionDigits:2}):'–';
-/* prezzo di una riga finestra/zanzariera: quello del preventivo, altrimenti quello del listino per la tipologia */
+/* prezzo di una riga finestra/zanzariera: quello del preventivo, altrimenti quello del listino per il profilo */
 function prezzoListino(kind,t){const L=S.listino[kind]||{};let d=t&&L[t.id];
-  if(!d&&t){const pre=(S.predef[kind==='fin'?'tipFin':'tipZan']||[]).find(y=>y.nome===t.nome||(t.preset&&y.preset===t.preset));if(pre)d=L[pre.id]}
+  if(!d&&t){const pre=(S.prof[kind==='fin'?'tipFin':'tipZan']||[]).find(y=>y.nome===t.nome||(t.preset&&y.preset===t.preset));if(pre)d=L[pre.id]}
   return{modo:(d&&d.modo)||(kind==='fin'?'pz':'mq'),prezzo:(d&&d.prezzo)||'',min:(d&&d.min)||''}}
 function lineaPrezzo(c,kind,x,t,mat){const pv=c.prev;pv.fz=pv.fz||{};const e=pv.fz[x.id]&&pv.fz[x.id][kind];if(e)return e;
   const r=prezzoListino(kind,t);if(mat){pv.fz[x.id]=pv.fz[x.id]||{};pv.fz[x.id][kind]=r}return r}
@@ -1156,7 +1277,7 @@ function prevCalc(c,mat){
   const pv=c.prev,byG={};let mq=0,vani=0;
   c.lati.forEach(l=>l.vani.forEach(v=>{vani++;const r=compute(v,c);if(!r.ok)return;mq+=r.mq;
     const g=byG[r.gl.id]||(byG[r.gl.id]={id:r.gl.id,nome:r.gl.nome,n:0,mq:0,fmq:0});g.n+=r.N*r.qta;g.mq+=r.mq;g.fmq+=r.fmq}));
-  const vetri=Object.values(byG).map(g=>{const pr=num(pv.prezzi[g.id]);return{...g,pr,imp:pr>0?pr*g.fmq:0}});
+  const vetri=Object.values(byG).map(g=>{let pz=pv.prezzi[g.id];if(pz===undefined){const lp=S.listino.vetri[g.id];if(lp!=null&&lp!==''){pz=lp;if(mat)pv.prezzi[g.id]=lp}}const pr=num(pz);return{...g,pr,imp:pr>0?pr*g.fmq:0}});
   const fz={fin:[],zan:[]};
   (c.fz&&c.fz.voci||[]).forEach(x=>{vani++;const r=fzCalc(c,x);if(!r.ok)return;
     ['fin','zan'].forEach(kind=>{const o=r[kind];if(!o)return;mq+=o.mq*r.q;
@@ -1251,7 +1372,7 @@ function renderPrev(c){
       refreshPrev(c)};
     box.addEventListener('input',upd);box.addEventListener('change',e=>{if(e.target.tagName==='SELECT')upd(e)})});
   armDelete('#pvFromList',()=>{const k=prevCalc(c);let n=0;
-    k.vetri.forEach(g=>{const cat=S.catalogo.find(x=>x.id===g.id)||S.catalogo.find(x=>x.nome===g.nome);const p=cat&&S.listino.vetri[cat.id];if(p!=null&&p!==''){pv.prezzi[g.id]=p;n++}});
+    k.vetri.forEach(g=>{const cat=S.prof.vetri.find(x=>x.id===g.id)||S.prof.vetri.find(x=>x.nome===g.nome);const p=cat&&S.listino.vetri[cat.id];if(p!=null&&p!==''){pv.prezzi[g.id]=p;n++}});
     ['fin','zan'].forEach(kind=>k[kind].forEach(l=>{const d=prezzoListino(kind,l.o.t);if(d.prezzo!==''){pv.fz[l.x.id]=pv.fz[l.x.id]||{};pv.fz[l.x.id][kind]=d;n++}}));
     save();renderPrev(c);toast(n?`Prezzi aggiornati dal listino: ${n}`:'Il listino non ha prezzi per queste voci')});
   $('lavAdd').onclick=()=>{const x={id:uid(),desc:'',qta:'1',um:'pz',prezzo:''};pv.lav.push(x);save();paintPrevLav(c);paintPrevTot(c);const e=$('ld_'+x.id);if(e)e.focus()};
@@ -1315,7 +1436,7 @@ function renderListino(){
     <div class="titles"><span class="crumb">Preventivi</span><h1>Listino prezzi</h1><span class="sync" id="sync"></span></div>
     <button class="hbtn" id="setBtn" type="button" aria-label="Impostazioni generali">${ICON.gear}</button></div>`;
   removeNav();
-  const righe=kind=>(S.predef[kind==='fin'?'tipFin':'tipZan']||[]).map(t=>{const d=L[kind][t.id]||{modo:kind==='fin'?'pz':'mq',prezzo:'',min:''},id=kind+'_'+t.id;
+  const righe=kind=>(S.prof[kind==='fin'?'tipFin':'tipZan']||[]).map(t=>{const d=L[kind][t.id]||{modo:kind==='fin'?'pz':'mq',prezzo:'',min:''},id=kind+'_'+t.id;
     return`<div class="pl-row lst" data-lk="${kind}" data-lt="${t.id}"><div class="pl-d"><b>${esc(t.nome)}</b></div>
       <select class="pl-m" id="lm_${id}" data-lf2="modo" aria-label="Come si calcola il prezzo"><option value="pz" ${d.modo!=='mq'?'selected':''}>€ al pezzo</option><option value="mq" ${d.modo==='mq'?'selected':''}>€ al m²</option></select>
       <div class="unit pl-p"><input class="num" id="lp_${id}" data-lf2="prezzo" inputmode="decimal" value="${esc(d.prezzo)}" placeholder="Prezzo" aria-label="Prezzo"><span>€</span></div>
@@ -1323,12 +1444,12 @@ function renderListino(){
   setMain(),$('main').innerHTML=`
   <section class="card">${cardH('Prezzi dei vetri','listVetri','hp_lv')}
     <div class="tablebox"><table class="pvtab"><thead><tr><th class="l">Vetro</th><th>€/m²</th></tr></thead><tbody>
-    ${S.catalogo.map(v=>`<tr><td class="t l">${esc(v.nome)}</td><td><input class="num" id="lv_${v.id}" data-lv="${v.id}" inputmode="decimal" value="${esc(L.vetri[v.id]??'')}" placeholder="–" aria-label="Prezzo al metro quadro di ${esc(v.nome)}"></td></tr>`).join('')}</tbody></table></div>
-    <p class="note">L'elenco dei vetri si modifica in Impostazioni generali › Vetri predefiniti.</p></section>
+    ${S.prof.vetri.map(v=>`<tr><td class="t l">${esc(v.nome)}</td><td><input class="num" id="lv_${v.id}" data-lv="${v.id}" inputmode="decimal" value="${esc(L.vetri[v.id]??'')}" placeholder="–" aria-label="Prezzo al metro quadro di ${esc(v.nome)}"></td></tr>`).join('')}</tbody></table></div>
+    <p class="note">I vetri si aggiungono e si modificano nella sezione Profili › Vetri.</p></section>
   <section class="card">${cardH('Prezzi delle finestre','listFin','hp_lfi')}<div class="pl-list" id="lFin">${righe('fin')}</div>
-    <p class="note">Le tipologie si modificano in Impostazioni generali › Tipologie finestre predefinite.</p></section>
+    <p class="note">I profili delle finestre si gestiscono nella sezione Profili › Finestre.</p></section>
   <section class="card">${cardH('Prezzi delle zanzariere','listZan','hp_lza')}<div class="pl-list" id="lZan">${righe('zan')}</div>
-    <p class="note">Le tipologie si modificano in Impostazioni generali › Tipologie zanzariere predefinite.</p></section>
+    <p class="note">I profili delle zanzariere si gestiscono nella sezione Profili › Zanzariere.</p></section>
   <section class="card">${cardH('Lavorazioni frequenti','listLav','hp_ll')}
     <div id="llav" class="lav-list"></div><div class="row"><button class="btn" id="llAdd" type="button">+ Aggiungi lavorazione</button></div></section>
   <section class="card">${cardH('Valori di partenza dei preventivi','listAltro','hp_la')}
@@ -1357,7 +1478,7 @@ function paintListLav(){const L=S.listino,box=$('llav');if(!box)return;
   armDelete('#llav [data-lldel]',b=>{L.lav=L.lav.filter(y=>y.id!==b.dataset.lldel);save();paintListLav()})}
 
 /* ---------- finestre e zanzariere: sezione del cantiere ---------- */
-const TABS_FZ=[['vani','Vani','finestra'],['ordine','Ordine','riepilogo'],['parametri','Parametri','parametri'],['strumenti','Strumenti','strumenti']];
+const TABS_FZ=[['vani','Vani','finestra'],['ordine','Ordine','riepilogo'],['dati','Dati','dati'],['strumenti','Strumenti','strumenti']];
 const findVano=(c,id)=>{for(const l of c.lati){const v=l.vani.find(x=>x.id===id);if(v)return{l,v}}return null};
 const findVoce=(c,id)=>(c.fz&&c.fz.voci||[]).find(x=>x.id===id);
 function syncDaVano(c,v){if(!v.link)return;const x=findVoce(c,v.link);if(!x){v.link=null;return}x.L=v.L;x.H=v.Hs}
@@ -1410,7 +1531,7 @@ function voceCard(c,x){
         <button class="tog" type="button" data-tog="zan" aria-pressed="${!!z.on}"><span class="ck">${z.on?'✓':''}</span>Zanzariera</button></div>
     </div></div>
     <div class="prod" ${f.on?'':'hidden'}><h3>Finestra</h3><div class="fields">
-      ${fld({id:'fT_'+x.id,label:'Tipologia',wide:true,ctrl:sel('fT_'+x.id,c.tipFin.map(t=>[t.id,t.nome]),tf&&tf.id,'data-ff="tipo"')})}
+      ${fld({id:'fT_'+x.id,label:'Profilo',wide:true,ctrl:`<select id="fT_${x.id}" data-ff="tipo">${profOpts(c,'tipFin',x.fin.tipo)}</select>`})}
       ${fld({id:'fA_'+x.id,label:'Apertura',help:HELP.fApertura,ctrl:sel('fA_'+x.id,APERTURE.map(a=>[a,a]),f.apertura,'data-ff="apertura"')})}
       ${fld({id:'fN_'+x.id,label:'Ante',ctrl:sel('fN_'+x.id,[1,2,3,4].map(n=>[n,n]),f.ante,'data-ff="ante"')})}
       ${fld({id:'fV_'+x.id,label:'Verso',help:HELP.fVerso,ctrl:sel('fV_'+x.id,[['','—'],['DX','DX'],['SX','SX']],f.verso,'data-ff="verso"')})}
@@ -1419,7 +1540,7 @@ function voceCard(c,x){
       ${fld({id:'fO_'+x.id,label:'Note per l\'ordine',wide:true,val:f.note,attrs:'data-ff="note" placeholder="Es. maniglia con chiave, soglia ribassata"'})}
     </div></div>
     <div class="prod" ${z.on?'':'hidden'}><h3>Zanzariera</h3><div class="fields">
-      ${fld({id:'zT_'+x.id,label:'Tipologia',wide:true,ctrl:sel('zT_'+x.id,c.tipZan.map(t=>[t.id,t.nome]),tz&&tz.id,'data-zf="tipo"')})}
+      ${fld({id:'zT_'+x.id,label:'Profilo',wide:true,ctrl:`<select id="zT_${x.id}" data-zf="tipo">${profOpts(c,'tipZan',x.zan.tipo)}</select>`})}
       ${fld({id:'zM_'+x.id,label:'Montaggio',help:HELP.zMont,ctrl:sel('zM_'+x.id,[['luce','In luce'],['sormonto','A sormonto']],z.mont,'data-zf="mont"')})}
       ${fld({id:'zC_'+x.id,label:'Colore',val:z.colore,attrs:'data-zf="colore" list="dlColori"'})}
       ${fld({id:'zR_'+x.id,label:'Rete',val:z.rete,attrs:'data-zf="rete" list="dlReti"'})}
@@ -1472,21 +1593,21 @@ function bindFzVani(c){
     save();if(t.dataset.xf!=='nome')voceResult(c,x);updTot(c)});
   m.addEventListener('change',e=>{const t=e.target,x=t.closest('[data-x]')&&findX(t);if(!x||t.tagName!=='SELECT')return;
     if(t.dataset.ff){x.fin[t.dataset.ff]=t.value;
-      if(t.dataset.ff==='tipo'){const tf=tipFinOf(c,x);if(tf){x.fin.apertura=tf.apertura;x.fin.ante=String(tf.ante)}save();viewFzVani(c);return}}
-    else if(t.dataset.zf)x.zan[t.dataset.zf]=t.value;else return;
+      if(t.dataset.ff==='tipo'){ensureRefs(c);const tf=tipFinOf(c,x);if(tf){x.fin.apertura=tf.apertura;x.fin.ante=String(tf.ante)}save();viewFzVani(c);paintAvvisi(c);return}}
+    else if(t.dataset.zf){x.zan[t.dataset.zf]=t.value;if(t.dataset.zf==='tipo'){ensureRefs(c);paintAvvisi(c)}}else return;
     save();voceResult(c,x)});
   m.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!b.closest('[data-x]'))return;const x=findX(b);
-    if(b.dataset.tog){x[b.dataset.tog].on=!x[b.dataset.tog].on;save();viewFzVani(c);updTot(c)}
+    if(b.dataset.tog){x[b.dataset.tog].on=!x[b.dataset.tog].on;ensureRefs(c);save();viewFzVani(c);updTot(c);paintAvvisi(c)}
     else if(b.hasAttribute('data-xdup')){const n={...clone(x),id:uid(),nome:x.nome+' (copia)',link:null};c.fz.voci.splice(c.fz.voci.indexOf(x)+1,0,n);save();viewFzVani(c);updTot(c)}
     else if(b.hasAttribute('data-xunlink')){scollega(c,x);save();viewFzVani(c);toast('Vano scollegato: ora le misure sono indipendenti')}});
-  armDelete('[data-xdel]',b=>{const x=c.fz.voci.find(y=>y.id===b.dataset.xdel);if(!x)return;scollega(c,x);c.fz.voci=c.fz.voci.filter(y=>y!==x);save();viewFzVani(c);updTot(c)});
+  armDelete('[data-xdel]',b=>{const x=c.fz.voci.find(y=>y.id===b.dataset.xdel);if(!x)return;scollega(c,x);c.fz.voci=c.fz.voci.filter(y=>y!==x);ensureRefs(c);save();viewFzVani(c);updTot(c);paintAvvisi(c)});
   $('fzAdd').onclick=()=>{const prev=c.fz.voci[c.fz.voci.length-1];const x=newVoce('Vano '+(c.fz.voci.length+1),c);
     if(prev){x.fin={...clone(prev.fin),note:''};x.zan={...clone(prev.zan),note:''}}
-    c.fz.voci.push(x);save();viewFzVani(c);updTot(c);const el=document.querySelector(`[data-x="${x.id}"]`);if(el)el.scrollIntoView({block:'start'})};
+    c.fz.voci.push(x);ensureRefs(c);save();viewFzVani(c);updTot(c);const el=document.querySelector(`[data-x="${x.id}"]`);if(el)el.scrollIntoView({block:'start'})};
   if($('fzFromV')){$('fzFromV').onclick=()=>{const p=$('fzPick');p.hidden=!p.hidden};$('fzPickNo').onclick=()=>{$('fzPick').hidden=true};
     $('fzPickOk').onclick=()=>{const f=findVano(c,$('fzPickSel').value);if(!f)return;
       const x=newVoce(/^vano\s*\d*$/i.test(f.v.nome.trim())?`${f.l.nome} – ${f.v.nome}`:f.v.nome,c,{L:f.v.L,H:f.v.Hs,link:f.v.id});f.v.link=x.id;
-      c.fz.voci.push(x);save();viewFzVani(c);updTot(c);toast('Vano collegato: le misure si aggiornano in entrambe le sezioni')}}
+      c.fz.voci.push(x);ensureRefs(c);save();viewFzVani(c);updTot(c);toast('Vano collegato: le misure si aggiornano in entrambe le sezioni')}}
 }
 
 /* ---------- ordine al fornitore ---------- */
@@ -1502,12 +1623,12 @@ function viewFzOrdine(c){
     ${warn?`<div class="msg">Ci sono ${warn} avvisi nei vani: controllali in Vani.</div>`:''}
   </section>
   <section class="card">${cardH('Ordine finestre','fzOrdFin','hp_fzof',fin.length?'<button class="btn sm" id="cpFin" type="button">Copia testo</button><button class="btn primary sm" id="pdfFin" type="button">PDF</button>':'')}
-    ${fin.length?`<div class="tablebox"><table><thead><tr><th class="l">N°</th><th class="l">Vano</th><th>Pz</th><th class="l">Tipologia</th><th class="l">Apertura</th><th>Misura da ordinare</th><th class="l">Vetro</th><th class="l">Colore</th><th class="l">Note</th></tr></thead><tbody>
+    ${fin.length?`<div class="tablebox"><table><thead><tr><th class="l">N°</th><th class="l">Vano</th><th>Pz</th><th class="l">Profilo</th><th class="l">Apertura</th><th>Misura da ordinare</th><th class="l">Vetro</th><th class="l">Colore</th><th class="l">Note</th></tr></thead><tbody>
       ${fin.map((o,i)=>{const f=o.x.fin,t=o.r.fin.t,n=+f.ante||1;return`<tr><td class="l">${i+1}</td><td class="t l">${esc(o.x.nome)}</td><td>${o.r.q}</td><td class="t l">${esc(t.nome)}</td><td class="t l">${esc(f.apertura)}, ${n} ${n===1?'anta':'ante'}${f.verso?' '+f.verso:''}</td><td>${fmtMis(o.r.fin.oL,o.r.fin.oH)}</td><td class="t l">${esc(f.vetro||'–')}</td><td class="t l">${esc(f.colore||'–')}</td><td class="t l">${esc(f.note||'')}</td></tr>`}).join('')}
       </tbody></table></div>`:'<p class="note">Nessuna finestra con misure.</p>'}
     <textarea id="taFin" rows="8" class="num" hidden></textarea></section>
   <section class="card">${cardH('Ordine zanzariere','fzOrdZan','hp_fzoz',zan.length?'<button class="btn sm" id="cpZan" type="button">Copia testo</button><button class="btn primary sm" id="pdfZan" type="button">PDF</button>':'')}
-    ${zan.length?`<div class="tablebox"><table><thead><tr><th class="l">N°</th><th class="l">Vano</th><th>Pz</th><th class="l">Tipologia</th><th class="l">Montaggio</th><th>Misura da ordinare</th><th class="l">Colore</th><th class="l">Rete</th><th class="l">Comando</th><th class="l">Note</th></tr></thead><tbody>
+    ${zan.length?`<div class="tablebox"><table><thead><tr><th class="l">N°</th><th class="l">Vano</th><th>Pz</th><th class="l">Profilo</th><th class="l">Montaggio</th><th>Misura da ordinare</th><th class="l">Colore</th><th class="l">Rete</th><th class="l">Comando</th><th class="l">Note</th></tr></thead><tbody>
       ${zan.map((o,i)=>{const z=o.x.zan;return`<tr><td class="l">${i+1}</td><td class="t l">${esc(o.x.nome)}</td><td>${o.r.q}</td><td class="t l">${esc(o.r.zan.t.nome)}</td><td class="t l">${o.r.zan.mont}</td><td>${fmtMis(o.r.zan.oL,o.r.zan.oH)}</td><td class="t l">${esc(z.colore||'–')}</td><td class="t l">${esc(z.rete||'–')}</td><td class="t l">${esc(z.comando||'–')}</td><td class="t l">${esc(z.note||'')}</td></tr>`}).join('')}
       </tbody></table></div>`:'<p class="note">Nessuna zanzariera con misure.</p>'}
     <textarea id="taZan" rows="8" class="num" hidden></textarea></section>`;
@@ -1523,22 +1644,24 @@ function viewFzOrdine(c){
     t+=`\nTotale: ${tot(zan)} ${tot(zan)===1?'zanzariera':'zanzariere'}`;copy(t,$('taZan'))};
 }
 
-/* ---------- tipologie di finestre e zanzariere ---------- */
+/* ---------- profili di finestre e zanzariere (sezione Profili) ---------- */
 function fzTipHTML(kind,ctx,title,hk){
   const K=kind==='fin'?'tf':'tz',prop=kind==='fin'?'tipFin':'tipZan',list=ctx.h[prop],PR=kind==='fin'?FIN_PRESETS:ZAN_PRESETS;
   S.ui.tipSel=S.ui.tipSel||{};const sk=ctx.key+'_'+kind,s=list.find(t=>t.id===S.ui.tipSel[sk])||list[0];
-  const opts=list.map(t=>`<option value="${t.id}" ${t===s?'selected':''}>${esc(t.nome)}${usoTxt(ctx.usage?ctx.usage(kind,t):null)}</option>`).join('');
+  const opts=list.map(t=>`<option value="${t.id}" ${t===s?'selected':''}>${esc(t.nome)}${usoTxt(ctx.usage?ctx.usage(kind,t):null,ctx.catalogo)}</option>`).join('');
   const base=`<optgroup label="Preimpostazioni">${PR.map(x=>`<option value="pre:${x.key}">${esc(x.nome)}</option>`).join('')}</optgroup>`+
-    (list.length?`<optgroup label="Copia di una tipologia">${list.map(t=>`<option value="copy:${t.id}">${esc(t.nome)}</option>`).join('')}</optgroup>`:'');
+    (list.length?`<optgroup label="Copia di un profilo">${list.map(t=>`<option value="copy:${t.id}">${esc(t.nome)}</option>`).join('')}</optgroup>`:'');
   const F=kind==='fin'?FIN_FIELDS:ZAN_FIELDS,es=s?(kind==='fin'?`Esempio: vano 1.000 × 1.000 mm → ordine ${fmtMis(rv(1000-(num(s.p.detL)||0)),rv(1000-(num(s.p.detH)||0)))}`
     :`Esempio: vano 1.000 × 1.000 mm → in luce ${fmtMis(rv(1000-(num(s.p.detL)||0)),rv(1000-(num(s.p.detH)||0)))}, a sormonto ${fmtMis(rv(1000+(num(s.p.sorL)||0)),rv(1000+(num(s.p.sorH)||0)))}`):'';
   return`<section class="card" id="${K}Card" data-kind="${kind}">${cardH(title,hk,'hp_'+K)}
-    <div class="tip-top">${fld({id:K+'Sel',label:'Tipologia da modificare',ctrl:`<select id="${K}Sel">${opts}</select>`})}<button class="btn" id="${K}NewBtn" type="button">+ Nuova tipologia</button></div>
+    <div class="tip-top">${list.length?fld({id:K+'Sel',label:'Profilo da modificare',ctrl:`<select id="${K}Sel">${opts}</select>`}):''}<button class="btn" id="${K}NewBtn" type="button">+ Nuovo profilo</button></div>
     <div class="tip-new" id="${K}New" hidden>
       <div class="fields">${fld({id:K+'Base',label:'Parti da',ctrl:`<select id="${K}Base">${base}</select>`})}${fld({id:K+'Nome',label:'Nome',attrs:'placeholder="Facoltativo"'})}</div>
-      <div class="row"><button class="btn primary" id="${K}Create" type="button">Crea tipologia</button><button class="btn" id="${K}Ann" type="button">Annulla</button></div></div>
-    ${s?`<div class="tip-body">
+      <div class="row"><button class="btn primary" id="${K}Create" type="button">Crea profilo</button><button class="btn" id="${K}Ann" type="button">Annulla</button></div></div>
+    ${s?`<div class="tip-body">${ctx.usage?usoNota(ctx.usage(kind,s)):''}
       <div class="fields">${fld({id:K+'N',label:'Nome',val:s.nome,wide:true})}
+        ${fld({id:K+'Fo',label:'Fornitore / serie',wide:true,val:s.forn||'',help:HELP.profForn,attrs:'placeholder="Facoltativo"'})}
+        ${fld({id:K+'No',label:'Note',wide:true,ctrl:`<textarea id="${K}No" rows="2">${esc(s.note||'')}</textarea>`})}
         ${kind==='fin'?fld({id:K+'Mat',label:'Materiale',val:s.materiale||'',attrs:'list="dlMat"'})+
           fld({id:K+'Ap',label:'Apertura proposta',ctrl:`<select id="${K}Ap">${APERTURE.map(a=>`<option ${a===s.apertura?'selected':''}>${a}</option>`).join('')}</select>`})+
           fld({id:K+'An',label:'Ante proposte',ctrl:`<select id="${K}An">${[1,2,3,4].map(n=>`<option ${String(n)===String(s.ante)?'selected':''}>${n}</option>`).join('')}</select>`})
@@ -1547,42 +1670,32 @@ function fzTipHTML(kind,ctx,title,hk){
       <h3>Misura da ordinare</h3>
       <div class="fields">${F.map(([k,l,u,h])=>fld({id:`${K}_${k}`,label:l,unit:u,val:s.p[k]??'',help:h,attrs:`data-k="${k}"`})).join('')}</div>
       <p class="note" id="${K}Es">${es}</p>
-      <div class="row"><button class="btn sm" id="${K}Dup" type="button">Duplica</button>${PR.find(x=>x.key===s.preset)?`<button class="btn sm" id="${K}Reset" type="button">Ripristina valori preimpostati</button>`:''}<button class="btn sm danger" id="${K}Del" type="button">Elimina tipologia</button></div>
-    </div>`:'<p class="note">Nessuna tipologia: creane una.</p>'}
-    ${ctx.cantiere?`<div class="tip-pre">${h3H('Predefinite','tipPre','hp_'+K+'pre')}<div class="row"><button class="btn sm" id="${K}ToPre" type="button">Salva come predefinite</button><button class="btn sm" id="${K}FromPre" type="button">Ricarica le predefinite</button></div></div>`:''}
+      <div class="row"><button class="btn sm" id="${K}Dup" type="button">Duplica</button>${PR.find(x=>x.key===s.preset)?`<button class="btn sm" id="${K}Reset" type="button">Ripristina valori preimpostati</button>`:''}<button class="btn sm danger" id="${K}Del" type="button">Elimina profilo</button></div>
+    </div>`:'<p class="note">Nessun profilo: creane uno con + Nuovo profilo.</p>'}
   </section>`}
 function bindFzTip(kind,ctx){
   const K=kind==='fin'?'tf':'tz',prop=kind==='fin'?'tipFin':'tipZan',PR=kind==='fin'?FIN_PRESETS:ZAN_PRESETS,mk=kind==='fin'?finDaPreset:zanDaPreset;
   const sk=ctx.key+'_'+kind,list=()=>ctx.h[prop],s=list().find(t=>t.id===S.ui.tipSel[sk])||list()[0],rer=ctx.rerender;
-  $(K+'Sel').onchange=e=>{S.ui.tipSel[sk]=e.target.value;save();rer()};
+  if($(K+'Sel'))$(K+'Sel').onchange=e=>{S.ui.tipSel[sk]=e.target.value;save();rer()};
   $(K+'NewBtn').onclick=()=>{const n=$(K+'New');n.hidden=!n.hidden};$(K+'Ann').onclick=()=>{$(K+'New').hidden=true};
   $(K+'Create').onclick=()=>{const b=$(K+'Base').value,nome=$(K+'Nome').value.trim();let n;
     if(b.startsWith('pre:'))n=mk(PR.find(x=>x.key===b.slice(4)));else{const o=list().find(x=>x.id===b.slice(5));n={...clone(o),id:uid(),nome:o.nome+' (copia)'}}
-    if(nome)n.nome=nome;list().push(n);S.ui.tipSel[sk]=n.id;save();rer();toast('Tipologia creata: '+n.nome)};
+    n.forn=n.forn||'';n.note=n.note||'';if(nome)n.nome=nome;list().push(n);S.ui.tipSel[sk]=n.id;save();rer();toast('Profilo creato: '+n.nome)};
   if(!s)return;
   const es=()=>{const e=$(K+'Es');if(!e)return;const p=s.p;e.textContent=kind==='fin'?`Esempio: vano 1.000 × 1.000 mm → ordine ${fmtMis(rv(1000-(num(p.detL)||0)),rv(1000-(num(p.detH)||0)))}`
     :`Esempio: vano 1.000 × 1.000 mm → in luce ${fmtMis(rv(1000-(num(p.detL)||0)),rv(1000-(num(p.detH)||0)))}, a sormonto ${fmtMis(rv(1000+(num(p.sorL)||0)),rv(1000+(num(p.sorH)||0)))}`};
   document.querySelectorAll(`#${K}Card [data-k]`).forEach(i=>i.addEventListener('input',e=>{const n=num(e.target.value);s.p[e.target.dataset.k]=isFinite(n)?n:0;save();es()}));
-  $(K+'N').addEventListener('input',e=>{s.nome=e.target.value||'Tipologia';save();const o=$(K+'Sel').selectedOptions[0];if(o)o.textContent=s.nome+usoTxt(ctx.usage?ctx.usage(kind,s):null)});
-  if(kind==='fin'){$(K+'Mat').addEventListener('input',e=>{s.materiale=e.target.value;save()});$(K+'Ap').onchange=e=>{s.apertura=e.target.value;save()};$(K+'An').onchange=e=>{s.ante=+e.target.value;save()}}
-  else $(K+'Tp').onchange=e=>{s.tipo=e.target.value;save()};
-  $(K+'Dup').onclick=()=>{const n={...clone(s),id:uid(),nome:s.nome+' (copia)'};list().splice(list().indexOf(s)+1,0,n);S.ui.tipSel[sk]=n.id;save();rer();toast('Tipologia duplicata')};
-  if($(K+'Reset'))armDelete('#'+K+'Reset',()=>{const x=PR.find(k=>k.key===s.preset);if(!x)return;const d=mk(x);Object.assign(s,{...d,id:s.id,nome:s.nome});save();rer();toast('Valori ripristinati')});
+  const pg=()=>{if(ctx.catalogo)propaga(prop,s);save()};
+  $(K+'N').addEventListener('input',e=>{s.nome=e.target.value||'Profilo';pg();const o=$(K+'Sel')&&$(K+'Sel').selectedOptions[0];if(o)o.textContent=s.nome+usoTxt(ctx.usage?ctx.usage(kind,s):null,ctx.catalogo)});
+  $(K+'Fo').addEventListener('input',e=>{s.forn=e.target.value;pg()});$(K+'No').addEventListener('input',e=>{s.note=e.target.value;pg()});
+  if(kind==='fin'){$(K+'Mat').addEventListener('input',e=>{s.materiale=e.target.value;pg()});$(K+'Ap').onchange=e=>{s.apertura=e.target.value;pg()};$(K+'An').onchange=e=>{s.ante=+e.target.value;pg()}}
+  else $(K+'Tp').onchange=e=>{s.tipo=e.target.value;pg()};
+  $(K+'Dup').onclick=()=>{const n={...clone(s),id:uid(),nome:s.nome+' (copia)'};list().splice(list().indexOf(s)+1,0,n);S.ui.tipSel[sk]=n.id;save();rer();toast('Profilo duplicato')};
+  if($(K+'Reset'))armDelete('#'+K+'Reset',()=>{const x=PR.find(k=>k.key===s.preset);if(!x)return;const d=mk(x);Object.assign(s,{...d,id:s.id,nome:s.nome});if(ctx.catalogo)propaga(prop,s);save();rer();toast('Valori ripristinati')});
   armDelete('#'+K+'Del',()=>{const u=ctx.usage?ctx.usage(kind,s):0;
-    if(list().length<2){toast('Serve almeno una tipologia');return}
-    if(u){toast(`Usata da ${u} ${u===1?'vano':'vani'}: cambia prima la tipologia di quei vani`);return}
-    ctx.h[prop]=list().filter(x=>x!==s);delete S.ui.tipSel[sk];save();rer();toast('Tipologia eliminata')});
-  if(ctx.cantiere){const c=ctx.cantiere;
-    armDelete('#'+K+'ToPre',()=>{S.predef[prop]=clone(c[prop]);save();toast('Salvate come predefinite per i nuovi cantieri')});
-    armDelete('#'+K+'FromPre',()=>{const nuovi=clone(S.predef[prop]);
-      c.fz.voci.forEach(x=>{const old=c[prop].find(t=>t.id===x[kind].tipo);const n=nuovi.find(t=>old&&((t.preset&&t.preset===old.preset)||t.nome===old.nome))||nuovi[0];if(n)x[kind].tipo=n.id});
-      c[prop]=nuovi;delete S.ui.tipSel[sk];save();rer();toast('Tipologie predefinite caricate')})}
-}
-function viewFzParam(c){
-  const ctx={key:'c_'+c.id,h:c,cantiere:c,usage:(kind,t)=>c.fz.voci.filter(x=>x[kind].on&&(kind==='fin'?tipFinOf(c,x):tipZanOf(c,x))===t).length,rerender:()=>viewFzParam(c)};
-  setMain(),$('main').innerHTML=`<datalist id="dlMat">${['PVC','Alluminio','Legno-alluminio','Legno'].map(x=>`<option value="${x}">`).join('')}</datalist>
-    ${fzTipHTML('fin',ctx,'Tipologie di finestre','tipFin')}${fzTipHTML('zan',ctx,'Tipologie di zanzariere','tipZan')}`;
-  bindFzTip('fin',ctx);bindFzTip('zan',ctx);
+    if(list().length<2){toast('Serve almeno un profilo');return}
+    ctx.h[prop]=list().filter(x=>x!==s);delete S.ui.tipSel[sk];save();rer();
+    toast(u?`Profilo eliminato: ${u===1?'il cantiere che lo usa conserva':'i '+u+' cantieri che lo usano conservano'} i suoi valori`:'Profilo eliminato')});
 }
 
 /* ---------- PDF: generatore integrato (A4, Helvetica, testo, linee, poligoni) ---------- */
@@ -1826,8 +1939,6 @@ function renderSettings(){
     <div class="titles"><span class="crumb">Calcolo vetrate</span><h1>Impostazioni generali</h1><span class="sync" id="sync"></span></div></div>`;
   removeNav();
   const st=S.set;let kb=0;try{kb=Math.max(1,Math.round((localStorage.getItem(KEY)||'').length/1024))}catch(e){}
-  const ctx={key:'predef',h:S.predef,cantiere:null,vetri:S.catalogo,usage:null,rerender:renderSettings,onChange:null};
-  const fctx={key:'predef',h:S.predef,cantiere:null,usage:null,rerender:renderSettings};
   setMain(),$('main').innerHTML=`
   <section class="card">${cardH('Aspetto','aspetto','hp_asp')}
     <div class="setrow"><span class="setl">Tema</span>${seg('sTema',st.tema,[['auto','Automatico'],['light','Chiaro'],['dark','Scuro']])}</div>
@@ -1842,10 +1953,6 @@ function renderSettings(){
       ${fld({id:'sCont',label:'Contatto',val:st.contatto,attrs:'placeholder="Telefono o email"'})}${fld({id:'sPiva',label:'Partita IVA',val:st.piva,attrs:'inputmode="numeric"'})}</div>
     ${fld({id:'sNote',label:'Note per il vetraio',ctrl:`<textarea id="sNote" rows="2" placeholder="Es. filo lucido, consegna in cantiere">${esc(st.noteOrdine)}</textarea>`})}
   </section>
-  ${tipHTML(ctx,'Tipologie vetrate predefinite','tipPredef')}
-  <datalist id="dlMat">${['PVC','Alluminio','Legno-alluminio','Legno'].map(x=>`<option value="${x}">`).join('')}</datalist>
-  ${fzTipHTML('fin',fctx,'Tipologie finestre predefinite','tipFinPre')}${fzTipHTML('zan',fctx,'Tipologie zanzariere predefinite','tipZanPre')}
-  <section class="card">${cardH('Vetri predefiniti','vetriPre','hp_vpre')}${vetriHTML(S.catalogo,'gv')}</section>
   <section class="card">${cardH('Dati e backup','backup','hp_bk')}
     <dl class="kv"><dt>Ultimo backup</dt><dd>${st.lastBackup?new Date(st.lastBackup).toLocaleDateString('it-IT'):'mai'}</dd><dt>Cantieri salvati</dt><dd>${S.cantieri.length}</dd><dt>Spazio usato</dt><dd>${kb} KB</dd></dl>
     <div class="row"><button class="btn primary" id="bkBtn" type="button">Backup completo</button>
@@ -1861,9 +1968,6 @@ function renderSettings(){
   const segBind=(id,fn)=>$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{fn(b.dataset.v);save();applySettings();renderSettings()});
   segBind('sTema',v=>st.tema=v);segBind('sTesto',v=>st.testo=v);segBind('sAiuti',v=>st.aiuti=v==='1');segBind('sArr',v=>st.arrotVetro=v);
   $('sDitta').oninput=e=>{st.ditta=e.target.value;save()};$('sInd').oninput=e=>{st.indDitta=e.target.value;save()};$('sPiva').oninput=e=>{st.piva=e.target.value;save()};$('sCont').oninput=e=>{st.contatto=e.target.value;save()};$('sNote').oninput=e=>{st.noteOrdine=e.target.value;save()};
-  bindTip(ctx);
-  bindVetri(S,'catalogo','gv',renderSettings,null);
-  bindFzTip('fin',fctx);bindFzTip('zan',fctx);
   $('bkBtn').onclick=()=>doBackup().then(ok=>{if(ok)renderSettings()});
   $('impAll').onchange=e=>readFile(e.target,restoreBackup);
   $('impC2').onchange=e=>readFile(e.target,o=>{const c=importCantiere(o.cantiere||o);if(c)go(c.id,'struttura')});
@@ -1871,6 +1975,7 @@ function renderSettings(){
   $('updBtn').onclick=()=>{toast('Controllo aggiornamenti…');const fine=()=>setTimeout(()=>location.reload(),800);
     if(!('serviceWorker' in navigator))return fine();
     navigator.serviceWorker.getRegistration().then(r=>r?r.update():null).catch(()=>{}).finally(fine)};
+  paintStatus();
 }
 
 render();
