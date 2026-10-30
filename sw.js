@@ -3,7 +3,7 @@
 // La copia salvata sul dispositivo si usa quando manca internet oppure quando il sito
 // non risponde correttamente (per esempio se la pubblicazione è sospesa): così l'app
 // installata continua a funzionare.
-const VERSIONE = 'vetrate-v11';
+const VERSIONE = 'vetrate-v12';
 const FILE = ['./', 'index.html', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
