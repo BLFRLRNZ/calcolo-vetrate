@@ -333,9 +333,14 @@ details.regole[open] summary{margin-bottom:10px}
 .pu-diff{flex-basis:100%;margin:0;padding-left:18px;font-size:.78rem;color:var(--muted)}
 .pu-diff b{color:var(--ink);font-weight:600}
 .dis-box{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:10px;border:1px dashed var(--line-2);border-radius:var(--r);background:var(--surface-2)}
-.dis-th{width:150px;height:100px;border:1px solid var(--line);border-radius:4px;background:var(--surface);cursor:zoom-in;flex:none;display:block}
 .dis-side{flex:1 1 180px;min-width:0;display:flex;flex-direction:column;gap:8px}
 .dis-side small{color:var(--muted);font:400 .74rem var(--f-mono);overflow-wrap:anywhere}
+.dis-pv{all:unset;box-sizing:border-box;display:block;width:100%;cursor:zoom-in;border-radius:4px;overflow:hidden}
+.dis-pv canvas{display:block;width:100%;height:260px}
+.dis-pv:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dis-grid.big{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.dis-grid.big .dis-tile canvas{height:190px}
+.dis-tile small{font-size:.72rem;color:var(--muted)}
 .dis-multi{align-items:center}
 .dis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .dis-tile{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:8px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface-2)}
@@ -344,9 +349,9 @@ details.regole[open] summary{margin-bottom:10px}
 .dis-tile b{font:600 .82rem var(--f-body);color:var(--ink);overflow-wrap:anywhere}
 .dis-inl{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:8px;margin-top:10px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface-2)}
 .dis-inl canvas{width:100%;height:220px;background:var(--surface);border-radius:3px;display:block}
+@media (min-width:640px){.dis-inl canvas{height:300px}}
 .dis-inl span{font-size:.76rem;color:var(--muted)}
 .dis-inl:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.dv-qv{flex:0 0 120px;min-width:0;font:500 .9rem var(--f-mono);padding:6px 8px;border:1px solid var(--line-2);border-radius:4px;background:var(--surface);color:var(--ink)}
 .dv{position:fixed;inset:0;z-index:60;background:var(--surface);display:flex;flex-direction:column;
   padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
 .dv-h{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
@@ -356,8 +361,6 @@ details.regole[open] summary{margin-bottom:10px}
 .dv-b{position:relative;flex:1;min-height:0;background:var(--surface-2);overflow:hidden}
 .dv-b>canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
 .dv-b>canvas[hidden]{display:none}
-.dv-3{position:absolute;inset:0}
-.dv-3 canvas{display:block;width:100%;height:100%;touch-action:none}
 .dv-msg{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:.9rem;pointer-events:none;text-align:center;padding:24px}
 .dv-msg[hidden]{display:none}
 .dv-f{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;padding:8px 14px;border-top:1px solid var(--line);font-size:.8rem;color:var(--muted)}
@@ -449,9 +452,10 @@ const HELP={
  profVetri:'Elenco dei vetri che puoi scegliere nei vani delle vetrate. Scrivendo lo spessore il peso viene stimato a 2,5 kg/m² per mm; puoi correggerlo a mano, per esempio per i vetrocamera. I prezzi si inseriscono nel Listino dei Preventivi.',
  profUsati:'I profili e i vetri usati in questo cantiere, confrontati con la sezione Profili. Diverso dal profilo: nei Profili i valori sono cambiati (o il cantiere era stato fatto con valori suoi); sotto vedi cosa cambia. Aggiorna applica i valori dei Profili a questo cantiere; Ignora nasconde l\'avviso finché il profilo non cambia di nuovo. Solo in questo cantiere: il profilo è stato eliminato dai Profili, ma il cantiere conserva i suoi valori.',
  profForn:'Facoltativo: marca, fornitore o serie del sistema, per riconoscere il profilo. Compare nell\'elenco dei profili usati dal cantiere.',
- disegno:'La sezione del profilo da un file DXF, per esempio quello del fornitore. Il disegno resta su questo iPad: lo vedi qui, dentro i vani di finestre e zanzariere quando scegli il profilo, nella Vista delle vetrate e nella scheda Dati. Nel visore ingrandisci con due dita; toccando una parte vedi le sue misure di ingombro e la puoi vedere in 3D; con Quote aggiungi tu le misure tra due punti, e puoi scrivere il valore esatto del catalogo. Il disegno è illustrativo: per i calcoli valgono le misure del profilo. Disegni e quote vanno nel backup completo, non nel file Esporta cantiere.',
- sezioni:'Le sezioni dei profili usati in questo lato, se le hai caricate nella sezione Profili. Tocca una sezione per aprirla: con due dita ingrandisci, toccando una parte la scegli e con 3D la vedi in rilievo.',
- disMulti:'Scegli uno o più file DXF: per ogni file viene creato un profilo con il nome del file nella sezione aperta, con la sua sezione già caricata. Se esiste già un profilo con lo stesso nome, il disegno viene assegnato a quello. Poi controlla le misure di ogni profilo.',
+ disegno:'Il blueprint del profilo: il disegno tecnico con le sue misure, da un file DXF (per esempio quello del fornitore). Resta su questo iPad e lo vedi anche dentro i vani di finestre e zanzariere, nella Vista delle vetrate, nella scheda Dati e nei preventivi. Toccalo per aprirlo a tutto schermo e ingrandire le misure con due dita. Va nel backup completo, non nel file Esporta cantiere.',
+ sezioni:'I blueprint dei profili usati in questo lato, se li hai caricati nella sezione Profili. Toccane uno per aprirlo a tutto schermo e leggere le misure.',
+ disMulti:'Scegli uno o più file DXF: per ogni file viene creato un profilo con il nome del file nella sezione aperta, con il suo blueprint già caricato. Se esiste già un profilo con lo stesso nome, il blueprint viene assegnato a quello. Poi controlla le misure di ogni profilo.',
+ bpPrev:'I blueprint dei profili usati in questo cantiere, con le loro misure: un riferimento mentre prepari il preventivo, per esempio per controllare che ci sia lo spazio. Toccane uno per aprirlo a tutto schermo e ingrandire.',
  app:'L\'app si aggiorna da sola quando la apri con internet. Cerca aggiornamenti forza subito il controllo. Non eliminare l\'icona dalla Home per aggiornare: cancelleresti i dati.'
 };
 HELP.tipologie='Scegli il profilo da modificare, oppure con + Nuovo profilo creane uno partendo da una preimpostazione, da una copia o da zero. Se cambi come si dividono i vetri o se sono mobili, il profilo passa nella sezione giusta. I cantieri che lo usano conservano i valori con cui sono stati calcolati e ti mostrano un avviso con Aggiorna.<br><br>'+HELP.calcolo+'<br><br>I valori preimpostati sono indicativi: confrontali con un lavoro di cui conosci già le misure usando la Prova rapida.';
@@ -813,7 +817,7 @@ const ICON={
  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M10.3 3h3.4l.5 2.4 1.7.7 2-1.4 2.4 2.4-1.4 2 .7 1.7 2.4.5v3.4l-2.4.5-.7 1.7 1.4 2-2.4 2.4-2-1.4-1.7.7-.5 2.4h-3.4l-.5-2.4-1.7-.7-2 1.4-2.4-2.4 1.4-2-.7-1.7L3 13.7v-3.4l2.4-.5.7-1.7-1.4-2 2.4-2.4 2 1.4 1.7-.7z"/></svg>',
  logo:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#dfe7ee" stroke-width="1.5"><rect x="3" y="4" width="18" height="16"/><path d="M12 4v16" stroke="#3cc3d8"/><path d="M6 15l3-6" stroke-width="1"/></svg>'
 };
-const APP_VER='16 · 31/10/2026';
+const APP_VER='17 · 04/11/2026';
 const TABS=[['struttura','Struttura'],['vista','Vista'],['riepilogo','Riepilogo'],['dati','Dati'],['strumenti','Strumenti']];
 function nav(o){Object.assign(S.ui,{imp:false,listino:false,prev:null,c:null},o);save();render();window.scrollTo(0,0)}
 function go(c,tab){nav({c,tab:tab||S.ui.tab})}
@@ -1105,7 +1109,7 @@ function viewVista(c){
   document.querySelectorAll('[data-sl]').forEach(b=>b.onclick=()=>{if(b.dataset.sl==='__all')S.ui.sviluppo=true;else{S.ui.lato=b.dataset.sl;S.ui.sviluppo=false}save();viewVista(c)});
 }
 function sezCard(c,lati){const ids=[...new Set(lati.flatMap(l=>l.vani.map(v=>v.sistema)))].filter(id=>DIS.meta.has(id));if(!ids.length)return'';
-  return`<section class="card">${cardH('Sezioni dei profili','sezioni','hp_sez')}<div class="dis-grid">${ids.map(id=>`<button type="button" class="dis-tile" data-disv="${id}"><canvas data-dist="${id}" aria-hidden="true"></canvas><b>${esc((c.sistemi.find(x=>x.id===id)||{}).nome||profNome(id))}</b></button>`).join('')}</div></section>`}
+  return`<section class="card">${cardH('Blueprint dei profili','sezioni','hp_sez')}<div class="dis-grid big">${ids.map(id=>`<button type="button" class="dis-tile" data-disv="${id}"><canvas data-dist="${id}" data-big="1" aria-hidden="true"></canvas><b>${esc((c.sistemi.find(x=>x.id===id)||{}).nome||profNome(id))}</b></button>`).join('')}</div></section>`}
 function latoDetail(c,l){return l.vani.map(v=>{const r=compute(v,c);return`<div class="card sub-card"><div class="row between"><h3>${esc(v.nome)}</h3>
   ${r.ok?`<span class="note">${fmt(r.L)} × ${r.flat?fmt(r.Hs):fmt(r.Hs)+'/'+fmt(r.Hd)} mm · ${esc(r.s.nome)}${versoTxt(r)?' · '+esc(versoTxt(r)):''} · ${esc(r.gl.nome)}${r.qta>1?' · × '+r.qta:''}</span>`:''}</div>
   ${r.ok?r.msgs.map(([k,t])=>`<div class="msg ${k==='bad'?'bad':''}">${esc(t)}</div>`).join('')+paneTable(r):'<p class="note">Misure incomplete.</p>'}</div>`}).join('')}
@@ -1171,7 +1175,7 @@ function tipBody(ctx,s){
      ${fld({id:'tsSchema',label:'Come si dividono i vetri',wide:true,help:HELP.schema,ctrl:`<select id="tsSchema">${Object.entries(SCHEMI).map(([k,t])=>`<option value="${k}" ${s.schema===k?'selected':''}>${t}</option>`).join('')}</select>`})}
      ${fld({id:'tsMob',label:'Vetri',help:HELP.mobili,ctrl:`<select id="tsMob"><option value="1" ${s.mobili?'selected':''}>Mobili</option><option value="0" ${s.mobili?'':'selected'}>Fissi</option></select>`})}
    </div>
-   ${h3H('Sezione del profilo','disegno','hp_dis')}${disBlockHTML(s.id)}
+   ${h3H('Blueprint','disegno','hp_dis')}${disBlockHTML(s.id)}
    ${SIS_FIELDS.map(gr=>{const fs=gr.f.filter(x=>!x[4]||x[4]===s.schema);return fs.length?`<h3>${gr.t}</h3><div class="fields">`+
      fs.map(([k,l,un,h])=>fld({id:'tp_'+k,label:l,unit:un,val:s.p[k]??'',help:h,attrs:`data-k="${k}"`})).join('')+'</div>':''}).join('')}
    ${h3H('Prova rapida','prova','hp_prova')}
@@ -1235,7 +1239,7 @@ function viewDati(c){
     const dif=st.st==='mod'||st.st==='ign'?diffCopia(k,cp,st.src):[];if(dif.length)haDiff=true;
     const sub=[k==='sistemi'?(SEZ_VET.find(x=>x[0]===sezOf(cp))||[])[1]:k==='vetri'?`${fmt(num(cp.kg),1)} kg/m²`:'',cp.forn].filter(Boolean).join(' · ');
     return`<div class="pu-row" data-pk="${k}" data-pid="${cp.id}"><div class="pu-d"><b>${esc(cp.nome)}</b>${sub?`<small>${esc(sub)}</small>`:''}</div>${pill}
-      ${st.st==='mod'||st.st==='ign'||DIS.meta.has(cp.id)?`<div class="row pu-a">${disBtn(cp.id,'Sezione')}${st.st==='mod'||st.st==='ign'?`<button class="btn sm primary" type="button" data-puup>Aggiorna</button>${st.st==='mod'?'<button class="btn sm" type="button" data-puign>Ignora</button>':''}`:''}</div>`:''}
+      ${st.st==='mod'||st.st==='ign'||DIS.meta.has(cp.id)?`<div class="row pu-a">${disBtn(cp.id,'Blueprint')}${st.st==='mod'||st.st==='ign'?`<button class="btn sm primary" type="button" data-puup>Aggiorna</button>${st.st==='mod'?'<button class="btn sm" type="button" data-puign>Ignora</button>':''}`:''}</div>`:''}
       ${dif.length?`<ul class="pu-diff">${dif.map(([n,x,y])=>`<li>${esc(n)}: <b>${esc(x)} → ${esc(y)}</b></li>`).join('')}</ul>`:''}</div>`}).join('')}</div>`}).join('');
   setMain(),$('main').innerHTML=`
   <section class="card">${cardH('Dati del cantiere','datiCantiere','hp_dc')}
@@ -1398,6 +1402,7 @@ function renderPrev(c){
   ${k0.zan.length?`<section class="card">${cardH('Zanzariere','prevZan','hp_pza')}
     <div class="pl-list" id="pvZan">${plRows(c,'zan',k0.zan)}</div>
     <div class="pl-tot"><span>Totale zanzariere</span><b id="pvTZ">${fmtE(k0.totZ)}</b></div></section>`:''}
+  ${bpCard(c)}
   <section class="card">${cardH('Altre lavorazioni','prevLav','hp_plv')}
     <div id="pvLav" class="lav-list"></div>
     <div class="row"><button class="btn" id="lavAdd" type="button">+ Aggiungi lavorazione</button></div>
@@ -1650,7 +1655,7 @@ function bindFzVani(c){
   m.addEventListener('change',e=>{const t=e.target,x=t.closest('[data-x]')&&findX(t);if(!x||t.tagName!=='SELECT')return;
     if(t.dataset.ff){x.fin[t.dataset.ff]=t.value;
       if(t.dataset.ff==='tipo'){ensureRefs(c);const tf=tipFinOf(c,x);if(tf){x.fin.apertura=tf.apertura;x.fin.ante=String(tf.ante)}save();viewFzVani(c);paintAvvisi(c);return}}
-    else if(t.dataset.zf){x.zan[t.dataset.zf]=t.value;if(t.dataset.zf==='tipo'){ensureRefs(c);paintAvvisi(c)}}else return;
+    else if(t.dataset.zf){x.zan[t.dataset.zf]=t.value;if(t.dataset.zf==='tipo'){ensureRefs(c);save();viewFzVani(c);paintAvvisi(c);return}}else return;
     save();voceResult(c,x)});
   m.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!b.closest('[data-x]'))return;const x=findX(b);
     if(b.dataset.tog){x[b.dataset.tog].on=!x[b.dataset.tog].on;ensureRefs(c);save();viewFzVani(c);updTot(c);paintAvvisi(c)}
@@ -1723,7 +1728,7 @@ function fzTipHTML(kind,ctx,title,hk){
           fld({id:K+'An',label:'Ante proposte',ctrl:`<select id="${K}An">${[1,2,3,4].map(n=>`<option ${String(n)===String(s.ante)?'selected':''}>${n}</option>`).join('')}</select>`})
         :fld({id:K+'Tp',label:'Tipo',ctrl:`<select id="${K}Tp">${ZTIPI.map(([k,t])=>`<option value="${k}" ${k===s.tipo?'selected':''}>${t}</option>`).join('')}</select>`})}
       </div>
-      ${h3H('Sezione del profilo','disegno','hp_dis'+K)}${disBlockHTML(s.id)}
+      ${h3H('Blueprint','disegno','hp_dis'+K)}${disBlockHTML(s.id)}
       <h3>Misura da ordinare</h3>
       <div class="fields">${F.map(([k,l,u,h])=>fld({id:`${K}_${k}`,label:l,unit:u,val:s.p[k]??'',help:h,attrs:`data-k="${k}"`})).join('')}</div>
       <p class="note" id="${K}Es">${es}</p>
@@ -2192,7 +2197,6 @@ async function disPut(id,file,geo){await disOpen();if(!DIS.db)throw new Error('n
 async function disGet(id){if(DIS.cache.has(id))return DIS.cache.get(id);await disOpen();if(!DIS.db)return null;
   const r=await idb('geo','readonly',s=>s.get(id)).catch(()=>null),g=r&&r.geo;
   if(g){DIS.cache.set(id,g);if(DIS.cache.size>10)DIS.cache.delete(DIS.cache.keys().next().value)}return g||null}
-async function disSaveQ(id){const m=DIS.meta.get(id);if(!m)return;await disOpen();if(DIS.db)await idb('meta','readwrite',s=>s.put(m)).catch(()=>toast('Non è stato possibile salvare la quota'))}
 async function disDel(id){await disOpen();if(!DIS.db)return;await idb('geo','readwrite',s=>s.delete(id));await idb('meta','readwrite',s=>s.delete(id));DIS.meta.delete(id);DIS.cache.delete(id)}
 async function disClear(){await disOpen();if(!DIS.db)return;await idb('geo','readwrite',s=>s.clear());await idb('meta','readwrite',s=>s.clear());DIS.meta.clear();DIS.cache.clear()}
 /* toglie i dati di comodo (percorsi già pronti, gruppi) prima di salvare */
@@ -2217,132 +2221,64 @@ const nomeDaFile=n=>{const s=String(n).replace(/\.[^.]+$/,'').replace(/[_-]+/g,'
 function profNome(id){for(const k of PK){const x=S.prof[k].find(y=>y.id===id);if(x)return x.nome}
   for(const c of S.cantieri)for(const k of PK){const x=(c[k]||[]).find(y=>y.id===id);if(x)return x.nome}return'Sezione'}
 
-/* ---------- disegno 2D ---------- */
-const ACI_C={1:'#e03131',2:'#e0a800',3:'#2f9e44',4:'#1098ad',5:'#3b5bdb',6:'#ae3ec9',8:'#868e96',9:'#adb5bd',250:'#343a40',251:'#495057',252:'#868e96',253:'#adb5bd',254:'#ced4da',255:'#e9ecef'};
-function disTheme(){const cs=getComputedStyle(document.documentElement),v=(n,d)=>cs.getPropertyValue(n).trim()||d;
-  return{ink:v('--ink','#141a20'),mut:v('--muted','#6b7680'),acc:v('--accent','#0b7285'),hi:v('--hi','#d9480f'),bg:v('--surface','#fff')}}
-const disCol=(c,T)=>ACI_C[c]||T.ink;
+/* ---------- blueprint: il disegno del profilo con le sue misure, su fondo blu ---------- */
+const BP={bg:'#14427d',grid:'rgba(255,255,255,.07)',line:'#eef5ff',light:'rgba(170,205,255,.55)',fill:'rgba(255,255,255,.16)',txt:'#ffffff'};
+const ACI_BP={1:'#ff8a80',2:'#ffe066',3:'#8ce99a',4:'#66d9e8',5:'#a5d8ff',6:'#eebefa'};
+const bpCol=c=>ACI_BP[c]||BP.line;
 function disGroups(g){if(g._gr)return g._gr;const m=new Map(),light=l=>!!(g.layers[l]&&g.layers[l].fill);
-  const get=(k,f,l,c)=>{let x=m.get(k);if(!x){x={f,l,c,light:light(l),p:new Path2D()};m.set(k,x)}return x};
+  const get=(k,f,l,c)=>{let x=m.get(k);if(!x){x={f,l,c,light:light(l)||c===8||c===9||(c>=250&&c<=254),p:new Path2D()};m.set(k,x)}return x};
   const add=(P,a,z)=>{P.moveTo(a[0],a[1]);for(let i=2;i<a.length;i+=2)P.lineTo(a[i],a[i+1]);if(z)P.closePath()};
   g.paths.forEach(o=>{if(o.f)add(get('F'+o.l+'_'+o.c,1,o.l,o.c).p,o.p,1);add(get('S'+o.l+'_'+o.c,0,o.l,o.c).p,o.p,o.z)});
   g.segs.forEach(s=>{const P=get('S'+s.l+'_'+s.c,0,s.l,s.c).p,a=s.p;for(let i=0;i<a.length;i+=4){P.moveTo(a[i],a[i+1]);P.lineTo(a[i+2],a[i+3])}});
   g._gr=[...m.values()].sort((a,b)=>(b.f-a.f)||((b.light?1:0)-(a.light?1:0)));return g._gr}
 function disFit(bb,w,h,pad){const W=Math.max(bb[2]-bb[0],1e-6),H=Math.max(bb[3]-bb[1],1e-6),s=Math.max(1e-6,Math.min((w-2*pad)/W,(h-2*pad)/H));
   return{s,ox:(w-W*s)/2-bb[0]*s,oy:(h+H*s)/2+bb[1]*s}}
-const fmtQt=n=>(Math.round(n*10)/10).toLocaleString('it-IT',{maximumFractionDigits:1});
-/* quota in coordinate dello schermo: linea con tratti obliqui, valore sopra con alone; E1/E2 = punti misurati (linee di richiamo) */
-function disQ(ctx,T,P,Q,txt,col,E1,E2,fs=12){const dx=Q[0]-P[0],dy=Q[1]-P[1],L=Math.hypot(dx,dy);if(L<1)return;const ux=dx/L,uy=dy/L,k=4;
-  ctx.save();ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=1.2;ctx.lineCap='round';
-  if(E1&&E2){ctx.globalAlpha=.65;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(E1[0],E1[1]);ctx.lineTo(P[0],P[1]);ctx.moveTo(E2[0],E2[1]);ctx.lineTo(Q[0],Q[1]);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1}
-  const tx=(ux-uy)*k,ty=(uy+ux)*k;ctx.beginPath();ctx.moveTo(P[0],P[1]);ctx.lineTo(Q[0],Q[1]);
-  ctx.moveTo(P[0]-tx,P[1]-ty);ctx.lineTo(P[0]+tx,P[1]+ty);ctx.moveTo(Q[0]-tx,Q[1]-ty);ctx.lineTo(Q[0]+tx,Q[1]+ty);ctx.stroke();
-  let an=Math.atan2(dy,dx);if(an>=Math.PI/2)an-=Math.PI;if(an<-Math.PI/2)an+=Math.PI;
-  ctx.translate((P[0]+Q[0])/2,(P[1]+Q[1])/2);ctx.rotate(an);ctx.font=`600 ${fs}px "IBM Plex Mono",Menlo,monospace`;ctx.textAlign='center';ctx.textBaseline='bottom';
-  ctx.lineJoin='round';ctx.lineWidth=3.5;ctx.strokeStyle=T.bg;ctx.strokeText(txt,0,-3);ctx.fillText(txt,0,-3);ctx.restore()}
-function disDraw(cv,g,V,T,sel,o={}){const d=window.devicePixelRatio||1,ctx=cv.getContext('2d'),thumb=!!o.thumb;
-  ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,cv.width,cv.height);
-  ctx.setTransform(V.s*d,0,0,-V.s*d,V.ox*d,V.oy*d);ctx.lineJoin='round';ctx.lineCap='round';
-  for(const x of disGroups(g)){const col=disCol(x.c,T);
-    if(x.f){ctx.globalAlpha=.25;ctx.fillStyle=col;ctx.fill(x.p,'evenodd');ctx.globalAlpha=1;continue}
-    ctx.strokeStyle=col;ctx.globalAlpha=x.light?.7:1;ctx.lineWidth=(x.light?.6:thumb?.8:1.1)/V.s;ctx.stroke(x.p);ctx.globalAlpha=1}
-  if(sel){ctx.strokeStyle=T.hi;ctx.lineWidth=2.4/V.s;ctx.stroke(disSelPath(g,sel))}
+/* o.small: anteprima piccola (senza griglia e testi); i testi sotto i 4 px non si disegnano */
+function disDraw(cv,g,V,o={}){const d=window.devicePixelRatio||1,ctx=cv.getContext('2d'),W=cv.width/d,H=cv.height/d;
+  ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=BP.bg;ctx.fillRect(0,0,cv.width,cv.height);
   ctx.setTransform(d,0,0,d,0,0);
-  if(!thumb)for(const t of g.texts){const px=t.h*V.s*1.4;if(px<5)continue;ctx.save();ctx.translate(V.ox+t.x*V.s,V.oy-t.y*V.s);ctx.rotate(-t.r);
-    ctx.font=`${px.toFixed(1)}px "IBM Plex Sans",Arial,sans-serif`;ctx.fillStyle=disCol(t.c,T);ctx.textAlign=t.ha===1?'center':t.ha===2?'right':'left';
+  if(!o.small){let st=10;while(st*V.s<9)st*=5;ctx.strokeStyle=BP.grid;ctx.lineWidth=1;ctx.beginPath();
+    const x0=Math.floor((-V.ox/V.s)/st)*st,x1=(W-V.ox)/V.s,y1=V.oy/V.s,y0=Math.floor(((V.oy-H)/V.s)/st)*st;
+    for(let x=x0;x<=x1;x+=st){const X=Math.round(V.ox+x*V.s)+.5;ctx.moveTo(X,0);ctx.lineTo(X,H)}
+    for(let y=y0;y<=y1;y+=st){const Y=Math.round(V.oy-y*V.s)+.5;ctx.moveTo(0,Y);ctx.lineTo(W,Y)}ctx.stroke()}
+  ctx.setTransform(V.s*d,0,0,-V.s*d,V.ox*d,V.oy*d);ctx.lineJoin='round';ctx.lineCap='round';
+  for(const x of disGroups(g)){
+    if(x.f){ctx.fillStyle=BP.fill;ctx.fill(x.p,'evenodd');continue}
+    ctx.strokeStyle=x.light?BP.light:bpCol(x.c);ctx.lineWidth=(x.light?.6:o.small?.8:1.1)/V.s;ctx.stroke(x.p)}
+  if(o.small)return;
+  ctx.setTransform(d,0,0,d,0,0);ctx.fillStyle=BP.txt;
+  for(const t of g.texts){const px=t.h*V.s*1.4;if(px<4)continue;ctx.save();ctx.translate(V.ox+t.x*V.s,V.oy-t.y*V.s);ctx.rotate(-t.r);
+    ctx.font=`${px.toFixed(1)}px "IBM Plex Sans",Arial,sans-serif`;ctx.textAlign=t.ha===1?'center':t.ha===2?'right':'left';
     ctx.textBaseline=t.va===3?'top':t.va===2?'middle':t.va===1?'bottom':'alphabetic';
-    String(t.s).split('\n').forEach((ln,i)=>ctx.fillText(ln,0,i*px*1.2));ctx.restore()}
-  const S2=(x,y)=>[V.ox+x*V.s,V.oy-y*V.s];
-  if(sel&&o.dims){const[x0,y0,x1,y1]=disDim(g,sel),A=S2(x0,y0),B=S2(x1,y0),C2=S2(x0,y1);
-    disQ(ctx,T,[A[0],A[1]+18],[B[0],B[1]+18],fmtQt(x1-x0),T.hi,A,B);disQ(ctx,T,[A[0]-18,A[1]],[C2[0]-18,C2[1]],fmtQt(y1-y0),T.hi,A,C2)}
-  if(o.q)o.q.forEach((q,i)=>disQ(ctx,T,S2(q.a[0],q.a[1]),S2(q.b[0],q.b[1]),q.t||fmtQt(Math.hypot(q.b[0]-q.a[0],q.b[1]-q.a[1])),i===o.qsel?T.acc:T.hi,null,null,thumb?9:12));
-  if(o.pend){const p=S2(o.pend[0],o.pend[1]);ctx.fillStyle=T.hi;ctx.beginPath();ctx.arc(p[0],p[1],5,0,Math.PI*2);ctx.fill()}}
-/* miniature: ogni canvas con data-dist viene disegnata appena compare */
+    String(t.s).split('\n').forEach((ln,i)=>ctx.fillText(ln,0,i*px*1.2));ctx.restore()}}
+/* anteprime: ogni canvas con data-dist si disegna appena compare (data-big = anteprima grande, con testi e griglia) */
 async function paintThumb(cv){cv.dataset.ok='1';const id=cv.dataset.dist,g=await disGet(id);if(!g||!cv.isConnected)return;
   const d=window.devicePixelRatio||1,w=cv.clientWidth||150,h=cv.clientHeight||100,big=!!cv.dataset.big;cv.width=Math.round(w*d);cv.height=Math.round(h*d);
-  disDraw(cv,g,disFit(g.bbox,w,h,big?12:5),disTheme(),null,{thumb:!big,q:big?(DIS.meta.get(id)||{}).q:null})}
+  disDraw(cv,g,disFit(g.bbox,w,h,big?10:5),{small:!big})}
 const paintThumbs=()=>document.querySelectorAll('canvas[data-dist]:not([data-ok])').forEach(paintThumb);
 let thumbQ=0;new MutationObserver(()=>{if(!thumbQ)thumbQ=requestAnimationFrame(()=>{thumbQ=0;paintThumbs()})}).observe(document.body,{childList:true,subtree:true});
 
-/* ---------- parti del disegno: contorni chiusi vicini tra loro (una sezione = una parte) ---------- */
-function disParts(g,lv=1){const K='_cl'+lv;if(g[K])return g[K];const it=[];
-  g.paths.forEach((o,i)=>{if(!o.z||(g.layers[o.l]&&g.layers[o.l].fill))return;const a=o.p;
-    if(a.length<=8&&polyArea(a)<10)return; /* frecce delle quote e piccoli segni: non sono parti del profilo */
-    let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
-    for(let k=0;k<a.length;k+=2){const x=a[k],y=a[k+1];if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}it.push({i,x0,y0,x1,y1})});
-  const bb=g.bbox,gap=Math.max(.3*lv,Math.hypot(bb[2]-bb[0],bb[3]-bb[1])*.004*lv),par=it.map((_,k)=>k);
-  const f=k=>{while(par[k]!==k){par[k]=par[par[k]];k=par[k]}return k};
-  const ord=it.map((_,k)=>k).sort((p,q)=>it[p].x0-it[q].x0);
-  for(let a=0;a<ord.length;a++){const P=it[ord[a]];for(let b=a+1;b<ord.length;b++){const Q=it[ord[b]];if(Q.x0>P.x1+gap)break;
-    if(Q.y0<=P.y1+gap&&Q.y1>=P.y0-gap){const r1=f(ord[a]),r2=f(ord[b]);if(r1!==r2)par[r1]=r2}}}
-  const m=new Map();it.forEach((o,k)=>{const r=f(k);let c=m.get(r);if(!c){c={ids:[],x0:Infinity,y0:Infinity,x1:-Infinity,y1:-Infinity};m.set(r,c)}
-    c.ids.push(o.i);c.x0=Math.min(c.x0,o.x0);c.y0=Math.min(c.y0,o.y0);c.x1=Math.max(c.x1,o.x1);c.y1=Math.max(c.y1,o.y1)});
-  g[K]=[...m.values()].filter(c=>c.ids.length).map(c=>({...c,area:(c.x1-c.x0)*(c.y1-c.y0)})).sort((a,b)=>b.area-a.area);return g[K]}
-/* parte proposta per il 3D: contorno più grande e più dettagli; le righe di testo trasformate in contorni contano poco */
-const polyArea=a=>{let s=0;const n=a.length/2;for(let k=0;k<n;k++){const j=(k+1)%n;s+=a[2*k]*a[2*j+1]-a[2*j]*a[2*k+1]}return Math.abs(s/2)};
-function disMain(g){if(g._main!==undefined)return g._main;let best=null,bs=-1;
-  for(const c of disParts(g,4)){let pts=0,mx=0;const hs=[];
-    for(const i of c.ids){const a=g.paths[i].p;pts+=a.length/2;const A=polyArea(a);if(A>mx)mx=A;let y0=Infinity,y1=-Infinity;for(let k=1;k<a.length;k+=2){if(a[k]<y0)y0=a[k];if(a[k]>y1)y1=a[k]}hs.push(y1-y0)}
-    let sc=Math.sqrt(mx)*Math.log(1+pts);
-    if(hs.length>=4){hs.sort((x,y)=>x-y);const md=hs[hs.length>>1];if(md<=6&&c.y1-c.y0<=md*1.8)sc*=.2}
-    if(sc>bs){bs=sc;best=c}}
-  g._main=best;return best}
-function disVerts(g){if(g._vx)return g._vx;let n=0;g.paths.forEach(o=>n+=o.p.length);g.segs.forEach(x=>n+=x.p.length);
-  const a=new Float32Array(n);let k=0;g.paths.forEach(o=>{a.set(o.p,k);k+=o.p.length});g.segs.forEach(x=>{a.set(x.p,k);k+=x.p.length});return g._vx=a}
-function disSnap(g,x,y,tol){const a=disVerts(g);let best=-1,bd=tol*tol;for(let i=0;i<a.length;i+=2){const dx=a[i]-x,dy=a[i+1]-y,dd=dx*dx+dy*dy;if(dd<bd){bd=dd;best=i}}
-  return best>=0?[+a[best].toFixed(3),+a[best+1].toFixed(3)]:[+x.toFixed(3),+y.toFixed(3)]}
-/* ingombro della parte: contorni non trascurabili (esclude numeri e segni piccoli vicino al profilo) */
-function disDim(g,c){if(c._d)return c._d;let mx=0;const A=c.ids.map(i=>{const a=g.paths[i].p,ar=polyArea(a);if(ar>mx)mx=ar;return[a,ar]});
-  let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;A.forEach(([a,ar])=>{if(ar<mx*.02)return;for(let k=0;k<a.length;k+=2){const x=a[k],y=a[k+1];if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}});
-  return c._d=isFinite(x0)?[x0,y0,x1,y1]:[c.x0,c.y0,c.x1,c.y1]}
-function disSelPath(g,c){if(c._p)return c._p;const P=new Path2D();c.ids.forEach(i=>{const a=g.paths[i].p;P.moveTo(a[0],a[1]);for(let k=2;k<a.length;k+=2)P.lineTo(a[k],a[k+1]);P.closePath()});c._p=P;return P}
-/* parti sotto il dito, dalla più piccola alla più grande: toccando di nuovo nello stesso punto si passa alla successiva */
-function disPick(g,x,y,tol,cur){const L=[],seen=new Set();
-  for(const lv of[1,4])for(const c of disParts(g,lv)){if(x<c.x0-tol||x>c.x1+tol||y<c.y0-tol||y>c.y1+tol)continue;
-    const k=c.ids.length+':'+[c.x0,c.y0,c.x1,c.y1].map(v=>v.toFixed(2)).join(',');if(seen.has(k))continue;seen.add(k);L.push(c)}
-  L.sort((a,b)=>a.area-b.area||a.ids.length-b.ids.length);
-  if(!L.length)return{c:null,n:0};const i=L.indexOf(cur);return{c:i>=0?L[(i+1)%L.length]:L[0],n:L.length}}
-
-/* ---------- visore a tutto schermo: sezione e 3D ---------- */
+/* ---------- visore a tutto schermo: solo il blueprint, da ingrandire con le dita ---------- */
 let DV=null;
 function openDis(id,title){closeDis();const m=DIS.meta.get(id);
-  const el=document.createElement('div');el.className='dv';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label','Sezione del profilo');
-  el.innerHTML=`<div class="dv-h"><div class="dv-t"><b>${esc(title||profNome(id))}</b><small>${esc(m?m.file:'')}</small></div>
-    <div class="seg dv-seg"><button type="button" data-dvm="2d" aria-pressed="true">Sezione</button><button type="button" data-dvm="3d" aria-pressed="false">3D</button></div>
+  const el=document.createElement('div');el.className='dv';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label','Blueprint del profilo');
+  el.innerHTML=`<div class="dv-h"><div class="dv-t"><b>${esc(title||profNome(id))}</b><small>Blueprint · ${esc(m?m.file:'')}</small></div>
     <button class="xbtn" type="button" id="dvX" aria-label="Chiudi">✕</button></div>
-    <div class="dv-b" id="dvB"><canvas id="dvC"></canvas><div class="dv-3" id="dv3" hidden></div><div class="dv-msg" id="dvMsg">Carico il disegno…</div></div>
-    <div class="dv-f" id="dvF"></div>`;
+    <div class="dv-b" id="dvB"><canvas id="dvC"></canvas><div class="dv-msg" id="dvMsg">Carico il disegno…</div></div>
+    <div class="dv-f"><span>Due dita per ingrandire e leggere le misure, un dito per spostare, doppio tocco per vedere tutto.</span><button class="btn sm" type="button" id="dvFit">Adatta</button></div>`;
   document.body.appendChild(el);document.documentElement.classList.add('dv-open');
-  DV={id,el,g:null,V:null,sel:null,mode:'2d',t3:null};const me=DV;
-  el.querySelector('#dvX').onclick=closeDis;
-  el.querySelectorAll('[data-dvm]').forEach(b=>b.onclick=()=>dvMode(b.dataset.dvm));
+  DV={id,el,g:null,V:null};const me=DV;
+  el.querySelector('#dvX').onclick=closeDis;el.querySelector('#dvFit').onclick=dvFit;
   me.onKey=e=>{if(e.key==='Escape')closeDis()};document.addEventListener('keydown',me.onKey);
-  me.onRs=()=>{if(DV!==me)return;if(me.mode==='2d'){dvSize();dvFit()}else if(me.t3)me.t3.resize()};window.addEventListener('resize',me.onRs);
+  me.onRs=()=>{if(DV===me){dvSize();dvFit()}};window.addEventListener('resize',me.onRs);
   disGet(id).then(g=>{if(DV!==me)return;if(!g){$('dvMsg').textContent='Il disegno non è più disponibile su questo dispositivo.';return}
-    me.g=g;$('dvMsg').hidden=true;dv2Bind();dvSize();dvFit();dvFoot()})}
-function closeDis(){if(!DV)return;const me=DV;DV=null;if(me.t3)me.t3.dispose();me.el.remove();document.documentElement.classList.remove('dv-open');
-  document.removeEventListener('keydown',me.onKey);window.removeEventListener('resize',me.onRs);
-  document.querySelectorAll(`canvas[data-dist="${me.id}"]`).forEach(c=>{delete c.dataset.ok});paintThumbs()}
+    me.g=g;$('dvMsg').hidden=true;dv2Bind();dvSize();dvFit()})}
+function closeDis(){if(!DV)return;const me=DV;DV=null;me.el.remove();document.documentElement.classList.remove('dv-open');
+  document.removeEventListener('keydown',me.onKey);window.removeEventListener('resize',me.onRs)}
 function dvSize(){const C=$('dvC'),B=$('dvB'),d=window.devicePixelRatio||1;C.width=Math.round(B.clientWidth*d);C.height=Math.round(B.clientHeight*d)}
-function dvFit(){if(!DV||!DV.g)return;const B=$('dvB'),V=disFit(DV.g.bbox,B.clientWidth,B.clientHeight,16);V.min=V.s/4;V.max=V.s*80;DV.V=V;dv2()}
-function dv2(){if(DV&&DV.g&&DV.V)disDraw($('dvC'),DV.g,DV.V,disTheme(),DV.qm?null:DV.sel,{dims:!DV.qm,q:(DIS.meta.get(DV.id)||{}).q,pend:DV.pend,qsel:DV.qsel})}
+function dvFit(){if(!DV||!DV.g)return;const B=$('dvB'),V=disFit(DV.g.bbox,B.clientWidth,B.clientHeight,16);V.min=V.s/2;V.max=V.s*60;DV.V=V;dv2()}
+function dv2(){if(DV&&DV.g&&DV.V)disDraw($('dvC'),DV.g,DV.V)}
 let dvRaf=0;const dvReq=()=>{if(!dvRaf)dvRaf=requestAnimationFrame(()=>{dvRaf=0;dv2()})};
-function dvFoot(){const f=$('dvF');if(!f||!DV)return;const M=DIS.meta.get(DV.id)||{},Q=M.q||[];
-  if(DV.mode==='2d'&&DV.qsel!=null&&Q[DV.qsel]){const q=Q[DV.qsel],mis=fmtQt(Math.hypot(q.b[0]-q.a[0],q.b[1]-q.a[1]));
-    f.innerHTML=`<span>Quota misurata sul disegno: ${mis} mm. Se vuoi scrivi il valore esatto.</span><input id="dvQv" class="dv-qv" inputmode="decimal" value="${esc(q.t||'')}" placeholder="${mis}" aria-label="Valore della quota">
-      <button class="btn sm primary" type="button" id="dvQok">Salva</button><button class="btn sm danger" type="button" id="dvQdel">Elimina</button><button class="btn sm" type="button" id="dvQno">Annulla</button>`;
-    const fine=()=>{DV.qsel=null;dv2();dvFoot()};
-    $('dvQok').onclick=()=>{q.t=$('dvQv').value.trim();disSaveQ(DV.id);fine()};$('dvQv').onkeydown=e=>{if(e.key==='Enter')$('dvQok').click()};
-    $('dvQdel').onclick=()=>{Q.splice(DV.qsel,1);disSaveQ(DV.id);fine();toast('Quota eliminata')};$('dvQno').onclick=fine;return}
-  if(DV.mode==='2d'&&DV.qm){f.innerHTML=`<span>${DV.pend?'Ora tocca il secondo punto.':'Quote: tocca il primo punto e poi il secondo, il punto si aggancia allo spigolo più vicino. Tocca il numero di una quota per cambiarlo o eliminarla.'}</span>
-      ${Q.length?'<button class="btn sm danger" type="button" id="dvQall">Elimina tutte</button>':''}<button class="btn sm primary" type="button" id="dvQend">Fine</button>`;
-    $('dvQend').onclick=()=>{DV.qm=false;DV.pend=null;dv2();dvFoot()};
-    if($('dvQall'))armDelete('#dvQall',()=>{Q.length=0;DV.pend=null;disSaveQ(DV.id);dv2();dvFoot();toast('Quote eliminate')});return}
-  const dd=DV.sel&&disDim(DV.g,DV.sel),sz=dd?`Ingombro della parte: ${fmtQt(dd[2]-dd[0])} × ${fmtQt(dd[3]-dd[1])} mm. `:'';
-  f.innerHTML=DV.mode==='2d'?`<span>${DV.sel?`${sz}Parte scelta per il 3D, in arancione.${DV.nsel>1?' Tocca di nuovo nello stesso punto per scegliere la parte più grande.':''}`:'Due dita per ingrandire, un dito per spostare. Tocca una parte del disegno per sceglierla per il 3D.'}</span>
-    <button class="btn sm" type="button" id="dvFit">Adatta</button><button class="btn sm" type="button" id="dvQ">Quote${Q.length?' ('+Q.length+')':''}</button>${DV.sel?'<button class="btn sm primary" type="button" id="dvGo3">Vedi in 3D</button>':''}`
-   :`<span>${sz}${DV.auto?'Ti mostro una parte principale del disegno: per vederne un\'altra torna a Sezione e toccala. ':''}Trascina per girare, due dita per ingrandire. Il 3D è illustrativo: le misure sono quelle del profilo.</span><button class="btn sm" type="button" id="dvRe">Riposiziona</button>`;
-  if($('dvFit'))$('dvFit').onclick=dvFit;if($('dvGo3'))$('dvGo3').onclick=()=>dvMode('3d');if($('dvQ'))$('dvQ').onclick=()=>{DV.qm=true;DV.pend=null;dv2();dvFoot()};if($('dvRe'))$('dvRe').onclick=()=>DV&&DV.t3&&DV.t3.reset()}
 function dv2Bind(){const C=$('dvC'),ptr=new Map();let tap=null,lastTap=0;
   const zoomAt=(x,y,k)=>{const V=DV.V,ns=Math.max(V.min,Math.min(V.max,V.s*k));k=ns/V.s;V.ox=x-(x-V.ox)*k;V.oy=y-(y-V.oy)*k;V.s=ns};
   const pos=e=>{const r=C.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
@@ -2354,86 +2290,26 @@ function dv2Bind(){const C=$('dvC'),ptr=new Map();let tap=null,lastTap=0;
         DV.V.ox+=(n.x+o.x)/2-mx0;DV.V.oy+=(n.y+o.y)/2-my0}}
     p.x=n.x;p.y=n.y;dvReq()};
   C.onpointerup=C.onpointercancel=e=>{ptr.delete(e.pointerId);
-    if(tap&&e.type==='pointerup'&&Date.now()-tap.t<400&&DV&&DV.V&&DV.qm){dvQTap(tap);tap=null;return}
-    if(tap&&e.type==='pointerup'&&Date.now()-tap.t<400&&DV&&DV.V&&DV.qsel==null){const now=Date.now();
-      if(now-lastTap<320){lastTap=0;dvFit()}else{lastTap=now;const V=DV.V,r=disPick(DV.g,(tap.x-V.ox)/V.s,(V.oy-tap.y)/V.s,10/V.s,DV.sel);DV.sel=r.c;DV.nsel=r.n;dv2();dvFoot()}}
+    if(tap&&e.type==='pointerup'&&Date.now()-tap.t<400&&DV&&DV.V){const now=Date.now();
+      if(now-lastTap<320){lastTap=0;const p=tap,V=DV.V;if(V.s>V.min*2.2)dvFit();else{zoomAt(p.x,p.y,2.5);dv2()}}else lastTap=now}
     tap=null};
   C.onwheel=e=>{e.preventDefault();if(!DV||!DV.V)return;const p=pos(e);zoomAt(p.x,p.y,Math.exp(-e.deltaY*.0015));dvReq()}}
-/* tocco in modalità quote: numero di una quota esistente oppure nuovo punto */
-function dvQTap(tap){const V=DV.V,m=DIS.meta.get(DV.id);if(!m)return;const Q=m.q=m.q||[];DV.qsel=null;
-  if(!DV.pend){const hit=Q.findIndex(q=>Math.hypot(tap.x-(V.ox+(q.a[0]+q.b[0])/2*V.s),tap.y-(V.oy-(q.a[1]+q.b[1])/2*V.s))<24);
-    if(hit>=0){DV.qsel=hit;dv2();dvFoot();return}}
-  const p=disSnap(DV.g,(tap.x-V.ox)/V.s,(V.oy-tap.y)/V.s,18/V.s);
-  if(!DV.pend)DV.pend=p;else{if(Math.hypot(p[0]-DV.pend[0],p[1]-DV.pend[1])>1e-3){Q.push({a:DV.pend,b:p,t:''});disSaveQ(DV.id)}DV.pend=null}
-  dv2();dvFoot()}
-function dvMode(mo){if(!DV||!DV.g)return;if(mo==='3d'){DV.qm=false;DV.pend=null;DV.qsel=null}DV.mode=mo;DV.el.querySelectorAll('[data-dvm]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.dvm===mo)));
-  const C=$('dvC'),H=$('dv3'),M=$('dvMsg');
-  if(mo==='2d'){if(DV.t3){DV.t3.dispose();DV.t3=null}H.hidden=true;H.innerHTML='';C.hidden=false;M.hidden=true;dvSize();dv2();dvFoot();return}
-  C.hidden=true;H.hidden=false;M.hidden=false;M.textContent='Preparo il 3D…';
-  DV.auto=!DV.sel;if(!DV.sel)DV.sel=disMain(DV.g);const part=DV.sel,me=DV;dvFoot();
-  if(!part){M.textContent='In questo disegno non ci sono contorni chiusi da mostrare in 3D.';return}
-  setTimeout(()=>dis3D(H,DV.g,part).then(t=>{if(DV!==me||me.mode!=='3d'){t&&t.dispose();return}me.t3=t;M.hidden=true})
-    .catch(()=>{if(DV===me)M.textContent='Il 3D non è disponibile su questo dispositivo.'}),30)}
 
-/* ---------- 3D: la sezione scelta allungata come un profilo (three.js, caricato solo quando serve) ---------- */
-let THREE_P=null;
-async function dis3D(host,g,part){const THREE=await(THREE_P||(THREE_P=import('./three.module.min.js')));
-  const C=[],seen=new Set();
-  part.ids.forEach(i=>{const a=g.paths[i].p,pts=[];for(let k=0;k<a.length;k+=2){const x=a[k],y=a[k+1],L=pts[pts.length-1];if(!L||Math.abs(L.x-x)>1e-4||Math.abs(L.y-y)>1e-4)pts.push(new THREE.Vector2(x,y))}
-    if(pts.length>3&&pts[0].distanceTo(pts[pts.length-1])<1e-4)pts.pop();if(pts.length<3)return;
-    let ar=0,x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;for(let k=0;k<pts.length;k++){const p=pts[k],q=pts[(k+1)%pts.length];ar+=p.x*q.y-q.x*p.y;
-      if(p.x<x0)x0=p.x;if(p.x>x1)x1=p.x;if(p.y<y0)y0=p.y;if(p.y>y1)y1=p.y}
-    ar=Math.abs(ar/2);if(ar<1e-3)return;const key=[x0,y0,x1,y1].map(v=>Math.round(v*20)).join(',')+':'+Math.round(ar*10);if(seen.has(key))return;seen.add(key);
-    C.push({pts,ar,x0,y0,x1,y1,par:-1,dep:0})});
-  if(!C.length)throw new Error('vuoto');
-  C.sort((a,b)=>b.ar-a.ar);
-  const inside=(P,pt)=>{let r=false;const v=P.pts;for(let i=0,j=v.length-1;i<v.length;j=i++){const a=v[i],b=v[j];if(((a.y>pt.y)!==(b.y>pt.y))&&(pt.x<(b.x-a.x)*(pt.y-a.y)/(b.y-a.y)+a.x))r=!r}return r};
-  const e=1e-6;
-  for(let i=1;i<C.length;i++){const ci=C[i],n=ci.pts.length,tp=[ci.pts[0],ci.pts[Math.floor(n/3)],ci.pts[Math.floor(2*n/3)]];
-    for(let j=i-1;j>=0;j--){const cj=C[j];if(cj.x0>ci.x0+e||cj.y0>ci.y0+e||cj.x1<ci.x1-e||cj.y1<ci.y1-e)continue;
-      let k=0;tp.forEach(p=>{if(inside(cj,p))k++});if(k>=2){ci.par=j;ci.dep=cj.dep+1;break}}}
-  const shapes=[];C.forEach(ci=>{if(ci.dep%2===0){ci.shape=new THREE.Shape(ci.pts);shapes.push(ci.shape)}});
-  C.forEach(ci=>{if(ci.dep%2===1&&ci.par>=0&&C[ci.par].shape)C[ci.par].shape.holes.push(new THREE.Path(ci.pts))});
-  const W=part.x1-part.x0,H=part.y1-part.y0,len=Math.max(W,H)*1.6;
-  const geo=new THREE.ExtrudeGeometry(shapes,{depth:len,bevelEnabled:false,curveSegments:1,steps:1});
-  geo.translate(-(part.x0+part.x1)/2,-(part.y0+part.y1)/2,-len/2);geo.computeVertexNormals();
-  const T=disTheme(),scene=new THREE.Scene();
-  const mat=new THREE.MeshStandardMaterial({color:0xd3d9df,metalness:.3,roughness:.5,side:THREE.DoubleSide,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:1});
-  const mesh=new THREE.Mesh(geo,mat);scene.add(mesh);
-  const eg=new THREE.EdgesGeometry(geo,28),em=new THREE.LineBasicMaterial({color:new THREE.Color(T.ink),transparent:true,opacity:.55});scene.add(new THREE.LineSegments(eg,em));
-  scene.add(new THREE.HemisphereLight(0xffffff,0x6b7680,1.7));
-  const R=Math.hypot(W,H,len)/2,cam=new THREE.PerspectiveCamera(30,1,R/200,R*40);scene.add(cam);
-  const dl=new THREE.DirectionalLight(0xffffff,2.3);dl.position.set(.5,.9,1);cam.add(dl);
-  let rnd;try{rnd=new THREE.WebGLRenderer({antialias:true,alpha:true})}catch(err){geo.dispose();eg.dispose();throw err}
-  rnd.setPixelRatio(Math.min(2,window.devicePixelRatio||1));host.appendChild(rnd.domElement);const cv=rnd.domElement;cv.style.touchAction='none';
-  const st={th:.62,ph:1.12,dist:R*4,user:false};const st0={...st};let req=0;
-  const fitDist=()=>{const vf=cam.fov*Math.PI/360,hf=Math.atan(Math.tan(vf)*cam.aspect);return R/Math.sin(Math.min(vf,hf))*1.12};
-  const draw=()=>{req=0;cam.position.set(st.dist*Math.sin(st.ph)*Math.sin(st.th),st.dist*Math.cos(st.ph),st.dist*Math.sin(st.ph)*Math.cos(st.th));cam.lookAt(0,0,0);rnd.render(scene,cam)};
-  const ask=()=>{if(!req)req=requestAnimationFrame(draw)};
-  const resize=()=>{const w=host.clientWidth||300,h=host.clientHeight||300;rnd.setSize(w,h);cam.aspect=w/h;cam.updateProjectionMatrix();if(!st.user)st.dist=fitDist();ask()};
-  const ptr=new Map(),pos=ev=>{const r=cv.getBoundingClientRect();return{x:ev.clientX-r.left,y:ev.clientY-r.top}};
-  cv.onpointerdown=ev=>{try{cv.setPointerCapture(ev.pointerId)}catch(_){}ptr.set(ev.pointerId,pos(ev))};
-  cv.onpointermove=ev=>{const p=ptr.get(ev.pointerId);if(!p)return;const n=pos(ev);
-    if(ptr.size===1){st.th-=(n.x-p.x)*.008;st.ph=Math.max(.08,Math.min(Math.PI-.08,st.ph-(n.y-p.y)*.008))}
-    else{let o=null;for(const[k,v]of ptr)if(k!==ev.pointerId){o=v;break}if(o){const d0=Math.hypot(p.x-o.x,p.y-o.y),d1=Math.hypot(n.x-o.x,n.y-o.y);if(d0>2&&d1>2){st.dist=Math.max(R*.6,Math.min(R*30,st.dist*d0/d1));st.user=true}}}
-    p.x=n.x;p.y=n.y;ask()};
-  cv.onpointerup=cv.onpointercancel=ev=>{ptr.delete(ev.pointerId)};
-  cv.onwheel=ev=>{ev.preventDefault();st.dist=Math.max(R*.6,Math.min(R*30,st.dist*Math.exp(ev.deltaY*.0015)));st.user=true;ask()};
-  resize();
-  return{resize,reset(){Object.assign(st,st0);st.dist=fitDist();ask()},dispose(){if(req)cancelAnimationFrame(req);geo.dispose();eg.dispose();mat.dispose();em.dispose();rnd.dispose();try{rnd.forceContextLoss()}catch(_){}cv.remove()}}}
-
-/* ---------- riquadro "Sezione" nei profili e pulsanti nei cantieri ---------- */
+/* ---------- riquadro "Blueprint" nei profili, nei cantieri e nei preventivi ---------- */
 function disBlockHTML(id){const m=DIS.meta.get(id);
-  return`<div class="dis-box">${m?`<canvas class="dis-th" data-dist="${id}" data-disv="${id}" role="button" tabindex="0" aria-label="Apri la sezione"></canvas>`:''}
-   <div class="dis-side"><small>${m?esc(m.file)+' · '+new Date(m.at).toLocaleDateString('it-IT'):'Nessun disegno. Importa il file DXF con la sezione di questo profilo.'}</small>
+  return`<div class="dis-box">${m?`<button type="button" class="dis-pv" data-disv="${id}" aria-label="Apri il blueprint a tutto schermo"><canvas data-dist="${id}" data-big="1" aria-hidden="true"></canvas></button>`:''}
+   <div class="dis-side"><small>${m?esc(m.file)+' · '+new Date(m.at).toLocaleDateString('it-IT'):'Nessun blueprint. Importa il file DXF con il disegno di questo profilo.'}</small>
    <div class="row"><label class="btn sm${m?'':' primary'}" for="dif_${id}">${m?'Sostituisci DXF':'Importa DXF'}</label><input type="file" id="dif_${id}" data-disin="${id}" hidden>
-   ${m?`<button class="btn sm" type="button" data-disv="${id}">Apri</button><button class="btn sm danger" type="button" data-disdel="${id}">Elimina disegno</button>`:''}</div></div></div>`}
+   ${m?`<button class="btn sm" type="button" data-disv="${id}">Apri a tutto schermo</button><button class="btn sm danger" type="button" data-disdel="${id}">Elimina blueprint</button>`:''}</div></div></div>`}
 function bindDis(rer){
   document.querySelectorAll('[data-disin]').forEach(i=>i.onchange=async e=>{const f=e.target.files&&e.target.files[0],id=e.target.dataset.disin;e.target.value='';if(!f)return;
-    toast('Leggo il disegno…');try{const g=await leggiDxf(f);await disPut(id,f.name,g);rer();toast('Disegno importato: '+f.name)}catch(err){toast(dxfErr(err,f.name))}});
-  armDelete('[data-disdel]',async b=>{await disDel(b.dataset.disdel);rer();toast('Disegno eliminato')})}
-const disInline=id=>id&&DIS.meta.has(id)?`<button type="button" class="dis-inl" data-disv="${id}" aria-label="Apri la sezione"><canvas data-dist="${id}" data-big="1" aria-hidden="true"></canvas><span>Sezione del profilo: tocca per ingrandire, mettere le quote o vederla in 3D</span></button>`:'';
-const disBtn=(id,t='Vedi sezione')=>id&&DIS.meta.has(id)?`<button class="btn sm" type="button" data-disv="${id}">${t}</button>`:'';
+    toast('Leggo il disegno…');try{const g=await leggiDxf(f);await disPut(id,f.name,g);rer();toast('Blueprint importato: '+f.name)}catch(err){toast(dxfErr(err,f.name))}});
+  armDelete('[data-disdel]',async b=>{await disDel(b.dataset.disdel);rer();toast('Blueprint eliminato')})}
+const disInline=id=>id&&DIS.meta.has(id)?`<button type="button" class="dis-inl" data-disv="${id}" aria-label="Apri il blueprint a tutto schermo"><canvas data-dist="${id}" data-big="1" aria-hidden="true"></canvas><span>Blueprint del profilo: tocca per aprirlo a tutto schermo e ingrandire le misure</span></button>`:'';
+function bpCard(c){const L=[['sistemi','Vetrata'],['tipFin','Finestra'],['tipZan','Zanzariera']].flatMap(([k,t])=>(c[k]||[]).filter(x=>DIS.meta.has(x.id)).map(x=>({id:x.id,nome:x.nome,t})));
+  if(!L.length)return'';
+  return`<section class="card">${cardH('Blueprint dei profili','bpPrev','hp_bpp')}<div class="dis-grid big">${L.map(x=>`<button type="button" class="dis-tile" data-disv="${x.id}"><canvas data-dist="${x.id}" data-big="1" aria-hidden="true"></canvas><b>${esc(x.nome)}</b><small>${x.t}</small></button>`).join('')}</div></section>`}
+const disBtn=(id,t='Blueprint')=>id&&DIS.meta.has(id)?`<button class="btn sm" type="button" data-disv="${id}">${t}</button>`:'';
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-disv]');if(!b)return;e.preventDefault();openDis(b.dataset.disv)});
 document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('canvas[data-disv]')){e.preventDefault();openDis(e.target.dataset.disv)}});
 /* import di più file: un profilo per file nella sezione aperta (se esiste già un profilo con quel nome, gli assegna il disegno) */
