@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0f1720">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -38,7 +38,7 @@
   --hi:#ff8a3d; --glass:#173f48; --glass-2:#215661; --bar:#070b0f; --bar-ink:#dfe7ee; --bar-muted:#6f7e8a;
   --warn:#f0a54a; --bad:#ff8a80; --ok:#7fcf8a; color-scheme:dark}
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;touch-action:manipulation}
 body{background-color:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:.9375rem;line-height:1.45;
   background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
@@ -356,6 +356,8 @@ details.regole[open] summary{margin-bottom:10px}
   padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
 .dv-h{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .dv-t{flex:1 1 180px;min-width:0}
+.dv-h .back,.dv-h .xbtn{width:44px;height:44px}
+.dv-h .xbtn{font-size:1.15rem}
 .dv-t b{display:block;font:700 1.08rem/1.15 var(--f-display);overflow-wrap:anywhere}
 .dv-t small{display:block;color:var(--muted);font:400 .72rem var(--f-mono);overflow-wrap:anywhere}
 .dv-b{position:relative;flex:1;min-height:0;background:var(--surface-2);overflow:hidden}
@@ -817,7 +819,7 @@ const ICON={
  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M10.3 3h3.4l.5 2.4 1.7.7 2-1.4 2.4 2.4-1.4 2 .7 1.7 2.4.5v3.4l-2.4.5-.7 1.7 1.4 2-2.4 2.4-2-1.4-1.7.7-.5 2.4h-3.4l-.5-2.4-1.7-.7-2 1.4-2.4-2.4 1.4-2-.7-1.7L3 13.7v-3.4l2.4-.5.7-1.7-1.4-2 2.4-2.4 2 1.4 1.7-.7z"/></svg>',
  logo:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#dfe7ee" stroke-width="1.5"><rect x="3" y="4" width="18" height="16"/><path d="M12 4v16" stroke="#3cc3d8"/><path d="M6 15l3-6" stroke-width="1"/></svg>'
 };
-const APP_VER='17 · 04/11/2026';
+const APP_VER='18 · 04/11/2026';
 const TABS=[['struttura','Struttura'],['vista','Vista'],['riepilogo','Riepilogo'],['dati','Dati'],['strumenti','Strumenti']];
 function nav(o){Object.assign(S.ui,{imp:false,listino:false,prev:null,c:null},o);save();render();window.scrollTo(0,0)}
 function go(c,tab){nav({c,tab:tab||S.ui.tab})}
@@ -2231,9 +2233,21 @@ function disGroups(g){if(g._gr)return g._gr;const m=new Map(),light=l=>!!(g.laye
   g.paths.forEach(o=>{if(o.f)add(get('F'+o.l+'_'+o.c,1,o.l,o.c).p,o.p,1);add(get('S'+o.l+'_'+o.c,0,o.l,o.c).p,o.p,o.z)});
   g.segs.forEach(s=>{const P=get('S'+s.l+'_'+s.c,0,s.l,s.c).p,a=s.p;for(let i=0;i<a.length;i+=4){P.moveTo(a[i],a[i+1]);P.lineTo(a[i+2],a[i+3])}});
   g._gr=[...m.values()].sort((a,b)=>(b.f-a.f)||((b.light?1:0)-(a.light?1:0)));return g._gr}
+/* riquadro da inquadrare: il disegno più l'ingombro dei testi (non solo il loro punto d'inserimento) */
+let disMt=null;
+function disBB(g){if(g._bb)return g._bb;const b=[...g.bbox];
+  if(!disMt){try{disMt=document.createElement('canvas').getContext('2d')}catch(e){}}
+  if(disMt)disMt.font='100px "IBM Plex Sans",Arial,sans-serif';
+  const ext=(x,y)=>{if(x<b[0])b[0]=x;if(y<b[1])b[1]=y;if(x>b[2])b[2]=x;if(y>b[3])b[3]=y};
+  for(const t of g.texts||[]){const px=t.h*1.4,ls=String(t.s).split('\n');if(!(px>0))continue;
+    const w=Math.max(...ls.map(l=>disMt?disMt.measureText(l).width*px/100:l.length*px*.55)),x0=t.ha===1?-w/2:t.ha===2?-w:0,
+      su=t.va===3?0:t.va===2?px*.5:t.va===1?px:px*.8,giu=(t.va===3?px:t.va===2?px*.5:t.va===1?0:px*.25)+(ls.length-1)*px*1.2,
+      c=Math.cos(t.r||0),s=Math.sin(t.r||0);
+    for(const[u,v]of[[x0,su],[x0+w,su],[x0,-giu],[x0+w,-giu]])ext(t.x+u*c-v*s,t.y+u*s+v*c)}
+  return g._bb=b}
 function disFit(bb,w,h,pad){const W=Math.max(bb[2]-bb[0],1e-6),H=Math.max(bb[3]-bb[1],1e-6),s=Math.max(1e-6,Math.min((w-2*pad)/W,(h-2*pad)/H));
   return{s,ox:(w-W*s)/2-bb[0]*s,oy:(h+H*s)/2+bb[1]*s}}
-/* o.small: anteprima piccola (senza griglia e testi); i testi sotto i 4 px non si disegnano */
+/* o.small: anteprima piccola (senza griglia e testi). I testi si disegnano sempre, anche piccolissimi, come le quote disegnate a tratto */
 function disDraw(cv,g,V,o={}){const d=window.devicePixelRatio||1,ctx=cv.getContext('2d'),W=cv.width/d,H=cv.height/d;
   ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=BP.bg;ctx.fillRect(0,0,cv.width,cv.height);
   ctx.setTransform(d,0,0,d,0,0);
@@ -2247,41 +2261,60 @@ function disDraw(cv,g,V,o={}){const d=window.devicePixelRatio||1,ctx=cv.getConte
     ctx.strokeStyle=x.light?BP.light:bpCol(x.c);ctx.lineWidth=(x.light?.6:o.small?.8:1.1)/V.s;ctx.stroke(x.p)}
   if(o.small)return;
   ctx.setTransform(d,0,0,d,0,0);ctx.fillStyle=BP.txt;
-  for(const t of g.texts){const px=t.h*V.s*1.4;if(px<4)continue;ctx.save();ctx.translate(V.ox+t.x*V.s,V.oy-t.y*V.s);ctx.rotate(-t.r);
+  for(const t of g.texts){const px=t.h*V.s*1.4;if(!(px>=.8))continue;ctx.save();ctx.translate(V.ox+t.x*V.s,V.oy-t.y*V.s);ctx.rotate(-t.r);
     ctx.font=`${px.toFixed(1)}px "IBM Plex Sans",Arial,sans-serif`;ctx.textAlign=t.ha===1?'center':t.ha===2?'right':'left';
     ctx.textBaseline=t.va===3?'top':t.va===2?'middle':t.va===1?'bottom':'alphabetic';
     String(t.s).split('\n').forEach((ln,i)=>ctx.fillText(ln,0,i*px*1.2));ctx.restore()}}
 /* anteprime: ogni canvas con data-dist si disegna appena compare (data-big = anteprima grande, con testi e griglia) */
 async function paintThumb(cv){cv.dataset.ok='1';const id=cv.dataset.dist,g=await disGet(id);if(!g||!cv.isConnected)return;
   const d=window.devicePixelRatio||1,w=cv.clientWidth||150,h=cv.clientHeight||100,big=!!cv.dataset.big;cv.width=Math.round(w*d);cv.height=Math.round(h*d);
-  disDraw(cv,g,disFit(g.bbox,w,h,big?10:5),{small:!big})}
+  disDraw(cv,g,disFit(disBB(g),w,h,big?10:5),{small:!big})}
 const paintThumbs=()=>document.querySelectorAll('canvas[data-dist]:not([data-ok])').forEach(paintThumb);
 let thumbQ=0;new MutationObserver(()=>{if(!thumbQ)thumbQ=requestAnimationFrame(()=>{thumbQ=0;paintThumbs()})}).observe(document.body,{childList:true,subtree:true});
+
+/* ---------- niente zoom della pagina: con due dita si ingrandisce solo il blueprint ----------
+   Se la pagina fosse già ingrandita (per esempio da una versione precedente), il gesto resta libero
+   così si può sempre tornare indietro; uscendo da un campo si riporta lo zoom a 1. */
+(function(){const vv=window.visualViewport,uno=()=>!vv||vv.scale<1.01,stop=e=>{if(uno())e.preventDefault()};
+  ['gesturestart','gesturechange'].forEach(t=>document.addEventListener(t,stop,{passive:false}));
+  if('ongesturestart' in window)document.addEventListener('touchmove',e=>{if(e.touches&&e.touches.length>1&&uno()&&!(e.target&&e.target.closest&&e.target.closest('.dv-b')))e.preventDefault()},{passive:false});
+  const meta=document.querySelector('meta[name=viewport]'),base=meta&&meta.content;
+  document.addEventListener('focusout',()=>setTimeout(()=>{if(!meta||uno()||(document.activeElement&&/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)))return;
+    meta.content=base.replace('maximum-scale=1','maximum-scale=1.0');setTimeout(()=>{meta.content=base},300)},300))})();
 
 /* ---------- visore a tutto schermo: solo il blueprint, da ingrandire con le dita ---------- */
 let DV=null;
 function openDis(id,title){closeDis();const m=DIS.meta.get(id);
   const el=document.createElement('div');el.className='dv';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label','Blueprint del profilo');
-  el.innerHTML=`<div class="dv-h"><div class="dv-t"><b>${esc(title||profNome(id))}</b><small>Blueprint · ${esc(m?m.file:'')}</small></div>
+  el.innerHTML=`<div class="dv-h"><button class="back" type="button" id="dvBack" aria-label="Torna indietro">${ICON.back}</button>
+    <div class="dv-t"><b>${esc(title||profNome(id))}</b><small>Blueprint · ${esc(m?m.file:'')}</small></div>
     <button class="xbtn" type="button" id="dvX" aria-label="Chiudi">✕</button></div>
     <div class="dv-b" id="dvB"><canvas id="dvC"></canvas><div class="dv-msg" id="dvMsg">Carico il disegno…</div></div>
     <div class="dv-f"><span>Due dita per ingrandire e leggere le misure, un dito per spostare, doppio tocco per vedere tutto.</span><button class="btn sm" type="button" id="dvFit">Adatta</button></div>`;
   document.body.appendChild(el);document.documentElement.classList.add('dv-open');
   DV={id,el,g:null,V:null};const me=DV;
-  el.querySelector('#dvX').onclick=closeDis;el.querySelector('#dvFit').onclick=dvFit;
+  el.querySelector('#dvX').onclick=closeDis;el.querySelector('#dvBack').onclick=closeDis;el.querySelector('#dvFit').onclick=dvFit;
   me.onKey=e=>{if(e.key==='Escape')closeDis()};document.addEventListener('keydown',me.onKey);
-  me.onRs=()=>{if(DV===me){dvSize();dvFit()}};window.addEventListener('resize',me.onRs);
+  me.onRs=()=>{if(DV===me){dvVV();dvSize();dvFit()}};window.addEventListener('resize',me.onRs);
+  me.onVV=()=>{if(DV===me)dvVV()};const vv=window.visualViewport;if(vv){vv.addEventListener('resize',me.onVV);vv.addEventListener('scroll',me.onVV)}
+  dvVV();
   disGet(id).then(g=>{if(DV!==me)return;if(!g){$('dvMsg').textContent='Il disegno non è più disponibile su questo dispositivo.';return}
     me.g=g;$('dvMsg').hidden=true;dv2Bind();dvSize();dvFit()})}
 function closeDis(){if(!DV)return;const me=DV;DV=null;me.el.remove();document.documentElement.classList.remove('dv-open');
-  document.removeEventListener('keydown',me.onKey);window.removeEventListener('resize',me.onRs)}
+  document.removeEventListener('keydown',me.onKey);window.removeEventListener('resize',me.onRs);
+  const vv=window.visualViewport;if(vv){vv.removeEventListener('resize',me.onVV);vv.removeEventListener('scroll',me.onVV)}}
+/* se la pagina risulta ingrandita, il visore copre lo schermo visibile alla grandezza normale: ✕ e freccia restano sempre a portata */
+function dvVV(){if(!DV)return;const vv=window.visualViewport,s=DV.el.style;
+  if(!vv||Math.abs(vv.scale-1)<.01){if(s.transform){s.left=s.top=s.right=s.bottom=s.width=s.height=s.transform=s.transformOrigin=''}return}
+  const k=vv.scale;s.right=s.bottom='auto';s.left=vv.offsetLeft+'px';s.top=vv.offsetTop+'px';
+  s.width=vv.width*k+'px';s.height=vv.height*k+'px';s.transformOrigin='0 0';s.transform=`scale(${1/k})`}
 function dvSize(){const C=$('dvC'),B=$('dvB'),d=window.devicePixelRatio||1;C.width=Math.round(B.clientWidth*d);C.height=Math.round(B.clientHeight*d)}
-function dvFit(){if(!DV||!DV.g)return;const B=$('dvB'),V=disFit(DV.g.bbox,B.clientWidth,B.clientHeight,16);V.min=V.s/2;V.max=V.s*60;DV.V=V;dv2()}
+function dvFit(){if(!DV||!DV.g)return;const B=$('dvB'),V=disFit(disBB(DV.g),B.clientWidth,B.clientHeight,16);V.min=V.s/2;V.max=V.s*60;DV.V=V;dv2()}
 function dv2(){if(DV&&DV.g&&DV.V)disDraw($('dvC'),DV.g,DV.V)}
 let dvRaf=0;const dvReq=()=>{if(!dvRaf)dvRaf=requestAnimationFrame(()=>{dvRaf=0;dv2()})};
 function dv2Bind(){const C=$('dvC'),ptr=new Map();let tap=null,lastTap=0;
   const zoomAt=(x,y,k)=>{const V=DV.V,ns=Math.max(V.min,Math.min(V.max,V.s*k));k=ns/V.s;V.ox=x-(x-V.ox)*k;V.oy=y-(y-V.oy)*k;V.s=ns};
-  const pos=e=>{const r=C.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
+  const pos=e=>{const r=C.getBoundingClientRect(),kx=r.width?C.clientWidth/r.width:1,ky=r.height?C.clientHeight/r.height:1;return{x:(e.clientX-r.left)*kx,y:(e.clientY-r.top)*ky}};
   C.onpointerdown=e=>{try{C.setPointerCapture(e.pointerId)}catch(_){}const p=pos(e);ptr.set(e.pointerId,p);tap=ptr.size===1?{...p,t:Date.now()}:null};
   C.onpointermove=e=>{const p=ptr.get(e.pointerId);if(!p||!DV||!DV.V)return;const n=pos(e);
     if(ptr.size===1){DV.V.ox+=n.x-p.x;DV.V.oy+=n.y-p.y;if(tap&&Math.hypot(n.x-tap.x,n.y-tap.y)>8)tap=null}
